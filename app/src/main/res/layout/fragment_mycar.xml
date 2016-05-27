@@ -4,10 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <include layout="@layout/layout_titlebar"/>
-    <TextView
+
+    <cn.trinea.android.view.autoscrollviewpager.AutoScrollViewPager
+        android:id="@+id/auto_scroll_view_pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="My Car"
-        android:textSize="18sp"/>
+        android:layout_height="150dp" />
+
+
 </LinearLayout>
