@@ -9,27 +9,28 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 
 import com.lhh.apst.library.AdvancedPagerSlidingTabStrip;
-import com.zividig.ziv.fragments.FirstFragment;
-import com.zividig.ziv.fragments.FourthFragment;
-import com.zividig.ziv.fragments.SecondFragment;
-import com.zividig.ziv.fragments.ThirdFragment;
+import com.zividig.ziv.customView.CustomViewPager;
+import com.zividig.ziv.fragments.MyCarFragment;
+import com.zividig.ziv.fragments.MyFragment;
+import com.zividig.ziv.fragments.MessageFragment;
+import com.zividig.ziv.fragments.SettingFragment;
 
 public class MainActivity extends FragmentActivity implements ViewPager.OnPageChangeListener{
 
-    public AdvancedPagerSlidingTabStrip mAPSTS;
-    public APSTSViewPager mVP;
+    public AdvancedPagerSlidingTabStrip mTabs;
+    public CustomViewPager mViewPager;
 
-    private static final int VIEW_FIRST 		= 0;
-    private static final int VIEW_SECOND	    = 1;
-    private static final int VIEW_THIRD       = 2;
+    private static final int VIEW_FIRST 	= 0;
+    private static final int VIEW_SECOND	= 1;
+    private static final int VIEW_THIRD     = 2;
     private static final int VIEW_FOURTH    = 3;
 
     private static final int VIEW_SIZE = 4;
 
-    private FirstFragment mFirstFragment = null;
-    private SecondFragment mSecondFragment = null;
-    private ThirdFragment mThirdFragment = null;
-    private FourthFragment mFourthFragment = null;
+    private MyCarFragment mMyCarFragment = null; //我的车
+    private MessageFragment mMessageFragment = null; //消息
+    private SettingFragment mSettingFragment = null; //设置
+    private MyFragment mMyFragment = null; //我
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,21 +42,23 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
     }
 
     private void findViews(){
-        mAPSTS = (AdvancedPagerSlidingTabStrip)findViewById(R.id.tabs);
-        mVP = (APSTSViewPager)findViewById(R.id.vp_main);
+        mTabs = (AdvancedPagerSlidingTabStrip)findViewById(R.id.tabs);
+        mViewPager = (CustomViewPager)findViewById(R.id.vp_main);
     }
 
+    //初始化
     private void init(){
-        mVP.setOffscreenPageLimit(VIEW_SIZE);
+        mViewPager.setOffscreenPageLimit(VIEW_SIZE);
         FragmentAdapter adapter = new FragmentAdapter(getSupportFragmentManager());
 
-        mVP.setAdapter(new FragmentAdapter(getSupportFragmentManager()));
+        mViewPager.setAdapter(new FragmentAdapter(getSupportFragmentManager()));
 
         adapter.notifyDataSetChanged();
-        mAPSTS.setViewPager(mVP);
-        mAPSTS.setOnPageChangeListener(this);
-        mVP.setCurrentItem(VIEW_FIRST);
-        mAPSTS.showDot(VIEW_FIRST,"99+");
+        mTabs.setViewPager(mViewPager);
+        mTabs.setOnPageChangeListener(this);
+
+        mViewPager.setCurrentItem(VIEW_FIRST); //设置默认选中的选项卡
+        mTabs.showDot(VIEW_SECOND,"99+"); //设置消息
     }
 
     @Override
@@ -84,24 +87,24 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
             if(position >= 0 && position < VIEW_SIZE){
                 switch (position){
                     case  VIEW_FIRST:
-                        if(null == mFirstFragment)
-                            mFirstFragment = FirstFragment.instance();
-                        return mFirstFragment;
+                        if(null == mMyCarFragment)
+                            mMyCarFragment = MyCarFragment.instance();
+                        return mMyCarFragment;
 
                     case VIEW_SECOND:
-                        if(null == mSecondFragment)
-                            mSecondFragment = SecondFragment.instance();
-                        return mSecondFragment;
+                        if(null == mMessageFragment)
+                            mMessageFragment = MessageFragment.instance();
+                        return mMessageFragment;
 
                     case VIEW_THIRD:
-                        if(null == mThirdFragment)
-                            mThirdFragment = ThirdFragment.instance();
-                        return mThirdFragment;
+                        if(null == mSettingFragment)
+                            mSettingFragment = SettingFragment.instance();
+                        return mSettingFragment;
 
                     case VIEW_FOURTH:
-                        if(null == mFourthFragment)
-                            mFourthFragment = FourthFragment.instance();
-                        return mFourthFragment;
+                        if(null == mMyFragment)
+                            mMyFragment = MyFragment.instance();
+                        return mMyFragment;
                     default:
                         break;
                 }
@@ -115,7 +118,7 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
         }
 
         @Override
-        public CharSequence getPageTitle(int position) {
+        public CharSequence getPageTitle(int position) {  //设置选项卡文字
             if(position >= 0 && position < VIEW_SIZE){
                 switch (position){
                     case  VIEW_FIRST:
@@ -134,17 +137,17 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
         }
 
         @Override
-        public Integer getPageIcon(int index) {
+        public Integer getPageIcon(int index) { //设置选项卡没选中的图片
             if(index >= 0 && index < VIEW_SIZE){
                 switch (index){
                     case  VIEW_FIRST:
-                        return  R.mipmap.carinfo_default;
+                        return  R.mipmap.mycar_white;
                     case VIEW_SECOND:
-                        return  R.mipmap.realtimeimg_default;
+                        return  R.mipmap.message_white;
                     case VIEW_THIRD:
-                        return  R.mipmap.setting_default;
+                        return  R.mipmap.setting_white;
                     case VIEW_FOURTH:
-                        return  R.mipmap.route_walk_icon;
+                        return  R.mipmap.my_white;
                     default:
                         break;
                 }
@@ -153,17 +156,17 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
         }
 
         @Override
-        public Integer getPageSelectIcon(int index) {
+        public Integer getPageSelectIcon(int index) { //设置选项卡选中时候的图片
             if(index >= 0 && index < VIEW_SIZE){
                 switch (index){
                     case  VIEW_FIRST:
-                        return  R.mipmap.carinfo;
+                        return  R.mipmap.mycar_white_select;
                     case VIEW_SECOND:
-                        return  R.mipmap.realtimeimg;
+                        return  R.mipmap.message_white_select;
                     case VIEW_THIRD:
-                        return  R.mipmap.setting;
+                        return  R.mipmap.setting_white_select;
                     case VIEW_FOURTH:
-                        return  R.mipmap.route_walk_icon_slecter;
+                        return  R.mipmap.my_white_select;
                     default:
                         break;
                 }

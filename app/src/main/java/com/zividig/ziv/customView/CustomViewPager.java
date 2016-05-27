@@ -1,4 +1,4 @@
-package com.zividig.ziv;
+package com.zividig.ziv.customView;
 
 import android.content.Context;
 import android.support.v4.view.ViewPager;
@@ -6,14 +6,15 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 
 /**
+ * 自定义的ViewPager
  * Created by linhonghong on 2015/8/10.
  */
-public class APSTSViewPager extends ViewPager {
+public class CustomViewPager extends ViewPager {
     private boolean mNoFocus = false; //if true, keep View don't move
-    public APSTSViewPager(Context context, AttributeSet attrs) {
+    public CustomViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
-    public APSTSViewPager(Context context){
+    public CustomViewPager(Context context){
         this(context,null);
     }
 
