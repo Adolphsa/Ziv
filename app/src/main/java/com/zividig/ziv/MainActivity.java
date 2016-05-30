@@ -8,12 +8,15 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 
+import com.baidu.mapapi.SDKInitializer;
 import com.lhh.apst.library.AdvancedPagerSlidingTabStrip;
 import com.zividig.ziv.customView.CustomViewPager;
 import com.zividig.ziv.fragments.MyCarFragment;
 import com.zividig.ziv.fragments.MyFragment;
 import com.zividig.ziv.fragments.MessageFragment;
 import com.zividig.ziv.fragments.SettingFragment;
+
+import org.xutils.x;
 
 public class MainActivity extends FragmentActivity implements ViewPager.OnPageChangeListener{
 
@@ -35,7 +38,10 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SDKInitializer.initialize(getApplicationContext());
         setContentView(R.layout.activity_main);
+
+        x.Ext.init(getApplication()); //初始化xutils
 
         findViews();
         init();

@@ -12,6 +12,7 @@
         <item name="android:typeface">monospace</item>
     </style>
 
+    <!--底部导航栏样式-->
     <style name="pagertab_icon_style">
         <item name="android:background">@drawable/tab_bg_normal</item>
         <item name="apTabBackground">@drawable/tab_bg_normal</item>
@@ -27,4 +28,12 @@
         <item name="apTabTextSelectColor">@color/home_bar_text_push</item>
     </style>
 
+    <!-- 车辆信息车门。防盗等按钮样式-->
+    <style name="carInfoButtonStyle">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">40dp</item>
+        <item name="android:background">@null</item>
+        <item name="android:textColor">@android:color/holo_red_light</item>
+        <item name="android:drawablePadding">3dp</item>
+    </style>
 </resources>

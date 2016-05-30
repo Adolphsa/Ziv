@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@android:color/black"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/layout_titlebar"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@mipmap/line_bg"
+        android:layout_marginTop="5dp"
+        >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="60dp"
+            android:layout_alignParentLeft="true"
+            >
+
+            <Button
+                style="@style/carInfoButtonStyle"
+                android:drawableTop="@drawable/selector_carinfo_cardoor"
+                android:text="车门"
+                />
+            <Button
+                style="@style/carInfoButtonStyle"
+                android:drawableTop="@drawable/selector_carinfo_guard"
+                android:text="防盗"
+                android:layout_marginTop="8dp"
+                />
+            <Button
+                style="@style/carInfoButtonStyle"
+                android:drawableTop="@drawable/selector_carinfo_acc"
+                android:text="ACC"
+                android:layout_marginTop="8dp"
+                />
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/dash_board"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            />
+        <ImageView
+            android:id="@+id/img_speed_point"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/dash_needle"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            />
+        <LinearLayout
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="60dp"
+            android:layout_alignParentRight="true"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="油耗单位"
+                android:textColor="@android:color/holo_red_light"
+                android:textSize="12dp"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="升/百公里"
+                android:textColor="@android:color/holo_red_light"
+                android:textSize="11dp"
+                />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/holo_red_light"
+
+                android:gravity="center"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="平均油耗"
+                android:textColor="@android:color/holo_red_light"
+                android:layout_marginTop="20dp"
+                android:textSize="12dp"
+                />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/holo_red_light"
+                android:text="1.9"
+                android:gravity="center"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="瞬时油耗"
+                android:textColor="@android:color/holo_red_light"
+                android:layout_marginTop="20dp"
+                android:textSize="12dp"
+                />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/holo_red_light"
+                android:text="1.8"
+                android:gravity="center"
+                />
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/quxian"
+        />
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- 油量-->
+        <RelativeLayout
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            >
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/dashboard_oil"
+                />
+            <ImageView
+                android:id="@+id/img_oil_point"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/needle_oil"
+                />
+        </RelativeLayout>
+
+        <!-- 转速-->
+        <RelativeLayout
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/dashboard_speed"
+                />
+            <ImageView
+                android:id="@+id/img_turning_point"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/needle_speed"
+                />
+        </RelativeLayout>
+
+        <!-- 水温-->
+        <RelativeLayout
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            >
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/dashboard_temperature"
+                />
+            <ImageView
+                android:id="@+id/img_temperature_point"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/needle_oil"
+                />
+        </RelativeLayout>
+    </LinearLayout>
+</LinearLayout>

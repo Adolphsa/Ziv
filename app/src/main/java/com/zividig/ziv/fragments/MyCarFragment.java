@@ -1,12 +1,16 @@
 package com.zividig.ziv.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,6 +18,9 @@ import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.bigkoo.convenientbanner.holder.Holder;
 import com.zividig.ziv.R;
+import com.zividig.ziv.function.CarInfo;
+import com.zividig.ziv.function.CarLocation;
+import com.zividig.ziv.function.RealTimeShow;
 
 import java.util.ArrayList;
 
@@ -23,11 +30,15 @@ import java.util.ArrayList;
  */
 public class MyCarFragment extends Fragment {
 
+    private View view; //布局文件
 
     private ConvenientBanner convenientBanner; //顶部广告栏控件
     private ArrayList<Integer> localImages = new ArrayList<Integer>();
-    private View view;
 
+    private String[] itemTexts = {"实时预览","车辆信息","车辆定位",
+                                "电子围栏","违章查询","轨迹查询"};
+    private int[] itemImages = {R.drawable.selector_real_time,R.drawable.selector_car_info,R.drawable.selector_car_location,
+                                R.drawable.selector_electric_fence,R.drawable.selector_car_manage,R.drawable.selector_history_back};
     public static MyCarFragment instance() {
         MyCarFragment myCarView = new MyCarFragment();
 		return myCarView;
@@ -43,9 +54,71 @@ public class MyCarFragment extends Fragment {
         title.setText("我的车");
 
         initAd();
+        initFunctionButton();
+
         return view;
     }
 
+    //初始化功能按钮
+    private void initFunctionButton(){
+        GridView gridView = (GridView) view.findViewById(R.id.gv_mycar);
+        gridView.setAdapter(new BaseAdapter() {
+            @Override
+            public int getCount() {
+                return itemTexts.length;
+            }
+
+            @Override
+            public Object getItem(int position) {
+                return itemTexts[position];
+            }
+
+            @Override
+            public long getItemId(int position) {
+                return position;
+            }
+
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View view = View.inflate(getContext(),R.layout.layout_function_button,null);
+                ImageView ivItem = (ImageView) view.findViewById(R.id.iv_item);
+                TextView tvItem = (TextView) view.findViewById(R.id.tv_item);
+
+                ivItem.setImageResource(itemImages[position]);
+                tvItem.setText(itemTexts[position]);
+                return view;
+            }
+        });
+        //设置点击事件
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position){
+                    case 0:
+                        System.out.println("实时预览" + position);
+                        startActivity(new Intent(getContext(), RealTimeShow.class));
+                        break;
+                    case 1:
+                        System.out.println("车辆信息" + position);
+                        startActivity(new Intent(getContext(), CarInfo.class));
+                        break;
+                    case 2:
+                        System.out.println("车辆定位" + position);
+                        startActivity(new Intent(getContext(), CarLocation.class));
+                        break;
+                    case 3:
+                        System.out.println("电子围栏" + position);
+                        break;
+                    case 4:
+                        System.out.println("违章查询" + position);
+                        break;
+                    case 5:
+                        System.out.println("轨迹查询" + position);
+                        break;
+                }
+            }
+        });
+    }
     //初始化广告控件
     private void initAd(){
         convenientBanner = (ConvenientBanner) view.findViewById(R.id.convenientBanner);
