@@ -24,6 +24,13 @@
         <activity android:name=".function.RealTimeShow"/>
         <activity android:name=".function.CarInfo"/>
         <activity android:name=".function.CarLocation"/>
+        <!--违章查询相关Activity-->
+        <activity android:name=".weizhang.activity.WeiZhangMainActivity"/>
+        <activity android:name=".weizhang.activity.CityList"/>
+        <activity android:name=".weizhang.activity.ProvinceList"/>
+        <activity android:name=".weizhang.activity.ShortNameList"/>
+        <activity android:name=".weizhang.activity.WeizhangResult"/>
+        <service android:name="com.cheshouye.api.client.WeizhangIntentService" />
 
         <service android:name="com.baidu.location.f" android:enabled="true" android:process=":remote">
         </service>
@@ -38,5 +45,6 @@
     <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
 </manifest>

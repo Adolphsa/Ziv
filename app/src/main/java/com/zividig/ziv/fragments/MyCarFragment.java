@@ -21,6 +21,7 @@ import com.zividig.ziv.R;
 import com.zividig.ziv.function.CarInfo;
 import com.zividig.ziv.function.CarLocation;
 import com.zividig.ziv.function.RealTimeShow;
+import com.zividig.ziv.weizhang.activity.WeiZhangMainActivity;
 
 import java.util.ArrayList;
 
@@ -111,6 +112,7 @@ public class MyCarFragment extends Fragment {
                         break;
                     case 4:
                         System.out.println("违章查询" + position);
+                        startActivity(new Intent(getContext(), WeiZhangMainActivity.class));
                         break;
                     case 5:
                         System.out.println("轨迹查询" + position);
