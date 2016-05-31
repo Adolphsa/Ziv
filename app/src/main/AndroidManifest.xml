@@ -13,17 +13,19 @@
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="siDzHaqLxC9hD6UIWLbqbUyBVmPx3Bm8" />
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".main.SplashActivity" android:theme="@style/MyAppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity android:name=".main.MainActivity"/>
         <activity android:name=".function.RealTimeShow"/>
         <activity android:name=".function.CarInfo"/>
         <activity android:name=".function.CarLocation"/>
+
+
         <!--违章查询相关Activity-->
         <activity android:name=".weizhang.activity.WeiZhangMainActivity"/>
         <activity android:name=".weizhang.activity.CityList"/>

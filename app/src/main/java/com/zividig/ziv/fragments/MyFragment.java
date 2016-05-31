@@ -12,7 +12,7 @@ import com.zividig.ziv.R;
 
 /**
  * 我
- * Created by linhonghong on 2015/8/11.
+ *
  */
 public class MyFragment extends Fragment {
 

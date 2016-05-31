@@ -12,7 +12,7 @@ import com.zividig.ziv.R;
 
 /**
  * 信息
- * Created by linhonghong on 2015/8/11.
+ *
  */
 public class MessageFragment extends Fragment {
 

@@ -1,4 +1,4 @@
-package com.zividig.ziv;
+package com.zividig.ziv.main;
 
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -10,6 +10,7 @@ import android.support.v4.view.ViewPager;
 
 import com.baidu.mapapi.SDKInitializer;
 import com.lhh.apst.library.AdvancedPagerSlidingTabStrip;
+import com.zividig.ziv.R;
 import com.zividig.ziv.customView.CustomViewPager;
 import com.zividig.ziv.fragments.MyCarFragment;
 import com.zividig.ziv.fragments.MyFragment;
@@ -38,10 +39,7 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SDKInitializer.initialize(getApplicationContext());
         setContentView(R.layout.activity_main);
-
-        x.Ext.init(getApplication()); //初始化xutils
 
         findViews();
         init();

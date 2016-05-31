@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@drawable/selector_base_pager_baseground"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/item_left_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/gps"
+        android:scaleType="fitXY"
+        android:layout_marginLeft="20dp"
+        android:layout_centerVertical="true"
+        />
+    <TextView
+        android:id="@+id/item_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="GPS定位"
+        android:textColor="@android:color/black"
+        android:layout_toRightOf="@id/item_left_icon"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp"
+        />
+    <ImageView
+        android:id="@+id/item_right_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="5dp"
+        android:src="@mipmap/rights"
+        android:scaleType="fitXY"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        />
+
+</RelativeLayout>

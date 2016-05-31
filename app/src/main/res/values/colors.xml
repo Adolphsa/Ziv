@@ -18,4 +18,7 @@
     <color name="csy_label">#ff969696</color>
     <color name="csy_text">#ff555555</color>
     <color name="csy_hint">#ffc6c6c6</color>
+
+    <drawable name="pressTrue">#e7e7e7</drawable>
+    <drawable name="pressFalse">#ffffff</drawable>
 </resources>
