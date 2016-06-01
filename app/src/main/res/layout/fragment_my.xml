@@ -6,10 +6,10 @@
 
     <include layout="@layout/layout_titlebar"/>
 
-    <TextView
+    <ListView
+        android:id="@+id/lv_my"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="My"
-        android:textSize="18sp"/>
+        android:layout_height="wrap_content">
+
+    </ListView>
 </LinearLayout>

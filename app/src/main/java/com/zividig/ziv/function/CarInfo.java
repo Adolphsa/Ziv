@@ -117,4 +117,10 @@ public class CarInfo extends Activity {
         temperatureRotate.setFillAfter(true);
         temperaturePoint.setAnimation(temperatureRotate);
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        timer.cancel();
+    }
 }
