@@ -11,4 +11,5 @@
     <string name="csy_chejia_lab">车架号</string>
     <string name="csy_engine_lab">发动机号</string>
     <string name="csy_close">关闭</string>
+    <string name="title_activity_my_picture">MyPicture</string>
 </resources>

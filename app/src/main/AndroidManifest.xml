@@ -2,51 +2,56 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.zividig.ziv">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.Holo.Light.NoActionBar">
-
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="siDzHaqLxC9hD6UIWLbqbUyBVmPx3Bm8" />
 
-        <activity android:name=".main.SplashActivity" android:theme="@style/MyAppTheme">
+        <activity
+            android:name=".main.SplashActivity"
+            android:theme="@style/MyAppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".main.MainActivity"/>
-        <activity android:name=".function.RealTimeShow"/>
-        <activity android:name=".function.CarInfo"/>
-        <activity android:name=".function.CarLocation"/>
+        <activity android:name=".main.MainActivity" />
+        <activity android:name=".function.RealTimeShow" />
+        <activity android:name=".function.CarInfo" />
+        <activity android:name=".function.CarLocation" />
+        <activity android:name=".function.MyPicture" />
 
+        <!-- 违章查询相关Activity -->
+        <activity android:name=".weizhang.activity.WeiZhangMainActivity" />
+        <activity android:name=".weizhang.activity.CityList" />
+        <activity android:name=".weizhang.activity.ProvinceList" />
+        <activity android:name=".weizhang.activity.ShortNameList" />
+        <activity android:name=".weizhang.activity.WeizhangResult" />
 
-        <!--违章查询相关Activity-->
-        <activity android:name=".weizhang.activity.WeiZhangMainActivity"/>
-        <activity android:name=".weizhang.activity.CityList"/>
-        <activity android:name=".weizhang.activity.ProvinceList"/>
-        <activity android:name=".weizhang.activity.ShortNameList"/>
-        <activity android:name=".weizhang.activity.WeizhangResult"/>
         <service android:name="com.cheshouye.api.client.WeizhangIntentService" />
+        <service
+            android:name="com.baidu.location.f"
+            android:enabled="true"
+            android:process=":remote"/>
 
-        <service android:name="com.baidu.location.f" android:enabled="true" android:process=":remote">
-        </service>
+
     </application>
-
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.GET_TASKS" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
 </manifest>

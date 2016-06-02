@@ -1,5 +1,6 @@
 package com.zividig.ziv.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.zividig.ziv.R;
+import com.zividig.ziv.function.MyPicture;
 
 /**
  * 我
@@ -30,12 +32,22 @@ public class MyFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my, null);
 
+        //设置标题
+        TextView title = (TextView)view.findViewById(R.id.tv_title);
+        title.setText("我");
+
         ListView lvMy = (ListView) view.findViewById(R.id.lv_my);
         lvMy.setAdapter(new MyAdapter());
         lvMy.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                switch (position){
+                    case 0: //我的账号
+                        break;
+                    case 1: //我的图片
+                        startActivity(new Intent(getContext(), MyPicture.class));
+                        break;
+                }
             }
         });
         return view;
@@ -74,7 +86,7 @@ public class MyFragment extends Fragment {
             switch (position){
                 case 0:
                     holder.leftIcon.setImageResource(R.mipmap.my_account);
-                    holder.itemText.setText("我的账户");
+                    holder.itemText.setText("我的帐号");
                     break;
                 case 1:
                     holder.leftIcon.setImageResource(R.mipmap.my_ablum);
