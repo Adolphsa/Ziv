@@ -1,6 +1,8 @@
 package com.zividig.ziv.function;
 
 import android.app.Activity;
+import android.graphics.Color;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
@@ -14,10 +16,14 @@ import android.widget.Toast;
 import com.bm.library.PhotoView;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
+import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.zividig.ziv.R;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xutils.common.Callback;
 import org.xutils.image.ImageOptions;
 import org.xutils.x;
@@ -41,6 +47,9 @@ public class RealTimeShow extends Activity {
     private PhotoView photoView;
     private ProgressBar progressBar;
     private ImageOptions options;
+
+    private String[] urls;
+    private String url; //图片的地址
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +75,7 @@ public class RealTimeShow extends Activity {
 
         progressBar = (ProgressBar) findViewById(R.id.pb_img); //进度条
 
+
         //按钮
         BtnListener listener = new BtnListener();
         Button btRefresh = (Button) findViewById(R.id.bt_refresh); //图片刷新
@@ -77,38 +87,80 @@ public class RealTimeShow extends Activity {
     }
 
     private void showImage(){
-        options = new ImageOptions.Builder()
-                .setImageScaleType(ImageView.ScaleType.FIT_XY)
-                .build();
-        x.image().bind(photoView, mImgUrls[i], options, new Callback.CommonCallback<Drawable>() {
+        progressBar.setVisibility(View.VISIBLE);
+        System.out.println("获取图片");
+        //获取图片链接
+        org.xutils.http.RequestParams params = new org.xutils.http.RequestParams("http://192.168.1.2:9501/");
+        x.http().get(params, new Callback.CommonCallback<JSONObject>() {
 
             @Override
-            public void onSuccess(Drawable result) {
-                System.out.println("加载成功");
+            public void onSuccess(JSONObject result) {
+                System.out.println("返回的数组是：" + result.toString());
+                try {
+                    int picnum = result.getInt("picnum");
+                    JSONArray picinfo = result.getJSONArray("picinfo");
+                    for (int i = 0; i < picnum ; i++) {
+                        JSONObject temp = (JSONObject) picinfo.get(i);
+                        url = temp.getString("url");
+                        System.out.println(url);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
-                System.out.println("加载错误");
+
             }
 
             @Override
             public void onCancelled(CancelledException cex) {
-                System.out.println("加载取消");
+
             }
 
             @Override
             public void onFinished() {
-                System.out.println("加载完成");
-                if (i >= 4){
-                    i = i%4;
-                    System.out.println("if语句运行" + i);
-                }else {
-                    System.out.println("----" + i);
-                    i++;
-                }
+                //显示图片
+                options = new ImageOptions.Builder()
+                        .setImageScaleType(ImageView.ScaleType.FIT_XY)
+                        .build();
+                x.image().bind(photoView, url, options, new Callback.CommonCallback<Drawable>() {
+
+                    @Override
+                    public void onSuccess(Drawable result) {
+                        progressBar.setVisibility(View.INVISIBLE);
+                        System.out.println("加载成功");
+                    }
+
+                    @Override
+                    public void onError(Throwable ex, boolean isOnCallback) {
+
+                        System.out.println("加载错误" + ex);
+                    }
+
+                    @Override
+                    public void onCancelled(CancelledException cex) {
+                        System.out.println("加载取消");
+                    }
+
+                    @Override
+                    public void onFinished() {
+
+//                System.out.println("加载完成");
+//                if (i >= 4){
+//                    i = i%4;
+//                    System.out.println("if语句运行" + i);
+//                }else {
+//                    System.out.println("----" + i);
+//                    i++;
+//                }
+                    }
+                });
             }
         });
+
+
     }
 
     //下载图片到本地
@@ -157,6 +209,8 @@ public class RealTimeShow extends Activity {
         public void onClick(View v) {
             switch (v.getId()){
                 case R.id.bt_refresh:
+                    photoView.setImageResource(R.mipmap.default_white);
+                    photoView.setBackgroundColor(Color.WHITE);
                     showImage();
                     break;
                 case R.id.bt_downImage:
