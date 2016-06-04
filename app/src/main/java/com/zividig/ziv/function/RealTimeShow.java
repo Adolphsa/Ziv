@@ -111,7 +111,7 @@ public class RealTimeShow extends Activity {
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
-
+                System.out.println("返回json错误" + ex);
             }
 
             @Override
@@ -176,11 +176,11 @@ public class RealTimeShow extends Activity {
             System.out.println(file);
             String target = file  + "/" +getDateAndTime() + ".jpg";
             System.out.println(target);
-            httpUtils.download(mImgUrls[i], target, false, new RequestCallBack<File>() {
+            httpUtils.download(url, target, false, new RequestCallBack<File>() {
                 @Override
                 public void onSuccess(ResponseInfo<File> responseInfo) {
                     Toast.makeText(RealTimeShow.this,"图片已下载",Toast.LENGTH_SHORT).show();
-                    System.out.println(mImgUrls[i] + "---" + i);
+                    System.out.println(url + "---" + i);
                 }
 
                 @Override

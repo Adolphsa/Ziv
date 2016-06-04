@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="2dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/tv_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:textSize="18sp"
+        android:text="2016/05/03"
+        />
+    <com.zividig.ziv.customView.NoScrollGridView
+        android:id="@+id/gv_picture"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:numColumns="4"
+        android:horizontalSpacing="5dp"
+        android:verticalSpacing="3dp"
+        >
+
+    </com.zividig.ziv.customView.NoScrollGridView>
+</LinearLayout>

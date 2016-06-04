@@ -37,6 +37,7 @@
         <activity android:name=".function.CarInfo" />
         <activity android:name=".function.CarLocation" />
         <activity android:name=".function.MyPicture" />
+        <activity android:name=".function.ShowPicture"/>
 
         <!-- 违章查询相关Activity -->
         <activity android:name=".weizhang.activity.WeiZhangMainActivity" />
