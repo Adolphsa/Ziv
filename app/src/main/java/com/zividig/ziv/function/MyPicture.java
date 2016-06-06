@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -21,16 +20,15 @@ import com.zividig.ziv.R;
 import com.zividig.ziv.customView.NoScrollGridView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 public class MyPicture extends Activity{
 
-
-    private ArrayList<String> names;
-    private ArrayList<String> fileNames;
     private ListView lvPivture;
+    private PictureBean bean;
+    private int n;
+    private List<List<PictureBean>> sortList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,9 +49,6 @@ public class MyPicture extends Activity{
             }
         });
 
-        names = new ArrayList<String>();
-        fileNames = new ArrayList<String>();
-
         lvPivture = (ListView) findViewById(R.id.lv_picture);
         MyListAdapter listAdapter = new MyListAdapter();
         getImage();
@@ -70,66 +65,78 @@ public class MyPicture extends Activity{
         //设定查询目录
         String path= Environment.getExternalStorageDirectory() + "/Ziv";
         System.out.println("图片的地址:" + path);
+        List<PictureBean> beans = new ArrayList<PictureBean>();
         //定义selectionArgs：
         String[] selectionArgs = {path+"%"};
         Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                                                     null, selection,selectionArgs,null);
         while (cursor.moveToNext()){
 
+            //获取图片名称
             String name = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME));
-            System.out.println("name:" + name);
-            System.out.println(name.substring(0,4) + "年" + name.substring(4,6) + "月" + name.substring(6,8));
-            String year = name.substring(0,4);
-            String month = name.substring(4,6);
-            String day = name.substring(6,8);
-            String dateName = name.substring(0,4) + "年" + name.substring(4,6) + "月" + name.substring(6,8);
+            System.out.println("name:" + name);System.out.println(name.substring(0,4) + "年" + name.substring(4,6) + "月" + name.substring(6,8));
+            bean = new PictureBean();
+            bean.setPicNum(Integer.valueOf(name.substring(0,8)));
 
-            names.add(dateName);
+           //获取图片地址
             byte[] data = cursor.getBlob(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-            fileNames.add(new String(data,0,data.length-1));
-            System.out.println("fileNames的长度" + fileNames.size());
+            bean.setPicUrl(new String(data,0,data.length-1));
+
+            beans.add(bean);
+
         }
 
-        List<Map<String,Object>> listItems = new ArrayList<Map<String,Object>>();
-        for (int i = 0; i < names.size(); i++) {
-            Map<String,Object> listItem = new HashMap<String,Object>();
-            listItem.put("name",names.get(i));
-            listItem.put("fileName",fileNames.get(i));
-            listItems.add(listItem);
+        //排序
+        Collections.sort(beans);
+        for (PictureBean p:beans) {
+            System.out.println("排序后的序列" + p.getPicNum());
         }
 
-        System.out.println("listMap的长度：" + listItems.size());
-        List<ArrayList<String>> lists = new ArrayList<ArrayList<String>>();
-        ArrayList<String> s1 = new ArrayList<String>();
-        for (int i = 0; i < listItems.size(); i++) {
-            for (int j = i+1; j<listItems.size(); j++){
-                String a =(String) listItems.get(i).get("name");
-                String a8 = a.substring(0, 8);
-
-                String b = (String) listItems.get(j).get("name");
-                String b8 = b.substring(0, 8);
-                if (a8.equals(b8)){
-                    System.out.println("相等");
-                    s1.add(listItems.get(j).get("fileName").toString());
-
-                }else {
+        n = 0;
+        List<PictureBean> temp = null;
+        List<PictureBean> temp2 = new ArrayList<>();
+        //存在整理好的图片地址
+        sortList = new ArrayList<List<PictureBean>>();
+        for (int i = n; n < beans.size(); n++) {
+            System.out.println("n的值---" + n + "，i的值---" + i);
+            for (int j = i+1; j<beans.size();j++){
+                if (!beans.get(i).getPicNum().equals(beans.get(j).getPicNum())){ //判断到不相等为止
                     System.out.println("不相等");
-                    ArrayList<String> s2 = new ArrayList<String>();
-                    s2.add(listItems.get(j).get("fileName").toString());
+                    temp = new ArrayList<>();
+                    for (int k = i; k<j;k++){
+                        temp.add(beans.get(k));
+                    }
+                    n = j;
+                }else {
+                     //全部相等
+                    if (j==beans.size()-1){
+                        System.out.println("全部相等" + "--j的值" + j);
+                        for (int k=0;k<=j;k++){
+                            temp2.add(beans.get(k));
+                        }
+                    }
 
                 }
             }
-        }
-        lists.add(s1);
-        System.out.println("整理后的数组长度:---" + lists.size());
+            if (temp!=null){
+                System.out.println("增加temp");
+                sortList.add(temp);
+            }else {
+                System.out.println("增加temp2");
+                sortList.add(temp2);
+                n=beans.size();
+            }
 
+        }
+
+        System.out.println("整理后的序列sortList长度---" + sortList.size());
     }
 
     class MyListAdapter extends BaseAdapter{
 
         @Override
         public int getCount() {
-            return 2;
+            return sortList.size();
         }
 
         @Override
@@ -143,39 +150,44 @@ public class MyPicture extends Activity{
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
             ViewHolder holder;
             if (convertView == null){
                 convertView = View.inflate(MyPicture.this,R.layout.layout_picture_list_item,null);
                 holder = new ViewHolder();
                 holder.tvName = (TextView) convertView.findViewById(R.id.tv_name);
                 holder.gvPicture = (NoScrollGridView) convertView.findViewById(R.id.gv_picture);
-                holder.gvPicture.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        System.out.println("被点击了" + position);
-                        Intent intent = new Intent(MyPicture.this,ShowPicture.class);
-                        Bundle bundle = new Bundle();
-                        bundle.putString("pic_url",fileNames.get(position));
-                        intent.putExtras(bundle);
-                        startActivity(intent);
-                    }
-                });
+
                 convertView.setTag(holder);
             }else {
                 holder = (ViewHolder) convertView.getTag();
             }
-            holder.tvName.setText(names.get(0));
-            holder.gvPicture.setAdapter(new BaseAdapter() {
+            final List<PictureBean> pictureBeans = sortList.get(position);
+            String data = pictureBeans.get(0).getPicNum().toString();
+            String data2 = data.substring(0,4) + "年" + data.substring(4,6) + "月" + data.substring(6,8) + "日";
+            holder.tvName.setText(data2); //设置是哪一天的照片
+            //图片的点击事件
+            holder.gvPicture.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    System.out.println("被点击了" + position);
+                    Intent intent = new Intent(MyPicture.this,ShowPicture.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("pic_url",pictureBeans.get(position).getPicUrl());
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                }
+            });
+            holder.gvPicture.setAdapter(new BaseAdapter() { //设置具体的照片
                 GridViewHolder gvHolder;
                 @Override
                 public int getCount() {
-                    return fileNames.size();
+                    return pictureBeans.size();
                 }
 
                 @Override
                 public Object getItem(int position) {
-                    return fileNames.get(position);
+                    return pictureBeans.get(position);
                 }
 
                 @Override
@@ -194,7 +206,7 @@ public class MyPicture extends Activity{
                        gvHolder = (GridViewHolder) convertView.getTag();
                    }
                     gvHolder.gvImage.setScaleType(ImageView.ScaleType.FIT_XY);
-                    gvHolder.gvImage.setImageBitmap(BitmapFactory.decodeFile(fileNames.get(position)));
+                    gvHolder.gvImage.setImageBitmap(BitmapFactory.decodeFile(pictureBeans.get(position).getPicUrl()));
                     return convertView;
                 }
             });
