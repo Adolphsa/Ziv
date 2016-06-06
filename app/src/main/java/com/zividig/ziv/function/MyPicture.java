@@ -25,6 +25,8 @@ import java.util.List;
 
 public class MyPicture extends Activity{
 
+
+
     private ListView lvPivture;
     private PictureBean bean;
     private int n;
