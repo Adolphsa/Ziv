@@ -17,6 +17,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.zividig.ziv.R;
+import com.zividig.ziv.bean.PictureBean;
 import com.zividig.ziv.customView.NoScrollGridView;
 
 import java.util.ArrayList;

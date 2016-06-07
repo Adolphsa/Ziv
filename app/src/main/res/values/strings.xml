@@ -12,4 +12,5 @@
     <string name="csy_engine_lab">发动机号</string>
     <string name="csy_close">关闭</string>
     <string name="title_activity_my_picture">MyPicture</string>
+    <string name="title_activity_electronic_fence">ElectronicFence</string>
 </resources>

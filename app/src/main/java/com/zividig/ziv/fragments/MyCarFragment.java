@@ -20,7 +20,9 @@ import com.bigkoo.convenientbanner.holder.Holder;
 import com.zividig.ziv.R;
 import com.zividig.ziv.function.CarInfo;
 import com.zividig.ziv.function.CarLocation;
+import com.zividig.ziv.function.ElectronicFence;
 import com.zividig.ziv.function.RealTimeShow;
+import com.zividig.ziv.function.TrackQuery;
 import com.zividig.ziv.weizhang.activity.WeiZhangMainActivity;
 
 import java.util.ArrayList;
@@ -109,6 +111,7 @@ public class MyCarFragment extends Fragment {
                         break;
                     case 3:
                         System.out.println("电子围栏" + position);
+                        startActivity(new Intent(getContext(), ElectronicFence.class));
                         break;
                     case 4:
                         System.out.println("违章查询" + position);
@@ -116,6 +119,7 @@ public class MyCarFragment extends Fragment {
                         break;
                     case 5:
                         System.out.println("轨迹查询" + position);
+                        startActivity(new Intent(getContext(), TrackQuery.class));
                         break;
                 }
             }

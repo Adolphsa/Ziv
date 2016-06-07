@@ -1,4 +1,4 @@
-package com.zividig.ziv.function;
+package com.zividig.ziv.bean;
 
 /**
  * Created by Administrator on 2016-06-06.

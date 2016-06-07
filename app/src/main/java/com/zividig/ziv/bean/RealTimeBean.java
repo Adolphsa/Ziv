@@ -1,4 +1,4 @@
-package com.zividig.ziv.function;
+package com.zividig.ziv.bean;
 
 import java.util.List;
 

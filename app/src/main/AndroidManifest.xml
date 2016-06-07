@@ -37,7 +37,8 @@
         <activity android:name=".function.CarInfo" />
         <activity android:name=".function.CarLocation" />
         <activity android:name=".function.MyPicture" />
-        <activity android:name=".function.ShowPicture"/>
+        <activity android:name=".function.ShowPicture" />
+        <activity android:name=".function.ElectronicFence" />
 
         <!-- 违章查询相关Activity -->
         <activity android:name=".weizhang.activity.WeiZhangMainActivity" />
@@ -50,9 +51,9 @@
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"
-            android:process=":remote"/>
+            android:process=":remote" />
 
-
+        <activity android:name=".function.TrackQuery"></activity>
     </application>
 
 </manifest>
