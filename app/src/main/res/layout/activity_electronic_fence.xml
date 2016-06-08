@@ -1,9 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.zividig.ziv.function.ElectronicFence">
 
     <include layout="@layout/layout_titlebar"/>
-</RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+
+        <com.baidu.mapapi.map.MapView
+            android:id="@+id/electronic_map"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+        <Button
+            android:id="@+id/bt_electric_fence"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="设置围栏"
+            android:onClick="setFence"
+            />
+
+    </RelativeLayout>
+
+</LinearLayout>

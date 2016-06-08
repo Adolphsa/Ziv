@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -16,15 +17,19 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.lhh.apst.library.ViewHolder;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.PictureBean;
 import com.zividig.ziv.customView.NoScrollGridView;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class MyPicture extends Activity{
+
+    private static String path = Environment.getExternalStorageDirectory() + "/Ziv";
 
     private ListView lvPivture;
     private PictureBean bean;
@@ -58,32 +63,53 @@ public class MyPicture extends Activity{
 
     }
 
-    //获取Ziv文件夹中的图片
+    /**
+     * 更新图片
+     */
+    private void updateImage(){
+        Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+//        String path = Environment.getExternalStorageDirectory() + "/Ziv";
+        Uri uri = Uri.fromFile(new File(path));
+        intent.setData(uri);
+        this.sendBroadcast(intent);
+    }
+
+    /**
+     * 获取Ziv文件夹中的图片
+     */
     private void getImage(){
+
+        updateImage();
         //selection: 指定查询条件
         String selection = MediaStore.Images.Media.DATA + " like ?";
         System.out.println(selection);
         //设定查询目录
-        String path= Environment.getExternalStorageDirectory() + "/Ziv";
+//        String path= Environment.getExternalStorageDirectory() + "/Ziv";
         System.out.println("图片的地址:" + path);
         List<PictureBean> beans = new ArrayList<PictureBean>();
         //定义selectionArgs：
         String[] selectionArgs = {path+"%"};
         Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                                                    null, selection,selectionArgs,null);
+                                                    null, MediaStore.Images.Media.MIME_TYPE + "=?",
+                                                new String[] { "image/jpeg"},MediaStore.Images.Media.DATE_TAKEN);
         while (cursor.moveToNext()){
 
-            //获取图片名称
-            String name = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME));
-            System.out.println("name:" + name);System.out.println(name.substring(0,4) + "年" + name.substring(4,6) + "月" + name.substring(6,8));
-            bean = new PictureBean();
-            bean.setPicNum(Integer.valueOf(name.substring(0,8)));
+            //获取图片的路径
+            String imagePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+            if (imagePath.contains("/Ziv")){
 
-           //获取图片地址
-            byte[] data = cursor.getBlob(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-            bean.setPicUrl(new String(data,0,data.length-1));
+                //获取图片名称
+                String name = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME));
+                System.out.println("name:" + name);System.out.println(name.substring(0,4) + "年" + name.substring(4,6) + "月" + name.substring(6,8));
+                bean = new PictureBean();
+                bean.setPicNum(Integer.valueOf(name.substring(0,8)));
 
-            beans.add(bean);
+                //获取图片地址
+                byte[] data = cursor.getBlob(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+                bean.setPicUrl(new String(data,0,data.length-1));
+
+                beans.add(bean);
+            }
 
         }
 
@@ -94,42 +120,42 @@ public class MyPicture extends Activity{
         }
 
         n = 0;
-        List<PictureBean> temp = null;
-        List<PictureBean> temp2 = new ArrayList<>();
+        List<PictureBean> temp = new ArrayList<>();
+        List<PictureBean> temp2 = null;
         //存在整理好的图片地址
         sortList = new ArrayList<List<PictureBean>>();
-        for (int i = n; n < beans.size(); n++) {
-            System.out.println("n的值---" + n + "，i的值---" + i);
-            for (int j = i+1; j<beans.size();j++){
-                if (!beans.get(i).getPicNum().equals(beans.get(j).getPicNum())){ //判断到不相等为止
-                    System.out.println("不相等");
+        for (; n < beans.size(); n++) {
+            System.out.println("n的值---" + n);
+            int m = beans.size();
+            for (int j = n+1; j<m;j++){
+                if (!beans.get(n).getPicNum().equals(beans.get(j).getPicNum())){ //判断到不相等为止
+                    System.out.println("不相等" + "---j的值" + j);
                     temp = new ArrayList<>();
-                    for (int k = i; k<j;k++){
+                    for (int k = n; k<j;k++){
+                        System.out.println("K的值" + k);
                         temp.add(beans.get(k));
                     }
                     n = j;
+                    m = j;
+                    sortList.add(temp);
+                    System.out.println("m的值---" + m);
                 }else {
-                     //全部相等
+                    //全部相等
                     if (j==beans.size()-1){
                         System.out.println("全部相等" + "--j的值" + j);
-                        for (int k=0;k<=j;k++){
+                        temp2 = new ArrayList<>();
+                        for (int k=n-1;k<=j;k++){   //待定  k的值还有待考虑
+                            System.out.println("全部相等 --" + n);
                             temp2.add(beans.get(k));
                         }
+                        sortList.add(temp2);
+                        n=beans.size();
                     }
 
                 }
             }
-            if (temp!=null){
-                System.out.println("增加temp");
-                sortList.add(temp);
-            }else {
-                System.out.println("增加temp2");
-                sortList.add(temp2);
-                n=beans.size();
-            }
 
         }
-
         System.out.println("整理后的序列sortList长度---" + sortList.size());
     }
 

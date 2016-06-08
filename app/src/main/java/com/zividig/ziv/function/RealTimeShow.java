@@ -90,7 +90,7 @@ public class RealTimeShow extends Activity {
         progressBar.setVisibility(View.VISIBLE);
         System.out.println("获取图片");
         //获取图片链接
-        org.xutils.http.RequestParams params = new org.xutils.http.RequestParams("http://192.168.1.2:9501/");
+        org.xutils.http.RequestParams params = new org.xutils.http.RequestParams("http://120.24.174.213:9501/devid=1234567890123456789");
         x.http().get(params, new Callback.CommonCallback<JSONObject>() {
 
             @Override
