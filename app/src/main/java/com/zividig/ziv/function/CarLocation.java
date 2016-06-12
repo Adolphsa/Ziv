@@ -157,6 +157,7 @@ public class CarLocation extends Activity {
                 System.out.println("第一次定位");
                 isFirstLocation = false;
                 ll = new LatLng(bdLocation.getLatitude(),bdLocation.getLongitude());
+                System.out.println(bdLocation.getLatitude()+"---" + bdLocation.getLongitude());
                 MapStatus.Builder builder = new MapStatus.Builder();
                 builder.target(ll).zoom(18.0f);
                 baiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
