@@ -21,7 +21,17 @@
             android:id="@+id/bt_electric_fence"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:padding="3dp"
+            android:layout_marginTop="10dp"
+            android:drawablePadding="1dp"
+            android:layout_marginRight="10dp"
+            android:drawableTop="@mipmap/map_fence"
+            android:layout_alignParentRight="true"
+            android:gravity="center"
+            android:textSize="12sp"
             android:text="设置围栏"
+            android:textColor="@android:color/darker_gray"
+            android:background="@drawable/selector_base_pager_baseground"
             android:onClick="setFence"
             />
 

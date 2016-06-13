@@ -22,6 +22,7 @@ import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.zividig.ziv.R;
+import com.zividig.ziv.service.LocationService;
 import com.zividig.ziv.utils.StreamUtils;
 
 import org.json.JSONException;
@@ -95,6 +96,7 @@ public class SplashActivity extends Activity {
         setContentView(R.layout.activity_splash);
 
         x.Ext.init(getApplication()); //初始化xutils
+        startService(new Intent(this, LocationService.class));
 
         tvProgress = (TextView) findViewById(R.id.tv_progress);// 默认隐藏
 

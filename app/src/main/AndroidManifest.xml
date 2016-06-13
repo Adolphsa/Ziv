@@ -2,6 +2,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.zividig.ziv">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -28,7 +39,7 @@
         <activity android:name=".function.MyPicture" />
         <activity android:name=".function.ShowPicture" />
         <activity android:name=".function.ElectronicFence" />
-        <activity android:name=".function.TrackQuery"/>
+        <activity android:name=".function.TrackQuery" />
 
         <!-- 违章查询相关Activity -->
         <activity android:name=".weizhang.activity.WeiZhangMainActivity" />
@@ -38,7 +49,7 @@
         <activity android:name=".weizhang.activity.WeizhangResult" />
 
         <service android:name="com.cheshouye.api.client.WeizhangIntentService" />
-        <!--百度地图服务-->
+        <!-- 百度地图服务 -->
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"
@@ -46,19 +57,20 @@
         <service
             android:name="com.baidu.trace.LBSTraceService"
             android:enabled="true"
+            android:exported="true" />
+
+        <!--获取位置的服务-->
+        <service
+            android:name=".service.LocationService"
+            android:enabled="true"
             android:exported="true"/>
 
+        <!--获取位置信息的广播-->
+        <receiver android:name=".service.LocationBroadcast">
+            <intent-filter>
+                <action android:name="com.zividig.ziv.service.location" />
+            </intent-filter>
+        </receiver>
     </application>
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
-    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 </manifest>

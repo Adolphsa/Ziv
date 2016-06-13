@@ -1,11 +1,14 @@
 package com.zividig.ziv.function;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.app.Activity;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.View;
@@ -30,7 +33,8 @@ import com.baidu.mapapi.model.LatLng;
 import com.baidu.trace.LBSTraceClient;
 import com.baidu.trace.OnGeoFenceListener;
 import com.zividig.ziv.R;
-
+import com.zividig.ziv.bean.LocationBean;
+import com.zividig.ziv.service.LocationService;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -51,7 +55,7 @@ public class ElectronicFence extends Activity {
     private Button setFence;
 
     private static LBSTraceClient client;
-    protected static long serviceId =  113838  ; // serviceId为开发者创建的鹰眼服务ID
+    protected static long serviceId =  118422; // serviceId为开发者创建的鹰眼服务ID
     protected static String entityName = null;
 
 
@@ -105,6 +109,16 @@ public class ElectronicFence extends Activity {
         }
     };
 
+    //动态注册的广播
+    private BroadcastReceiver locationBroadcast = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            System.out.println("电子围栏收到广播了");
+            LocationBean locationBean = intent.getParcelableExtra(LocationService.PAR_KEY);
+            initMap(locationBean.getLat(),locationBean.getLon());
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,12 +145,22 @@ public class ElectronicFence extends Activity {
         client = new LBSTraceClient(getApplicationContext());
         entityName = "myTrace";
 
-        initMap();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(LocationService.LOCATION_ACTION);
+        filter.setPriority(Integer.MAX_VALUE);
+        registerReceiver(locationBroadcast, filter);
+
+
         initOnGeoFenceListener();
     }
 
-    public void initMap(){
-        LatLng ll = new LatLng(22.551906,113.93208);
+
+    /**
+     *初始化地图    这个地方要一直接收经度来实时更新位置
+     */
+    public void initMap(Double lat,Double lon){
+        mBaiduMap.clear();
+        LatLng ll = new LatLng(lat,lon);
 
         overlay = new MarkerOptions().position(ll)
                 .icon(realtimeBitmap).zIndex(9).draggable(true);
@@ -304,7 +328,6 @@ public class ElectronicFence extends Activity {
             // 创建圆形围栏回调接口
             @Override
             public void onCreateCircularFenceCallback(String arg0) {
-                // TODO Auto-generated method stub
 
                 JSONObject dataJson = null;
                 try {
@@ -483,7 +506,7 @@ public class ElectronicFence extends Activity {
         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
 
             public void onClick(DialogInterface dialog, int which) {
-                // TODO Auto-generated method stub
+
                 mBaiduMap.clear();
                 // 添加覆盖物
                 if (null != fenceOverlayTemp) {
@@ -556,5 +579,6 @@ public class ElectronicFence extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         mMapView.onDestroy();
+        unregisterReceiver(locationBroadcast);
     }
 }
