@@ -1,9 +1,11 @@
 package com.zividig.ziv.function;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
@@ -14,12 +16,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bm.library.PhotoView;
+import com.google.gson.Gson;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.zividig.ziv.R;
+import com.zividig.ziv.bean.RealTimeBean;
+import com.zividig.ziv.main.Login;
+import com.zividig.ziv.service.LocationService;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -90,23 +96,19 @@ public class RealTimeShow extends Activity {
         progressBar.setVisibility(View.VISIBLE);
         System.out.println("获取图片");
         //获取图片链接
-        org.xutils.http.RequestParams params = new org.xutils.http.RequestParams("http://120.24.174.213:9501/devid=1234567890123456789");
-        x.http().get(params, new Callback.CommonCallback<JSONObject>() {
+        org.xutils.http.RequestParams params = new org.xutils.http.RequestParams("http://120.24.174.213:9501/");
+        String devid = Login.getDevId();
+        params.addBodyParameter("devid", devid);
+        System.out.println("实时预览" + Login.getDevId());
+        System.out.println("请求连接" + params);
+        x.http().get(params, new Callback.CommonCallback<String>() {
 
             @Override
-            public void onSuccess(JSONObject result) {
+            public void onSuccess(String result) {
                 System.out.println("返回的数组是：" + result.toString());
-                try {
-                    int picnum = result.getInt("picnum");
-                    JSONArray picinfo = result.getJSONArray("picinfo");
-                    for (int i = 0; i < picnum ; i++) {
-                        JSONObject temp = (JSONObject) picinfo.get(i);
-                        url = temp.getString("url");
-                        System.out.println(url);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                Gson gson = new Gson();
+                RealTimeBean realTimeBean = gson.fromJson(result, RealTimeBean.class);
+                url = realTimeBean.getPicinfo().get(0).getUrl();
             }
 
             @Override
@@ -181,6 +183,7 @@ public class RealTimeShow extends Activity {
                 public void onSuccess(ResponseInfo<File> responseInfo) {
                     Toast.makeText(RealTimeShow.this,"图片已下载",Toast.LENGTH_SHORT).show();
                     System.out.println(url + "---" + i);
+                    updateImage();
                 }
 
                 @Override
@@ -191,6 +194,17 @@ public class RealTimeShow extends Activity {
 
         }
 
+    }
+
+    /**
+     * 更新图片
+     */
+    private void updateImage(){
+        Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        String path = Environment.getExternalStorageDirectory() + "/Ziv";
+        Uri uri = Uri.fromFile(new File(path));
+        intent.setData(uri);
+        this.sendBroadcast(intent);
     }
 
     /***

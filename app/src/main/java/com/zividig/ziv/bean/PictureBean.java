@@ -1,6 +1,7 @@
 package com.zividig.ziv.bean;
 
 /**
+ * 图片信息
  * Created by Administrator on 2016-06-06.
  */
 public class PictureBean implements Comparable<PictureBean>{

@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.lhh.apst.library.ViewHolder;
 import com.zividig.ziv.R;
@@ -57,29 +58,24 @@ public class MyPicture extends Activity{
 
         lvPivture = (ListView) findViewById(R.id.lv_picture);
         MyListAdapter listAdapter = new MyListAdapter();
+
         getImage();
 
-        lvPivture.setAdapter(listAdapter);
+        if (sortList.size() != 0){
+            lvPivture.setAdapter(listAdapter);
+        }else {
+            System.out.println("没有图片");
+        }
+
 
     }
 
-    /**
-     * 更新图片
-     */
-    private void updateImage(){
-        Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-//        String path = Environment.getExternalStorageDirectory() + "/Ziv";
-        Uri uri = Uri.fromFile(new File(path));
-        intent.setData(uri);
-        this.sendBroadcast(intent);
-    }
 
     /**
      * 获取Ziv文件夹中的图片
      */
     private void getImage(){
 
-        updateImage();
         //selection: 指定查询条件
         String selection = MediaStore.Images.Media.DATA + " like ?";
         System.out.println(selection);
@@ -113,49 +109,65 @@ public class MyPicture extends Activity{
 
         }
 
-        //排序
-        Collections.sort(beans);
-        for (PictureBean p:beans) {
-            System.out.println("排序后的序列" + p.getPicNum());
+        if (beans.size() == 0){
+            System.out.println("beans.size为0");
+            return;
         }
-
-        n = 0;
-        List<PictureBean> temp = new ArrayList<>();
-        List<PictureBean> temp2 = null;
-        //存在整理好的图片地址
-        sortList = new ArrayList<List<PictureBean>>();
-        for (; n < beans.size(); n++) {
-            System.out.println("n的值---" + n);
-            int m = beans.size();
-            for (int j = n+1; j<m;j++){
-                if (!beans.get(n).getPicNum().equals(beans.get(j).getPicNum())){ //判断到不相等为止
-                    System.out.println("不相等" + "---j的值" + j);
-                    temp = new ArrayList<>();
-                    for (int k = n; k<j;k++){
-                        System.out.println("K的值" + k);
-                        temp.add(beans.get(k));
-                    }
-                    n = j;
-                    m = j;
-                    sortList.add(temp);
-                    System.out.println("m的值---" + m);
-                }else {
-                    //全部相等
-                    if (j==beans.size()-1){
-                        System.out.println("全部相等" + "--j的值" + j);
-                        temp2 = new ArrayList<>();
-                        for (int k=n-1;k<=j;k++){   //待定  k的值还有待考虑
-                            System.out.println("全部相等 --" + n);
-                            temp2.add(beans.get(k));
-                        }
-                        sortList.add(temp2);
-                        n=beans.size();
-                    }
-
-                }
+        System.out.println("beans.size为0");
+        if (beans.size() == 1){
+            System.out.println("beans.size为1");
+            List<PictureBean> temp = new ArrayList<>();
+            temp.add(beans.get(0));
+            sortList.add(temp);
+            return;
+        }
+        System.out.println("beans.size为1");
+        if (beans.size() > 1){
+            //排序
+            Collections.sort(beans);
+            for (PictureBean p:beans) {
+                System.out.println("排序后的序列" + p.getPicNum());
             }
 
+            n = 0;
+            List<PictureBean> temp = new ArrayList<>();
+            List<PictureBean> temp2 = null;
+            //存在整理好的图片地址
+            sortList = new ArrayList<List<PictureBean>>();
+            for (; n < beans.size(); n++) {
+                System.out.println("n的值---" + n);
+                int m = beans.size();
+                for (int j = n+1; j<m;j++){
+                    if (!beans.get(n).getPicNum().equals(beans.get(j).getPicNum())){ //判断到不相等为止
+                        System.out.println("不相等" + "---j的值" + j);
+                        temp = new ArrayList<>();
+                        for (int k = n; k<j;k++){
+                            System.out.println("K的值" + k);
+                            temp.add(beans.get(k));
+                        }
+                        n = j;
+                        m = j;
+                        sortList.add(temp);
+                        System.out.println("m的值---" + m);
+                    }else {
+                        //全部相等
+                        if (j==beans.size()-1){
+                            System.out.println("全部相等" + "--j的值" + j);
+                            temp2 = new ArrayList<>();
+                            for (int k=n-1;k<=j;k++){   //待定  k的值还有待考虑
+                                System.out.println("全部相等 --" + n);
+                                temp2.add(beans.get(k));
+                            }
+                            sortList.add(temp2);
+                            n=beans.size();
+                        }
+
+                    }
+                }
+
+            }
         }
+
         System.out.println("整理后的序列sortList长度---" + sortList.size());
     }
 

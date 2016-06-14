@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="fitXY"
-        android:src="@mipmap/splash_icon"
+        android:src="@mipmap/guide2"
         />
     <TextView
         android:id="@+id/tv_progress"

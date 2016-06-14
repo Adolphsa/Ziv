@@ -67,20 +67,20 @@ public class SplashActivity extends Activity {
                 case CODE_URL_ERROR:
                     Toast.makeText(SplashActivity.this, "url错误", Toast.LENGTH_SHORT)
                             .show();
-                    enterMainActivity();
+                    enterLoginActivity();
                     break;
                 case CODE_NET_ERROR:
                     Toast.makeText(SplashActivity.this, "网络错误", Toast.LENGTH_SHORT)
                             .show();
-                    enterMainActivity();
+                    enterLoginActivity();
                     break;
                 case CODE_JSON_ERROR:
                     Toast.makeText(SplashActivity.this, "数据解析错误",
                             Toast.LENGTH_SHORT).show();
-                    enterMainActivity();
+                    enterLoginActivity();
                     break;
                 case CODE_ENTER_HOME:
-                    enterMainActivity();
+                    enterLoginActivity();
                     break;
 
                 default:
@@ -96,12 +96,12 @@ public class SplashActivity extends Activity {
         setContentView(R.layout.activity_splash);
 
         x.Ext.init(getApplication()); //初始化xutils
-        startService(new Intent(this, LocationService.class));
+
 
         tvProgress = (TextView) findViewById(R.id.tv_progress);// 默认隐藏
 
         tvVersionName = (TextView) findViewById(R.id.tv_versionname);
-        tvVersionName.setText("智威视讯" + getVersionName());
+        tvVersionName.setText(getVersionName());
 
         SharedPreferences config = getSharedPreferences("config",MODE_PRIVATE);
         boolean auto_update = config.getBoolean("auto_update", true);
@@ -258,7 +258,7 @@ public class SplashActivity extends Activity {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                enterMainActivity();
+                enterLoginActivity();
             }
         });
 
@@ -267,7 +267,7 @@ public class SplashActivity extends Activity {
 
             @Override
             public void onCancel(DialogInterface dialog) {
-                enterMainActivity();
+                enterLoginActivity();
             }
         });
 
@@ -327,15 +327,15 @@ public class SplashActivity extends Activity {
     // 如果用户取消安装的话,回调此方法
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        enterMainActivity();
+        enterLoginActivity();
         super.onActivityResult(requestCode, resultCode, data);
     }
 
     /**
-     * 进入主界面
+     * 进入登录界面
      */
-    private void enterMainActivity() {
-        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+    private void enterLoginActivity() {
+        Intent intent = new Intent(SplashActivity.this, Login.class);
         startActivity(intent);
         finish();
     }

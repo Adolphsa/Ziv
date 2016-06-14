@@ -26,10 +26,13 @@ import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
+import com.baidu.mapapi.map.Overlay;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.Stroke;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.utils.CoordinateConverter;
 import com.baidu.trace.LBSTraceClient;
 import com.baidu.trace.OnGeoFenceListener;
 import com.zividig.ziv.R;
@@ -47,11 +50,13 @@ public class ElectronicFence extends Activity {
 
     private MapView mMapView;
     private BaiduMap mBaiduMap;
+    private Marker marker;
     protected  MapStatusUpdate msUpdate = null;
 
     BitmapDescriptor realtimeBitmap = BitmapDescriptorFactory
             .fromResource(R.mipmap.icon_gcoding);
     protected static OverlayOptions overlay;  // 覆盖物
+    private boolean isFirst = true;
     private Button setFence;
 
     private static LBSTraceClient client;
@@ -113,11 +118,11 @@ public class ElectronicFence extends Activity {
     private BroadcastReceiver locationBroadcast = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            System.out.println("电子围栏收到广播了");
             LocationBean locationBean = intent.getParcelableExtra(LocationService.PAR_KEY);
             initMap(locationBean.getLat(),locationBean.getLon());
         }
     };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -159,16 +164,33 @@ public class ElectronicFence extends Activity {
      *初始化地图    这个地方要一直接收经度来实时更新位置
      */
     public void initMap(Double lat,Double lon){
-        mBaiduMap.clear();
-        LatLng ll = new LatLng(lat,lon);
+        LatLng sourceLatLng = new LatLng(lat,lon);
+        //坐标转换
+        CoordinateConverter converter = new CoordinateConverter();
+        converter.from(CoordinateConverter.CoordType.GPS);
+        converter.coord(sourceLatLng);
+        LatLng desLatLng = converter.convert();
 
-        overlay = new MarkerOptions().position(ll)
-                .icon(realtimeBitmap).zIndex(9).draggable(true);
-        MapStatus.Builder builder = new MapStatus.Builder();
+        if (isFirst){
+            isFirst = false;
+//            overlay = new MarkerOptions().position(ll)
+//                    .icon(realtimeBitmap).zIndex(9).draggable(true);
+            MarkerOptions markerOptions = new MarkerOptions().icon(realtimeBitmap).position(desLatLng);
+            Overlay overlay = mBaiduMap.addOverlay(markerOptions);
+            marker = (Marker) overlay;
+            MapStatus.Builder builder = new MapStatus.Builder();
 
-        builder.target(ll).zoom(18.0f);
-        mBaiduMap.addOverlay(overlay);
-        mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
+            builder.target(desLatLng).zoom(18.0f);
+//            mBaiduMap.addOverlay(overlay);
+            mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
+        }else {
+
+            marker.remove();
+            MarkerOptions markerOptions = new MarkerOptions().icon(realtimeBitmap).position(desLatLng);
+            marker = (Marker) mBaiduMap.addOverlay(markerOptions);
+
+        }
+
     }
 
     /**

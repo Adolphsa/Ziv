@@ -20,6 +20,7 @@ import com.bigkoo.convenientbanner.holder.Holder;
 import com.zividig.ziv.R;
 import com.zividig.ziv.function.CarInfo;
 import com.zividig.ziv.function.CarLocation;
+import com.zividig.ziv.function.CarLocation2;
 import com.zividig.ziv.function.ElectronicFence;
 import com.zividig.ziv.function.RealTimeShow;
 import com.zividig.ziv.function.TrackQuery;
@@ -107,7 +108,7 @@ public class MyCarFragment extends Fragment {
                         break;
                     case 2:
                         System.out.println("车辆定位" + position);
-                        startActivity(new Intent(getContext(), CarLocation.class));
+                        startActivity(new Intent(getContext(), CarLocation2.class));
                         break;
                     case 3:
                         System.out.println("电子围栏" + position);

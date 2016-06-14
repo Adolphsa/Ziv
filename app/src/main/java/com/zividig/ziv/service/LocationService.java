@@ -2,6 +2,7 @@ package com.zividig.ziv.service;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -9,6 +10,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.zividig.ziv.bean.LocationBean;
+import com.zividig.ziv.main.Login;
 
 
 import org.xutils.common.Callback;
@@ -30,6 +32,7 @@ public class LocationService extends Service {
     private LocationBean locationBean;
     private RequestParams params;
 
+
     public LocationService() {
     }
 
@@ -43,14 +46,15 @@ public class LocationService extends Service {
     public void onCreate() {
         super.onCreate();
         System.out.println("位置信息服务开启");
-        params = new RequestParams(URL);
-        params.addBodyParameter("deviceId", "1234567890123456789");
-        locationBean = new LocationBean();
-    }
+        String devid = Login.getDevId();
+        System.out.println("devid---" + devid);
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        System.out.println("onStartCommand");
+        //请求参数相关
+        params = new RequestParams(URL);
+        params.addBodyParameter("deviceId", devid);
+        locationBean = new LocationBean();
+
+        //定时器相关
         mTimer = new Timer();
         mTimerTask = new TimerTask() {
             @Override
@@ -59,6 +63,13 @@ public class LocationService extends Service {
             }
         };
         mTimer.schedule(mTimerTask,3000,3000); //每3秒启动一次任务
+
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+
+
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -70,10 +81,10 @@ public class LocationService extends Service {
 
             @Override
             public void onSuccess(String result) {
-                System.out.println("位置信息返回成功" + result);
+//                System.out.println("位置信息返回成功" + result);
                 Gson gson = new Gson();
                 locationBean = gson.fromJson(result, LocationBean.class);
-                System.out.println("纬度：" + locationBean.getLon() + "经度：" + locationBean.getLat());
+//                System.out.println("纬度：" + locationBean.getLon() + "经度：" + locationBean.getLat());
 
                 //发送广播
                 Intent broadcast = new Intent();
@@ -84,7 +95,7 @@ public class LocationService extends Service {
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
-                Toast.makeText(LocationService.this, "获取位置信息失败", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(LocationService.this, "获取位置信息失败", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -94,7 +105,7 @@ public class LocationService extends Service {
 
             @Override
             public void onFinished() {
-                System.out.println("位置信息获取完成");
+
             }
         });
 

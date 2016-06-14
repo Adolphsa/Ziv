@@ -40,6 +40,8 @@
         <activity android:name=".function.ShowPicture" />
         <activity android:name=".function.ElectronicFence" />
         <activity android:name=".function.TrackQuery" />
+        <activity android:name=".main.Login"/>
+        <activity android:name=".function.CarLocation2"/>
 
         <!-- 违章查询相关Activity -->
         <activity android:name=".weizhang.activity.WeiZhangMainActivity" />
@@ -59,18 +61,18 @@
             android:enabled="true"
             android:exported="true" />
 
-        <!--获取位置的服务-->
+        <!-- 获取位置的服务 -->
         <service
             android:name=".service.LocationService"
             android:enabled="true"
-            android:exported="true"/>
+            android:exported="true" />
 
-        <!--获取位置信息的广播-->
-        <receiver android:name=".service.LocationBroadcast">
-            <intent-filter>
-                <action android:name="com.zividig.ziv.service.location" />
-            </intent-filter>
-        </receiver>
+        <!-- 获取位置信息的广播 -->
+        <!-- <receiver android:name=".service.LocationBroadcast"> -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="com.zividig.ziv.service.location" /> -->
+        <!-- </intent-filter> -->
+        <!-- </receiver> -->
     </application>
 
 </manifest>
