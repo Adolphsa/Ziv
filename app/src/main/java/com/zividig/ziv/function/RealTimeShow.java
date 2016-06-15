@@ -42,6 +42,8 @@ import java.text.SimpleDateFormat;
  */
 public class RealTimeShow extends Activity {
 
+
+
     private PhotoView photoView;
     private ProgressBar progressBar;
     private ImageOptions options;
