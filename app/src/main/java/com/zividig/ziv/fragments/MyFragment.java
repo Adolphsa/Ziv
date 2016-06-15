@@ -2,6 +2,7 @@ package com.zividig.ziv.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -12,15 +13,20 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.zividig.ziv.R;
 import com.zividig.ziv.function.MyPicture;
+
+import java.io.File;
 
 /**
  * 我
  *
  */
 public class MyFragment extends Fragment {
+
+    private static String path = Environment.getExternalStorageDirectory() + "/Ziv";
 
     public static MyFragment instance() {
         MyFragment view = new MyFragment();
@@ -45,7 +51,13 @@ public class MyFragment extends Fragment {
                     case 0: //我的账号
                         break;
                     case 1: //我的图片
-                        startActivity(new Intent(getContext(), MyPicture.class));
+                        File file = new File(path);
+                        if (file.exists()){
+                            startActivity(new Intent(getContext(), MyPicture.class));
+                        }else {
+                            Toast.makeText(getContext(),"无图片",Toast.LENGTH_SHORT).show();
+                        }
+
                         break;
                 }
             }

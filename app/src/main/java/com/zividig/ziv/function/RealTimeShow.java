@@ -114,6 +114,7 @@ public class RealTimeShow extends Activity {
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
                 System.out.println("返回json错误" + ex);
+                Toast.makeText(RealTimeShow.this,"网络异常,请检查网络连接",Toast.LENGTH_SHORT).show();
             }
 
             @Override

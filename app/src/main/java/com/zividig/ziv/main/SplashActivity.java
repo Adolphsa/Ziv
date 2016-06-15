@@ -104,7 +104,7 @@ public class SplashActivity extends Activity {
         tvVersionName.setText(getVersionName());
 
         SharedPreferences config = getSharedPreferences("config",MODE_PRIVATE);
-        boolean auto_update = config.getBoolean("auto_update", true);
+        boolean auto_update = config.getBoolean("auto_update", false); //自动更新默认false
         System.out.println("自动更新默认" + auto_update);
 
         if (auto_update){

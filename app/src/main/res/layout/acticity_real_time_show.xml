@@ -53,6 +53,7 @@
             android:textSize="15sp"
             android:background="@android:color/transparent"
             android:padding="8dp"
+            android:visibility="gone"
             />
 
 

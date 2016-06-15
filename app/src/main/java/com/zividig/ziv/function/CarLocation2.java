@@ -6,6 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
@@ -31,6 +34,7 @@ public class CarLocation2 extends Activity{
     private MapView mMapView;
     private BaiduMap mBaiduMap;
     protected static OverlayOptions overlay;  // 覆盖物
+    private boolean isFirst = true;
     BitmapDescriptor carIcon = BitmapDescriptorFactory
             .fromResource(R.mipmap.car_icon);
 
@@ -53,6 +57,21 @@ public class CarLocation2 extends Activity{
         filter.setPriority(Integer.MAX_VALUE);
         registerReceiver(locationBroadcast, filter);
 
+        // 标题
+        TextView txtTitle = (TextView) findViewById(R.id.tv_title);
+        txtTitle.setText("车辆定位");
+
+        //返回按钮
+        Button btnBack = (Button) findViewById(R.id.btn_back);
+        btnBack.setVisibility(View.VISIBLE);
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+
 
         mMapView = (MapView) findViewById(R.id.carlocation2_map);
         mBaiduMap = mMapView.getMap();
@@ -71,10 +90,18 @@ public class CarLocation2 extends Activity{
         //标注
         overlay = new MarkerOptions().position(desLatLng).icon(carIcon).zIndex(9).draggable(true);
 
-        MapStatus.Builder builder = new MapStatus.Builder();
-        builder.target(desLatLng).zoom(18.0f);
-        mBaiduMap.addOverlay(overlay);
-        mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
+        if (isFirst){
+            isFirst = false;
+            MapStatus.Builder builder = new MapStatus.Builder();
+            builder.target(desLatLng).zoom(18.0f);
+            mBaiduMap.addOverlay(overlay);
+            mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
+
+        }else {
+            mBaiduMap.addOverlay(overlay);
+        }
+
+
 
 
 

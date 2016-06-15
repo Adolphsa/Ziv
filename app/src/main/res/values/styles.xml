@@ -10,7 +10,7 @@
 
     <!--自定义的主题样式-->
     <style name="MyAppTheme" parent="android:Theme.Holo.Light.NoActionBar">
-        <item name="android:windowBackground">@mipmap/guide2</item>
+        <item name="android:windowBackground">@mipmap/splash_yca_icon</item>
     </style>
 
     <style name="CustomTabPageIndicator.Text" parent="android:TextAppearance.Medium">

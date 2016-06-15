@@ -65,6 +65,7 @@ public class MyPicture extends Activity{
             lvPivture.setAdapter(listAdapter);
         }else {
             System.out.println("没有图片");
+
         }
 
 
