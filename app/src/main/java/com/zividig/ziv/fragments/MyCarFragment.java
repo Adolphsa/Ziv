@@ -130,9 +130,9 @@ public class MyCarFragment extends Fragment {
     private void initAd(){
         convenientBanner = (ConvenientBanner) view.findViewById(R.id.convenientBanner);
         localImages = new ArrayList<>();
-        localImages.add(R.mipmap.cbl1);
-        localImages.add(R.mipmap.cbl2);
-        localImages.add(R.mipmap.cbl3);
+        localImages.add(R.mipmap.yca1);
+        localImages.add(R.mipmap.yca2);
+        localImages.add(R.mipmap.yca3);
 
         convenientBanner.setPages(new CBViewHolderCreator() {
             @Override
