@@ -2,12 +2,14 @@ package com.zividig.ziv.function;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.AnimationDrawable;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.Display;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -18,18 +20,15 @@ import android.widget.Toast;
 import com.bm.library.PhotoView;
 import com.google.gson.Gson;
 import com.lidroid.xutils.HttpUtils;
+import com.lidroid.xutils.bitmap.core.BitmapDecoder;
+import com.lidroid.xutils.bitmap.factory.BitmapFactory;
 import com.lidroid.xutils.exception.HttpException;
-import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.RealTimeBean;
 import com.zividig.ziv.main.Login;
-import com.zividig.ziv.service.LocationService;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.xutils.common.Callback;
 import org.xutils.image.ImageOptions;
 import org.xutils.x;
@@ -43,19 +42,13 @@ import java.text.SimpleDateFormat;
  */
 public class RealTimeShow extends Activity {
 
-    private static String[] mImgUrls = {"http://120.25.80.80/~adolph/zivApp/picture/test_pic0.jpg",
-            "http://120.25.80.80/~adolph/zivApp/picture/test_pic1.jpg",
-            "http://120.25.80.80/~adolph/zivApp/picture/test_pic2.jpg",
-            "http://120.25.80.80/~adolph/zivApp/picture/test_pic3.jpg",
-            "http://120.25.80.80/~adolph/zivApp/picture/test_pic4.jpg"};
-    private int i;
-
     private PhotoView photoView;
     private ProgressBar progressBar;
     private ImageOptions options;
 
-    private String[] urls;
     private String url; //图片的地址
+    private int ScreenWidth;
+    private Button btRefresh;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,10 +74,16 @@ public class RealTimeShow extends Activity {
 
         progressBar = (ProgressBar) findViewById(R.id.pb_img); //进度条
 
+        //获取屏幕宽高
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        ScreenWidth = size.x;
 
         //按钮
         BtnListener listener = new BtnListener();
-        Button btRefresh = (Button) findViewById(R.id.bt_refresh); //图片刷新
+        //图片刷新
+        btRefresh = (Button) findViewById(R.id.bt_refresh);
         Button btDownImage = (Button) findViewById(R.id.bt_downImage); //图片下载
         btRefresh.setOnClickListener(listener);
         btDownImage.setOnClickListener(listener);
@@ -94,6 +93,7 @@ public class RealTimeShow extends Activity {
 
     private void showImage(){
         progressBar.setVisibility(View.VISIBLE);
+        btRefresh.setClickable(false);
         System.out.println("获取图片");
         //获取图片链接
         org.xutils.http.RequestParams params = new org.xutils.http.RequestParams("http://120.24.174.213:9501/");
@@ -103,16 +103,59 @@ public class RealTimeShow extends Activity {
         System.out.println("请求连接" + params);
         x.http().get(params, new Callback.CommonCallback<String>() {
 
+            private int imageHight;
+
             @Override
             public void onSuccess(String result) {
                 System.out.println("返回的数组是：" + result.toString());
                 Gson gson = new Gson();
                 RealTimeBean realTimeBean = gson.fromJson(result, RealTimeBean.class);
                 url = realTimeBean.getPicinfo().get(0).getUrl();
+
+                //显示图片
+                options = new ImageOptions.Builder()
+                        .setImageScaleType(ImageView.ScaleType.FIT_CENTER)
+                        .build();
+                x.image().bind(photoView, url, options, new Callback.CommonCallback<Drawable>() {
+
+                    @Override
+                    public void onSuccess(Drawable result) {
+                        progressBar.setVisibility(View.INVISIBLE);
+                        System.out.println("图片URL加载成功");
+
+                        int intrinsicWidth = result.getIntrinsicWidth();
+                        int intrinsicHeight = result.getIntrinsicHeight();
+                        System.out.println("图片的宽度：" + intrinsicWidth + "，图片的高度：" + intrinsicHeight);
+
+                        imageHight = intrinsicHeight*ScreenWidth/intrinsicWidth;
+
+                        if (!url.isEmpty()){
+                            btRefresh.setClickable(true);
+                        }
+
+
+                    }
+
+                    @Override
+                    public void onError(Throwable ex, boolean isOnCallback) {
+
+                        System.out.println("加载错误" + ex);
+                        btRefresh.setClickable(true);
+                    }
+
+                    @Override
+                    public void onCancelled(CancelledException cex) {
+                        System.out.println("加载取消");
+                    }
+
+                    @Override
+                    public void onFinished() {}
+                });
             }
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
+                btRefresh.setClickable(true);
                 System.out.println("返回json错误" + ex);
                 Toast.makeText(RealTimeShow.this,"网络异常,请检查网络连接",Toast.LENGTH_SHORT).show();
             }
@@ -124,42 +167,7 @@ public class RealTimeShow extends Activity {
 
             @Override
             public void onFinished() {
-                //显示图片
-                options = new ImageOptions.Builder()
-                        .setImageScaleType(ImageView.ScaleType.FIT_XY)
-                        .build();
-                x.image().bind(photoView, url, options, new Callback.CommonCallback<Drawable>() {
 
-                    @Override
-                    public void onSuccess(Drawable result) {
-                        progressBar.setVisibility(View.INVISIBLE);
-                        System.out.println("加载成功");
-                    }
-
-                    @Override
-                    public void onError(Throwable ex, boolean isOnCallback) {
-
-                        System.out.println("加载错误" + ex);
-                    }
-
-                    @Override
-                    public void onCancelled(CancelledException cex) {
-                        System.out.println("加载取消");
-                    }
-
-                    @Override
-                    public void onFinished() {
-
-//                System.out.println("加载完成");
-//                if (i >= 4){
-//                    i = i%4;
-//                    System.out.println("if语句运行" + i);
-//                }else {
-//                    System.out.println("----" + i);
-//                    i++;
-//                }
-                    }
-                });
             }
         });
 
@@ -183,7 +191,8 @@ public class RealTimeShow extends Activity {
                 @Override
                 public void onSuccess(ResponseInfo<File> responseInfo) {
                     Toast.makeText(RealTimeShow.this,"图片已下载",Toast.LENGTH_SHORT).show();
-                    System.out.println(url + "---" + i);
+
+                    //广播通知更新数据库的图片
                     updateImage();
                 }
 

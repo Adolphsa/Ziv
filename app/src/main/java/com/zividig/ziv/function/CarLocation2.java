@@ -102,8 +102,11 @@ public class CarLocation2 extends Activity{
         }
 
 
+    }
 
-
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(locationBroadcast);
     }
 }

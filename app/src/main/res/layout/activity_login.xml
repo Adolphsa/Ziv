@@ -22,7 +22,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@mipmap/login_yca_icon"
+            android:src="@mipmap/cbl_144_icon"
             android:layout_centerInParent="true"
             />
     </RelativeLayout>
