@@ -19,7 +19,6 @@ import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.bigkoo.convenientbanner.holder.Holder;
 import com.zividig.ziv.R;
 import com.zividig.ziv.function.CarInfo;
-import com.zividig.ziv.function.CarLocation;
 import com.zividig.ziv.function.CarLocation2;
 import com.zividig.ziv.function.ElectronicFence;
 import com.zividig.ziv.function.RealTimeShow;
@@ -130,9 +129,9 @@ public class MyCarFragment extends Fragment {
     private void initAd(){
         convenientBanner = (ConvenientBanner) view.findViewById(R.id.convenientBanner);
         localImages = new ArrayList<>();
-        localImages.add(R.mipmap.yca1);
-        localImages.add(R.mipmap.yca2);
-        localImages.add(R.mipmap.yca3);
+        localImages.add(R.mipmap.ad1);
+        localImages.add(R.mipmap.ad2);
+        localImages.add(R.mipmap.ad3);
 
         convenientBanner.setPages(new CBViewHolderCreator() {
             @Override

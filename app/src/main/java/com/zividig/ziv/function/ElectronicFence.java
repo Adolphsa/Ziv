@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Looper;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.View;
@@ -32,11 +33,15 @@ import com.baidu.mapapi.map.Overlay;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.Stroke;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.model.LatLngBounds;
 import com.baidu.mapapi.utils.CoordinateConverter;
 import com.baidu.trace.LBSTraceClient;
+import com.baidu.trace.OnEntityListener;
 import com.baidu.trace.OnGeoFenceListener;
+import com.baidu.trace.TraceLocation;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.LocationBean;
+import com.zividig.ziv.main.MainActivity;
 import com.zividig.ziv.service.LocationService;
 
 import org.json.JSONArray;
@@ -63,7 +68,6 @@ public class ElectronicFence extends Activity {
     protected static long serviceId =  118422; // serviceId为开发者创建的鹰眼服务ID
     protected static String entityName = null;
 
-
     private double latitude = 0;  // 围栏圆心纬度
 
     private double longitude = 0;  // 围栏圆心经度
@@ -76,6 +80,8 @@ public class ElectronicFence extends Activity {
 
     private int delayTime = 5;   // 延迟时间（单位: 分）
 
+
+    protected static OnEntityListener entityListener = null; // Entity监听器
     protected static OnGeoFenceListener geoFenceListener = null;  // 地理围栏监听器
 
     protected static OverlayOptions fenceOverlay = null;  // 围栏覆盖物
@@ -84,20 +90,23 @@ public class ElectronicFence extends Activity {
 
     protected static boolean isShow = false;
 
+    /**
+     * 地图点击事件
+     */
     protected BaiduMap.OnMapClickListener mapClickListener = new BaiduMap.OnMapClickListener() {
 
         public void onMapClick(LatLng arg0) {
 
             mBaiduMap.clear();
-            latitude = arg0.latitude;
-            longitude = arg0.longitude;
+            latitude = arg0.latitude; //纬度
+            longitude = arg0.longitude; //经度
 
             MapStatus mMapStatus = new MapStatus.Builder().target(arg0).zoom(18).build();
             msUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
 
-            overlay = new MarkerOptions().position(arg0)
-                    .icon(realtimeBitmap).zIndex(9).draggable(true);
-            mBaiduMap.addOverlay(overlay);
+//            overlay = new MarkerOptions().position(arg0)    //给中心点添加标注
+//                    .icon(realtimeBitmap).zIndex(9).draggable(true);
+//            mBaiduMap.addOverlay(overlay);
 
             fenceOverlayTemp = fenceOverlay;
             fenceOverlay = new CircleOptions().fillColor(0x000000FF).center(arg0)
@@ -150,13 +159,18 @@ public class ElectronicFence extends Activity {
         client = new LBSTraceClient(getApplicationContext());
         entityName = "myTrace";
 
+        initOnEntityListener();
+        initOnGeoFenceListener();
+        // 添加entity
+        addEntity();
+
         IntentFilter filter = new IntentFilter();
         filter.addAction(LocationService.LOCATION_ACTION);
         filter.setPriority(Integer.MAX_VALUE);
         registerReceiver(locationBroadcast, filter);
 
 
-        initOnGeoFenceListener();
+
     }
 
 
@@ -188,7 +202,6 @@ public class ElectronicFence extends Activity {
             marker.remove();
             MarkerOptions markerOptions = new MarkerOptions().icon(realtimeBitmap).position(desLatLng);
             marker = (Marker) mBaiduMap.addOverlay(markerOptions);
-
         }
 
     }
@@ -200,6 +213,17 @@ public class ElectronicFence extends Activity {
     public void setFence(View view){
         inputDialog();
          mBaiduMap.setOnMapClickListener(mapClickListener);
+    }
+
+    /**
+     * 添加entity
+     */
+    protected static void addEntity() {
+        // entity标识
+//        String entityName = entityName;
+        // 属性名称（格式 : "key1=value1,columnKey2=columnValue2......."）
+        String columnKey = "";
+        client.addEntity(serviceId, entityName, columnKey,entityListener);
     }
 
     /**
@@ -336,7 +360,7 @@ public class ElectronicFence extends Activity {
             // 请求失败回调接口
             @Override
             public void onRequestFailedCallback(String arg0) {
-                // TODO Auto-generated method stub
+
                 mBaiduMap.clear();
                 if (null != fenceOverlayTemp) {
                     fenceOverlay = fenceOverlayTemp;
@@ -484,6 +508,45 @@ public class ElectronicFence extends Activity {
         };
     }
 
+    /**
+     * 初始化OnEntityListener
+     */
+    private void initOnEntityListener() {
+        entityListener = new OnEntityListener() {
+
+            // 请求失败回调接口
+            @Override
+            public void onRequestFailedCallback(String arg0) {
+                // TODO Auto-generated method stub
+                Looper.prepare();
+                Toast.makeText(getApplicationContext(),
+                        "entity请求失败回调接口消息 : " + arg0, Toast.LENGTH_SHORT)
+                        .show();
+                Looper.loop();
+            }
+
+            // 添加entity回调接口
+            @Override
+            public void onAddEntityCallback(String arg0) {
+
+                System.out.println("添加entity回调接口消息 : " + arg0);
+
+            }
+
+            // 查询entity列表回调接口
+            @Override
+            public void onQueryEntityListCallback(String message) {
+
+
+            }
+
+            @Override
+            public void onReceiveLocation(TraceLocation location) {
+            }
+
+        };
+    }
+
     // 输入围栏信息对话框
     private void inputDialog() {
 
@@ -545,13 +608,33 @@ public class ElectronicFence extends Activity {
             public void onClick(DialogInterface dialog, int which) {
 
                 if (0 == fenceId) {
+
                     // 创建围栏
                     createFence();
+
                 } else {
                     // 更新围栏
                     updateFence();
                 }
+
                 mBaiduMap.setOnMapClickListener(null);
+
+                //计算圆形标注的东北和西南的坐标，以便完全显示在地图上
+                double topLat = latitude + radius/111000.0;
+                double bottomLat = latitude - radius/111000.0;
+                double leftLon = longitude + radius/111000.0;
+                double rightLon = longitude - radius/111000.0;
+
+                LatLng northeast = new LatLng(topLat,leftLon); //东北
+                LatLng southwest = new LatLng(bottomLat,rightLon); //西南
+                LatLngBounds lngBounds = new LatLngBounds.Builder()
+                        .include(northeast)
+                        .include(southwest)
+                        .include(new LatLng(latitude,longitude)).build();
+                MapStatusUpdate u = MapStatusUpdateFactory.newLatLngBounds(lngBounds);
+                mBaiduMap.setMapStatus(u);
+
+                System.out.println("东北坐标：" +  lngBounds.northeast + "，西南坐标：" + lngBounds.southwest);
             }
         });
         builder.show();
@@ -578,6 +661,7 @@ public class ElectronicFence extends Activity {
         // 围栏覆盖物
         if (null != ElectronicFence.fenceOverlay) {
             mBaiduMap.addOverlay(ElectronicFence.fenceOverlay);
+            System.out.println("增加围栏标注");
         }
 
 //        // 实时点覆盖物

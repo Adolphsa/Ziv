@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:background="@mipmap/line_bg"
         android:layout_marginTop="5dp"
+        android:layout_weight="1"
         >
 
         <LinearLayout
@@ -20,6 +21,7 @@
             android:orientation="vertical"
             android:layout_marginTop="60dp"
             android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
             >
 
             <Button
@@ -45,7 +47,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@mipmap/dash_board"
-            android:layout_centerHorizontal="true"
+            android:layout_centerInParent="true"
             android:layout_marginTop="20dp"
             />
         <ImageView
@@ -53,7 +55,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@mipmap/dash_needle"
-            android:layout_centerHorizontal="true"
+            android:layout_centerInParent="true"
             android:layout_marginTop="20dp"
             />
         <LinearLayout
@@ -62,6 +64,7 @@
             android:orientation="vertical"
             android:layout_marginTop="60dp"
             android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
             >
             <TextView
                 android:layout_width="wrap_content"
@@ -124,12 +127,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:src="@mipmap/quxian"
+        android:layout_weight="1"
         />
     <LinearLayout
         android:layout_marginTop="10dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        >
 
         <!-- 油量-->
         <RelativeLayout
