@@ -556,7 +556,7 @@ public class ElectronicFence extends Activity {
         circleRadius.setInputType(InputType.TYPE_CLASS_NUMBER);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        builder.setTitle("围栏半径(单位:米)").setView(circleRadius)
+        builder.setTitle("围栏半径(单位:米),5000米以内").setView(circleRadius)
                 .setNegativeButton("取消", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int which) {
