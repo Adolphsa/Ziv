@@ -1,17 +1,12 @@
 package com.zividig.ziv.service;
 
 import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.IBinder;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.zividig.ziv.bean.LocationBean;
 import com.zividig.ziv.main.Login;
-
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;

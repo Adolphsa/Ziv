@@ -16,9 +16,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.lhh.apst.library.ViewHolder;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.PictureBean;
 import com.zividig.ziv.customView.NoScrollGridView;
@@ -56,12 +54,16 @@ public class MyPicture extends Activity{
             }
         });
 
+        updateImage();  //更新图片库
+
         lvPivture = (ListView) findViewById(R.id.lv_picture);
         MyListAdapter listAdapter = new MyListAdapter();
 
+        sortList = new ArrayList<List<PictureBean>>();
+
         getImage();
 
-        if (sortList.size() != 0){
+        if (sortList.size() > 0){
             lvPivture.setAdapter(listAdapter);
         }else {
             System.out.println("没有图片");
@@ -75,7 +77,7 @@ public class MyPicture extends Activity{
     /**
      * 获取Ziv文件夹中的图片
      */
-    private void getImage(){
+    private int getImage(){
 
         //selection: 指定查询条件
         String selection = MediaStore.Images.Media.DATA + " like ?";
@@ -83,7 +85,7 @@ public class MyPicture extends Activity{
         //设定查询目录
 //        String path= Environment.getExternalStorageDirectory() + "/Ziv";
         System.out.println("图片的地址:" + path);
-        List<PictureBean> beans = new ArrayList<PictureBean>();
+        List<PictureBean> beans =  new ArrayList<PictureBean>();
         //定义selectionArgs：
         String[] selectionArgs = {path+"%"};
         Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
@@ -112,17 +114,17 @@ public class MyPicture extends Activity{
 
         if (beans.size() == 0){
             System.out.println("beans.size为0");
-            return;
+            return 0;
         }
-        System.out.println("beans.size为0");
+
         if (beans.size() == 1){
             System.out.println("beans.size为1");
             List<PictureBean> temp = new ArrayList<>();
             temp.add(beans.get(0));
             sortList.add(temp);
-            return;
+            return 1;
         }
-        System.out.println("beans.size为1");
+
         if (beans.size() > 1){
             //排序
             Collections.sort(beans);
@@ -134,7 +136,7 @@ public class MyPicture extends Activity{
             List<PictureBean> temp = new ArrayList<>();
             List<PictureBean> temp2 = null;
             //存在整理好的图片地址
-            sortList = new ArrayList<List<PictureBean>>();
+
             for (; n < beans.size(); n++) {
                 System.out.println("n的值---" + n);
                 int m = beans.size();
@@ -155,7 +157,7 @@ public class MyPicture extends Activity{
                         if (j==beans.size()-1){
                             System.out.println("全部相等" + "--j的值" + j);
                             temp2 = new ArrayList<>();
-                            for (int k=n-1;k<=j;k++){   //待定  k的值还有待考虑
+                            for (int k=n;k<=j;k++){   //待定  k的值还有待考虑
                                 System.out.println("全部相等 --" + n);
                                 temp2.add(beans.get(k));
                             }
@@ -167,10 +169,23 @@ public class MyPicture extends Activity{
                 }
 
             }
-        }
 
+        }
         System.out.println("整理后的序列sortList长度---" + sortList.size());
+        return sortList.size();
     }
+
+    /**
+     * 更新图片
+     */
+    private void updateImage() {
+        Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        String path = Environment.getExternalStorageDirectory() + "/Ziv";
+        Uri uri = Uri.fromFile(new File(path));
+        intent.setData(uri);
+        this.sendBroadcast(intent);
+    }
+
 
     class MyListAdapter extends BaseAdapter{
 
