@@ -3,11 +3,14 @@ package com.zividig.ziv.function;
 import android.app.Activity;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
 
 import com.bm.library.PhotoView;
 import com.zividig.ziv.R;
+
+import cn.sharesdk.onekeyshare.OnekeyShare;
 
 /**
  * 展示图片
@@ -16,6 +19,7 @@ import com.zividig.ziv.R;
 public class ShowPicture extends Activity {
 
     private PhotoView photoView;
+    private String picUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,10 +38,42 @@ public class ShowPicture extends Activity {
 
         //新页面接收数据
         Bundle bundle = this.getIntent().getExtras();
-        String picUrl = bundle.getString("pic_url");
+        picUrl = bundle.getString("pic_url");
+        System.out.println("pic_url---" + picUrl);
 
         photoView = (PhotoView) findViewById(R.id.pv_picture);
         photoView.enable();
         photoView.setImageBitmap(BitmapFactory.decodeFile(picUrl));
+    }
+
+    public void share(View view){
+        System.out.println("分享按钮被点击");
+//        ShareSDK.initSDK(this);
+        OnekeyShare oks = new OnekeyShare();
+        //关闭sso授权
+        oks.disableSSOWhenAuthorize();
+
+        // title标题：微信、QQ（新浪微博不需要标题）
+//        oks.setTitle("我是分享标题");  //最多30个字符
+
+        // text是分享文本：所有平台都需要这个字段
+//        oks.setText("我是分享文本，啦啦啦~http://uestcbmi.com/");  //最多40个字符
+
+        // imagePath是图片的本地路径：除Linked-In以外的平台都支持此参数
+        oks.setImagePath(picUrl);//确保SDcard下面存在此张图片
+
+        System.out.println(Environment.getExternalStorageDirectory() + "/meinv.jpg");
+
+        //网络图片的url：所有平台
+//        oks.setImageUrl("http://7sby7r.com1.z0.glb.clouddn.com/CYSJ_02.jpg");//网络图片rul
+
+        // url：仅在微信（包括好友和朋友圈）中使用
+//        oks.setUrl("http://sharesdk.cn");   //网友点进链接后，可以看到分享的详情
+
+        // Url：仅在QQ空间使用
+//        oks.setTitleUrl("http://www.baidu.com");  //网友点进链接后，可以看到分享的详情
+
+        // 启动分享GUI
+        oks.show(this);
     }
 }

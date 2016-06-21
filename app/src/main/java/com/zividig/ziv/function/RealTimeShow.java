@@ -24,7 +24,6 @@ import android.widget.Toast;
 
 import com.bm.library.PhotoView;
 import com.google.gson.Gson;
-import com.lidroid.xutils.HttpUtils;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.RealTimeBean;
 import com.zividig.ziv.main.Login;
@@ -94,6 +93,7 @@ public class RealTimeShow extends Activity {
         btDownImage.setOnClickListener(listener);
 
         showImage(); //显示图片
+
     }
 
     private void showImage() {
@@ -185,7 +185,7 @@ public class RealTimeShow extends Activity {
 
     //下载图片到本地
     private void downImage() {
-        HttpUtils httpUtils = new HttpUtils();
+
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) && localDraw != null) {
 
             File file = new File(Environment.getExternalStorageDirectory(), "Ziv"); //创建Ziv文件夹
@@ -206,21 +206,6 @@ public class RealTimeShow extends Activity {
             Bitmap temp = BitmapFactory.decodeByteArray(logoBuf, 0, logoBuf.length);
             //将图像从byte[]中读取生成Bitmap 对象 temp
             saveBitmapToSdCard(target, temp);
-//            httpUtils.download(url, target, false, new RequestCallBack<File>() {
-//                @Override
-//                public void onSuccess(ResponseInfo<File> responseInfo) {
-//                    Toast.makeText(RealTimeShow.this, "图片已下载", Toast.LENGTH_SHORT).show();
-//
-//                    //广播通知更新数据库的图片
-//                    updateImage();
-//                }
-//
-//                @Override
-//                public void onFailure(HttpException e, String s) {
-//                    Toast.makeText(RealTimeShow.this, "下载失败", Toast.LENGTH_SHORT).show();
-//                }
-//            });
-
 
         }else {
             Toast.makeText(RealTimeShow.this,"请先刷新图片",Toast.LENGTH_SHORT).show();
