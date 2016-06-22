@@ -41,6 +41,7 @@
         <activity android:name=".function.TrackQuery" />
         <activity android:name=".main.Login"/>
         <activity android:name=".function.CarLocation2"/>
+        <activity android:name=".function.TestShareVideo"/>
 
         <!-- 违章查询相关Activity -->
         <activity android:name=".weizhang.activity.WeiZhangMainActivity" />

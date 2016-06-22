@@ -17,8 +17,11 @@ import android.widget.Toast;
 
 import com.zividig.ziv.R;
 import com.zividig.ziv.function.MyPicture;
+import com.zividig.ziv.function.TestShareVideo;
 
 import java.io.File;
+
+import cn.sharesdk.framework.ShareSDK;
 
 /**
  * 我
@@ -38,6 +41,8 @@ public class MyFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my, null);
 
+        ShareSDK.initSDK(getContext());   //初始化shareSDK
+
         //设置标题
         TextView title = (TextView)view.findViewById(R.id.tv_title);
         title.setText("我");
@@ -49,6 +54,7 @@ public class MyFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position){
                     case 0: //我的账号
+                        startActivity(new Intent(getContext(), TestShareVideo.class));
                         break;
                     case 1: //我的图片
                         File file = new File(path);

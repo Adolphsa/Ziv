@@ -9,7 +9,6 @@ import android.widget.Button;
 import com.bm.library.PhotoView;
 import com.zividig.ziv.R;
 
-import cn.sharesdk.framework.ShareSDK;
 import cn.sharesdk.onekeyshare.OnekeyShare;
 
 /**
@@ -48,7 +47,7 @@ public class ShowPicture extends Activity {
 
     public void share(View view){
         System.out.println("分享按钮被点击");
-//        ShareSDK.initSDK(this);
+
         OnekeyShare oks = new OnekeyShare();
         //关闭sso授权
         oks.disableSSOWhenAuthorize();
@@ -78,6 +77,6 @@ public class ShowPicture extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ShareSDK.stopSDK();
+//        ShareSDK.stopSDK();
     }
 }
