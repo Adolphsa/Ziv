@@ -3,13 +3,13 @@ package com.zividig.ziv.function;
 import android.app.Activity;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
 
 import com.bm.library.PhotoView;
 import com.zividig.ziv.R;
 
+import cn.sharesdk.framework.ShareSDK;
 import cn.sharesdk.onekeyshare.OnekeyShare;
 
 /**
@@ -62,8 +62,6 @@ public class ShowPicture extends Activity {
         // imagePath是图片的本地路径：除Linked-In以外的平台都支持此参数
         oks.setImagePath(picUrl);//确保SDcard下面存在此张图片
 
-        System.out.println(Environment.getExternalStorageDirectory() + "/meinv.jpg");
-
         //网络图片的url：所有平台
 //        oks.setImageUrl("http://7sby7r.com1.z0.glb.clouddn.com/CYSJ_02.jpg");//网络图片rul
 
@@ -75,5 +73,11 @@ public class ShowPicture extends Activity {
 
         // 启动分享GUI
         oks.show(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ShareSDK.stopSDK();
     }
 }
