@@ -21,8 +21,6 @@ import com.zividig.ziv.function.TestShareVideo;
 
 import java.io.File;
 
-import cn.sharesdk.framework.ShareSDK;
-
 /**
  * 我
  *
@@ -40,8 +38,6 @@ public class MyFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my, null);
-
-        ShareSDK.initSDK(getContext());   //初始化shareSDK
 
         //设置标题
         TextView title = (TextView)view.findViewById(R.id.tv_title);

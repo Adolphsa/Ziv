@@ -6,4 +6,10 @@
     tools:context="com.zividig.ziv.function.TrackQuery">
 
     <include layout="@layout/layout_titlebar"/>
+    <com.baidu.mapapi.map.MapView
+        android:id="@+id/track_map"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        />
 </RelativeLayout>
