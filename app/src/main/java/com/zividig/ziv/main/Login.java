@@ -114,7 +114,7 @@ public class Login extends Activity {
 
                         Gson gson = new Gson();
                         loginBean =  gson.fromJson(result, LoginBean.class);
-                        String devid =  loginBean.getDevinfo().get(0).getDevid();
+                        String devid =   loginBean.getDevinfo().get(0).getDevid();
 
                         if (!devid.isEmpty()){
 

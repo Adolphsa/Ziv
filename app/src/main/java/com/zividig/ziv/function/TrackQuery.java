@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
+import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
@@ -21,6 +22,7 @@ import com.baidu.mapapi.model.LatLngBounds;
 import com.google.gson.Gson;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.MapTrackBean;
+import com.zividig.ziv.main.Login;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
@@ -53,7 +55,7 @@ public class TrackQuery extends Activity {
         setContentView(R.layout.activity_track_query);
 
         initView();
-
+        initData();
         getMapData();
     }
 
@@ -80,9 +82,18 @@ public class TrackQuery extends Activity {
         mMapView = (MapView) findViewById(R.id.track_map);
         mBaiduMap = mMapView.getMap();
 
-
+        MapStatus.Builder builder = new MapStatus.Builder();
+        builder.zoom(18.0f);
+        mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
     }
 
+    private void initData(){
+        System.out.println("设备ID：" + Login.getDevId());
+    }
+
+    /**
+     * 访问网络并得到轨迹数据
+     */
     public void getMapData(){
         RequestParams params = new RequestParams(MAP_DATA_URL);
         params.addBodyParameter("deviceId","1234567890123456788");
@@ -100,13 +111,14 @@ public class TrackQuery extends Activity {
                     latitude = mapTrackBean.getLocationdata().get(0).getLat();
                     longitude = mapTrackBean.getLocationdata().get(0).getLon();
 
+                    //显示轨迹
                     showTrackInMap(mapTrackBean.getLocationdata());
                 }
             }
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
-
+                System.out.println("访问出错");
             }
 
             @Override
@@ -121,6 +133,10 @@ public class TrackQuery extends Activity {
         });
     }
 
+    /**
+     * 在地图上显示轨迹
+     * @param locationdata GPS轨迹列表
+     */
     private void showTrackInMap(List<MapTrackBean.LocationdataBean> locationdata){
 
         for (MapTrackBean.LocationdataBean locationBean: locationdata) {
@@ -135,12 +151,12 @@ public class TrackQuery extends Activity {
         polylineOption = new PolylineOptions()
                 .points(overLatLng)
                 .color(Color.BLACK)
-                .width(1000)
-                .zIndex(5)
+                .width(10)
                 .visible(true);
-        //在地图上添加多边形Option，用于显示
+        //在地图上添加折线Option，用于显示
         mBaiduMap.addOverlay(polylineOption);
 
+        //标注第一个点的位置
         MarkerOptions markerOptions = new MarkerOptions()
                 .position(new LatLng(latitude,longitude))
                 .icon(realtimeBitmap).zIndex(9).draggable(true);
