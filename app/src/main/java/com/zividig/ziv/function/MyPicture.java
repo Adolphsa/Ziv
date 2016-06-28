@@ -90,7 +90,7 @@ public class MyPicture extends Activity{
         String[] selectionArgs = {path+"%"};
         Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                                                     null, MediaStore.Images.Media.MIME_TYPE + "=?",
-                                                new String[] { "image/jpeg"},MediaStore.Images.Media.DATE_TAKEN);
+                                                new String[] { "image/png"},MediaStore.Images.Media.DATE_TAKEN);
         while (cursor.moveToNext()){
 
             //获取图片的路径

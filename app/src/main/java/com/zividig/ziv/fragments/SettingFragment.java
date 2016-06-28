@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.text.style.UpdateLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +25,7 @@ public class SettingFragment extends Fragment {
     private ListView lvSetting;
     ViewHolder holder;
     private SettingAdapter adapter;
-    Boolean autoUpdate = true;
+    Boolean autoUpdate;
     private SharedPreferences sp;
 
     public static SettingFragment instance() {
@@ -44,6 +43,8 @@ public class SettingFragment extends Fragment {
         TextView title = (TextView)view.findViewById(R.id.tv_title);
         title.setText("设置");
 
+        autoUpdate = sp.getBoolean("auto_update",false);
+
         lvSetting = (ListView) view.findViewById(R.id.lv_setting);
         adapter = new SettingAdapter();
         lvSetting.setAdapter(adapter);
@@ -57,13 +58,11 @@ public class SettingFragment extends Fragment {
                         holder = (ViewHolder) view.getTag();
                         if (autoUpdate){
                             holder.RightIcon.setImageResource(R.mipmap.switch_off); //关闭自动更新
-                            autoUpdate = false;
                             sp.edit().putBoolean("auto_update",false).apply();
                             System.out.println("关闭自动更新");
 
                         }else {
                             holder.RightIcon.setImageResource(R.mipmap.switch_on); //开启自动更新
-                            autoUpdate = true;
                             sp.edit().putBoolean("auto_update",true).apply();
                             System.out.println("开启自动更新");
                         }
@@ -120,7 +119,7 @@ public class SettingFragment extends Fragment {
                case 0:
                    holder.leftIcon.setImageResource(R.mipmap.update);
                    holder.itemText.setText("自动更新");
-                   Boolean autoUpdate = sp.getBoolean("auto_update",true);
+                   Boolean autoUpdate = sp.getBoolean("auto_update",false);
                    if (autoUpdate){
                        holder.RightIcon.setImageResource(R.mipmap.switch_on);
                    }else {
