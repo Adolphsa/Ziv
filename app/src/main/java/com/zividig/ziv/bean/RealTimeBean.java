@@ -11,14 +11,18 @@ public class RealTimeBean {
 
     /**
      * cmd : snap
+     * error : 200
+     * errorStr : OK
      * picnum : 1
-     * picinfo : [{"url":"http://dev.caowei.name/mytest/uploadtest/upload_dir/1234567890123456789/snap_ch0_20160603114554110787.jpg"}]
+     * picinfo : [{"url":"http://dev.caowei.name/mytest/uploadtest/upload_dir/1234567890123456789/snap_ch0_20160629162441967310.jpg"}]
      */
 
     private String cmd;
+    private int error;
+    private String errorStr;
     private int picnum;
     /**
-     * url : http://dev.caowei.name/mytest/uploadtest/upload_dir/1234567890123456789/snap_ch0_20160603114554110787.jpg
+     * url : http://dev.caowei.name/mytest/uploadtest/upload_dir/1234567890123456789/snap_ch0_20160629162441967310.jpg
      */
 
     private List<PicinfoBean> picinfo;
@@ -29,6 +33,22 @@ public class RealTimeBean {
 
     public void setCmd(String cmd) {
         this.cmd = cmd;
+    }
+
+    public int getError() {
+        return error;
+    }
+
+    public void setError(int error) {
+        this.error = error;
+    }
+
+    public String getErrorStr() {
+        return errorStr;
+    }
+
+    public void setErrorStr(String errorStr) {
+        this.errorStr = errorStr;
     }
 
     public int getPicnum() {

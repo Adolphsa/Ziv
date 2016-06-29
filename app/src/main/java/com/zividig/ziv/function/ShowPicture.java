@@ -9,7 +9,6 @@ import android.widget.Button;
 import com.bm.library.PhotoView;
 import com.zividig.ziv.R;
 
-import cn.sharesdk.framework.ShareSDK;
 import cn.sharesdk.onekeyshare.OnekeyShare;
 
 /**
@@ -25,8 +24,6 @@ public class ShowPicture extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_picture);
-
-        ShareSDK.initSDK(this);
 
         //返回按钮
         Button btnBack = (Button) findViewById(R.id.btn_back);

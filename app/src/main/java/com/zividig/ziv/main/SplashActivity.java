@@ -26,7 +26,6 @@ import com.zividig.ziv.utils.StreamUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.xutils.x;
 
 import java.io.File;
 import java.io.IOException;
@@ -93,8 +92,6 @@ public class SplashActivity extends Activity {
         super.onCreate(savedInstanceState);
         SDKInitializer.initialize(getApplicationContext()); //初始化百度地图
         setContentView(R.layout.activity_splash);
-
-        x.Ext.init(getApplication()); //初始化xutils
 
         tvProgress = (TextView) findViewById(R.id.tv_progress);// 默认隐藏
 

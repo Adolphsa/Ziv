@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.zividig.ziv">
 
+    <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
@@ -16,6 +17,7 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
 
     <application
+        android:name=".main.ZivApp"
         android:allowBackup="true"
         android:icon="@mipmap/ziv_icon"
         android:label="@string/app_name"
@@ -51,29 +53,6 @@
         <activity android:name=".weizhang.activity.ProvinceList" />
         <activity android:name=".weizhang.activity.ShortNameList" />
         <activity android:name=".weizhang.activity.WeizhangResult" />
-
-        <!--QQ回调-->
-        <activity
-            android:name="com.mob.tools.MobUIShell"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustResize" >
-            <intent-filter>
-                <data android:scheme="tencent1105413845" />
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-
-        <!--微信分享回调-->
-        <activity
-            android:name="cn.sharesdk.demo.wxapi.WXEntryActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:exported="true"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
 
         <service android:name="com.cheshouye.api.client.WeizhangIntentService" />
         <!-- 百度地图服务 -->
