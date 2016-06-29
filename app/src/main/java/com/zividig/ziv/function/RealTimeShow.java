@@ -176,7 +176,7 @@ public class RealTimeShow extends Activity {
 
     //下载图片到本地
     private void downImage() {
-        btDownImage.setClickable(false);
+
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
 
             File file = new File(Environment.getExternalStorageDirectory(), "Ziv"); //创建Ziv文件夹
@@ -204,13 +204,14 @@ public class RealTimeShow extends Activity {
 
                             System.out.println("c的值---" + c);
                         }
-                        System.out.println("循环完了");
+
                         fsFrom.close();
                         fsTo.close();
-                        System.out.println("循环完了2");
+                        return true;
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+
                     return true;
                 }
 
@@ -235,7 +236,6 @@ public class RealTimeShow extends Activity {
 
                 @Override
                 public void onFinished() {
-                    btDownImage.setClickable(true);
                     updateImage();
                     Toast.makeText(RealTimeShow.this,"图片已保存",Toast.LENGTH_SHORT).show();
                 }
