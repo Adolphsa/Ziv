@@ -275,9 +275,6 @@ public class RealTimeShow extends Activity {
             Toast.makeText(RealTimeShow.this, "请先刷新图片", Toast.LENGTH_SHORT).show();
         }
 
-
-
-
     }
 
     /**
