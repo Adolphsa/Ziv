@@ -208,12 +208,20 @@ public class RealTimeShow extends Activity {
     private void downImage() {
 
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            long freeSpace = Environment.getExternalStorageDirectory().getFreeSpace();
+            System.out.println("可用空间:" + freeSpace/1000000 + "MB");
+//            freeSpace = (long) 0.5;
+            if ((freeSpace/1000000.0) < 1 ){
+                Toast.makeText(RealTimeShow.this,"存储空间不足",Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             File file = new File(Environment.getExternalStorageDirectory(), "Ziv"); //创建Ziv文件夹
             if (!file.exists()) {
                 System.out.println("创建");
-                file.mkdirs();
+                boolean mkdirs = file.mkdirs();
             }
+
             System.out.println(file);
             final String target = file + "/" + getDateAndTime() + ".png";
 
@@ -237,6 +245,9 @@ public class RealTimeShow extends Activity {
 
                         fsFrom.close();
                         fsTo.close();
+
+                        updateImage();
+                        Toast.makeText(RealTimeShow.this, "图片已保存", Toast.LENGTH_SHORT).show();
                         return true;
                     } catch (Exception e) {
                         e.printStackTrace();
