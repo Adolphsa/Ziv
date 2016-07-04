@@ -90,4 +90,43 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:gravity="bottom|center_horizontal"
+        >
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="注册账号"
+            android:background="@android:color/transparent"
+            android:layout_marginRight="20dp"
+            android:textSize="16sp"
+            android:padding="3dp"
+            android:textColor="@drawable/selector_login_text_color"
+            android:onClick="register"
+            />
+
+        <View
+            android:layout_width="2dp"
+            android:layout_height="13dp"
+            android:background="#dddddd"
+            android:layout_marginBottom="15dp"
+            />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:text="忘记密码"
+            android:layout_marginLeft="20dp"
+            android:textSize="16sp"
+            android:padding="3dp"
+            android:textColor="@drawable/selector_login_text_color"
+            android:onClick="findPassWord"
+            />
+    </LinearLayout>
+
+
 </LinearLayout>

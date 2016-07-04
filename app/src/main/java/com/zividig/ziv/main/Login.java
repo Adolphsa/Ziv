@@ -102,6 +102,10 @@ public class Login extends Activity {
             }
         });
     }
+
+    /**
+     * 登录
+     */
     private void login(){
         final String user = etUser.getText().toString().trim();
         if (!user.isEmpty()){
@@ -153,6 +157,21 @@ public class Login extends Activity {
         }else {
             Toast.makeText(Login.this,"用户名不能为空",Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /**
+     * 注册账号
+     */
+    public void register(View view){
+        startActivity(new Intent(Login.this,Register.class));
+    }
+
+    /**
+     * 找回密码
+     * @param view
+     */
+    public void findPassWord(View view){
+        startActivity(new Intent(Login.this,FindPassWord.class));
     }
 
     /**
