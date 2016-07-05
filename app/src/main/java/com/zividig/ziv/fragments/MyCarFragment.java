@@ -22,7 +22,7 @@ import com.zividig.ziv.function.CarInfo;
 import com.zividig.ziv.function.CarLocation2;
 import com.zividig.ziv.function.ElectronicFence;
 import com.zividig.ziv.function.RealTimeShow;
-import com.zividig.ziv.function.TrackQuery;
+import com.zividig.ziv.function.TrackQueryDateChoose;
 import com.zividig.ziv.weizhang.activity.WeiZhangMainActivity;
 
 import java.util.ArrayList;
@@ -119,7 +119,7 @@ public class MyCarFragment extends Fragment {
                         break;
                     case 5:
                         System.out.println("轨迹查询" + position);
-                        startActivity(new Intent(getContext(), TrackQuery.class));
+                        startActivity(new Intent(getContext(), TrackQueryDateChoose.class));
                         break;
                 }
             }

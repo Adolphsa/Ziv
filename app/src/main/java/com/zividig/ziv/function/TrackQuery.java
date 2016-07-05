@@ -10,7 +10,6 @@ import android.widget.TextView;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
-import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
@@ -81,10 +80,6 @@ public class TrackQuery extends Activity {
 
         mMapView = (MapView) findViewById(R.id.track_map);
         mBaiduMap = mMapView.getMap();
-
-        MapStatus.Builder builder = new MapStatus.Builder();
-        builder.zoom(18.0f);
-        mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
     }
 
     private void initData(){
@@ -162,13 +157,21 @@ public class TrackQuery extends Activity {
                 .icon(realtimeBitmap).zIndex(9).draggable(true);
         mBaiduMap.addOverlay(markerOptions);
 
-        //缩放地图到合适的比例
-        LatLngBounds lngBounds = new LatLngBounds.Builder()
-                .include(overLatLng.get(0))
-                .include(overLatLng.get(overLatLng.size()-1))
-                .build();
-        MapStatusUpdate u = MapStatusUpdateFactory.newLatLngBounds(lngBounds);
-        mBaiduMap.setMapStatus(u);
+      //当地图加载完成后，设置地图的地理范围
+        mBaiduMap.setOnMapLoadedCallback(new BaiduMap.OnMapLoadedCallback() {
+            @Override
+            public void onMapLoaded() {
+                //缩放地图到合适的比例
+                LatLngBounds lngBounds = new LatLngBounds.Builder()
+                        .include(overLatLng.get(0))
+                        .include(overLatLng.get(overLatLng.size()-1))
+                        .build();
+                MapStatusUpdate u = MapStatusUpdateFactory.newLatLngBounds(lngBounds);
+                mBaiduMap.setMapStatus(u);
+            }
+        });
+
+
     }
 
 

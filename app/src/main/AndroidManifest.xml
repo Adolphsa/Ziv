@@ -47,7 +47,8 @@
         <activity android:name=".main.Register" />
         <activity android:name=".function.CarLocation2" />
         <activity android:name=".function.TestShareVideo" />
-        <activity android:name=".main.FindPassWord"/>
+        <activity android:name=".main.FindPassWord" />
+        <activity android:name=".function.TrackQueryDateChoose"/>
 
         <!-- 违章查询相关Activity -->
         <activity android:name=".weizhang.activity.WeiZhangMainActivity" />
@@ -79,6 +80,7 @@
         <!-- <action android:name="com.zividig.ziv.service.location" /> -->
         <!-- </intent-filter> -->
         <!-- </receiver> -->
+
 
     </application>
 
