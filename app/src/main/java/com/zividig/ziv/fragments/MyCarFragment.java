@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.bigkoo.convenientbanner.holder.Holder;
+import com.dtr.zxing.activity.CaptureActivity;
 import com.zividig.ziv.R;
 import com.zividig.ziv.function.CarInfo;
 import com.zividig.ziv.function.CarLocation2;
@@ -55,6 +57,16 @@ public class MyCarFragment extends Fragment {
         //设置标题
         TextView title = (TextView) view.findViewById(R.id.tv_title);
         title.setText("我的车");
+
+        //设置添加设备按钮为可见
+        Button addDevice = (Button) view.findViewById(R.id.bt_add_device);
+        addDevice.setVisibility(View.VISIBLE);
+        addDevice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getContext(), CaptureActivity.class));
+            }
+        });
 
         initAd();
         initFunctionButton();

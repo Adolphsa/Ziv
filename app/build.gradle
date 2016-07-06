@@ -46,4 +46,5 @@ dependencies {
     compile 'com.google.code.gson:gson:2.6.2'
     compile files('libs/BaiduTraceSDK_v2_1_11.jar')
     compile project(':sharesdk')
+    compile project(':zXingProj')
 }

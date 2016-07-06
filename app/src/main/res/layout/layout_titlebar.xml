@@ -29,4 +29,14 @@
         android:layout_centerInParent="true"
         />
 
+    <Button
+        android:id="@+id/bt_add_device"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="添加设备"
+        android:textColor="@android:color/white"
+        android:layout_alignParentRight="true"
+        android:background="@android:color/transparent"
+        android:visibility="invisible"
+        />
 </RelativeLayout>

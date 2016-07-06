@@ -1,0 +1,14 @@
+[
+    {
+        "merged": "F:\\github\\Android\\Ziv\\zXingProj\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-xhdpi-v4\\shadow.png",
+        "source": "F:\\github\\Android\\Ziv\\zXingProj\\build\\intermediates\\bundles\\debug\\res\\drawable-xhdpi-v4\\shadow.png"
+    },
+    {
+        "merged": "F:\\github\\Android\\Ziv\\zXingProj\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-xhdpi-v4\\back.png",
+        "source": "F:\\github\\Android\\Ziv\\zXingProj\\build\\intermediates\\bundles\\debug\\res\\drawable-xhdpi-v4\\back.png"
+    },
+    {
+        "merged": "F:\\github\\Android\\Ziv\\zXingProj\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-xhdpi-v4\\scanner.png",
+        "source": "F:\\github\\Android\\Ziv\\zXingProj\\build\\intermediates\\bundles\\debug\\res\\drawable-xhdpi-v4\\scanner.png"
+    }
+]
