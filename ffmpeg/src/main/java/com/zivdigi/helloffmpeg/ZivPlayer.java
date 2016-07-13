@@ -26,7 +26,7 @@ public class ZivPlayer  {
     }
 
     private native int nativeInit(int colorFormat);
-    private native int nativeDestroy();
+    public native int nativeDestroy();
 
     public native boolean startStream(String url);
     public native boolean stopStream(String url);

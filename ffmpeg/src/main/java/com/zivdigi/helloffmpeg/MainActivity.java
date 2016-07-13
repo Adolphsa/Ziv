@@ -1,11 +1,13 @@
 package com.zivdigi.helloffmpeg;
 
 import android.app.Activity;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -17,10 +19,12 @@ public class MainActivity extends Activity {
     public static final int MSG_FAILURE = 1;//获取图片失败的标识
 
     private  ImageView image;
-    public static TestDecoder test;
+    public  TestDecoder test;
     private int bmpUseIndex = 0;
     Bitmap bmp0 = null;
     Bitmap bmp1 = null;
+    private Thread t1;
+    private ZivPlayer zivPlayer = new ZivPlayer(ZivPlayer.COLOR_FORMAT_RGB565LE);
 
     private Handler mHandler = new Handler() {
         @Override
@@ -57,17 +61,17 @@ public class MainActivity extends Activity {
         }
     };
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ffmpeg_activity_main);
 
+        System.out.println("onCreate");
         image = (ImageView) findViewById(R.id.img_pic);
 
-        Log.v("HelloFFMPEG", "App Exit.");
-
-        TestDecoder test = new TestDecoder(mHandler);
-        Thread t1 = new Thread(test);
+        test = new TestDecoder(mHandler);
+        t1 = new Thread(test);
         t1.start();
 
 /*
@@ -100,6 +104,21 @@ public class MainActivity extends Activity {
 //        setContentView(R.layout.activity_main);
 //    }
 
+    public void xuanzhuan(View view){
+
+        //如果是横排,则改为竖排
+        if(getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+        {
+            System.out.println("竖屏");
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
+        //如果是竖排,则改为横排
+        else if(getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+        {
+            System.out.println("横屏");
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
+    }
     @Override
     protected void onPause() {
         super.onPause();
@@ -116,5 +135,14 @@ public class MainActivity extends Activity {
     protected void onRestart() {
         super.onRestart();
         Log.v("HelloFFMPEG", "onRestart");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        zivPlayer.stopStream("rtsp://192.168.199.103:8554/stream0");
+        test.setStop();
+        zivPlayer.nativeDestroy();
+        System.out.println("停止了");
     }
 }

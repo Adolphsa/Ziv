@@ -30,6 +30,8 @@ public class TestDecoder implements Runnable{
     ByteBuffer rgb565Buf;
     private Bitmap bmp;
 
+    private boolean isPlayer = true;
+
     public TestDecoder(Handler handler){
         inputFileName = "";
         outputFileName = "";
@@ -51,7 +53,7 @@ public class TestDecoder implements Runnable{
         rgb565Buf = null;
         bmp = null;
 
-        while(true) {
+        while(isPlayer) {
             if (player !=  null && player.isFrameReady()) {
                 Log.v("TestDecoder", "width:" + player.getVideoWidth() + " height:" + player.getVideoHeight() + " outsize:" + player.getOutputByteSize());
                 int decodedBufLen = player.getOutputByteSize();
@@ -81,7 +83,7 @@ public class TestDecoder implements Runnable{
                 }
             }
         }
-
+        return 0;
     }
     private int testRTSPStream2()
     {
@@ -110,22 +112,22 @@ public class TestDecoder implements Runnable{
 
         //Never reach here except the player was stoped or error occur.
 
-        while(true)
-        {
-            if(true){
-                try {
-                    Thread.sleep(1000);
-                    Log.v("testRTSPStream2", "while loop running...");
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            int delayCount = 10000;
-            if(delayCount < 3) {
-                break;
-            }
-        }
+//        while(true)
+//        {
+//            if(true){
+//                try {
+//                    Thread.sleep(1000);
+//                    Log.v("testRTSPStream2", "while loop running...");
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            int delayCount = 10000;
+//            if(delayCount < 3) {
+//                break;
+//            }
+//        }
 
         return 0;
     }
@@ -135,5 +137,9 @@ public class TestDecoder implements Runnable{
 
         testRTSPStream2();
 
+    }
+
+    public void setStop(){
+        isPlayer = false;
     }
 }
