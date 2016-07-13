@@ -1,5 +1,9 @@
 [
     {
+        "merged": "F:\\github\\Android\\Ziv\\zXingProj\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\zx_layout_titlebar.xml",
+        "source": "F:\\github\\Android\\Ziv\\zXingProj\\build\\intermediates\\bundles\\debug\\res\\layout\\zx_layout_titlebar.xml"
+    },
+    {
         "merged": "F:\\github\\Android\\Ziv\\zXingProj\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\activity_capture.xml",
         "source": "F:\\github\\Android\\Ziv\\zXingProj\\build\\intermediates\\bundles\\debug\\res\\layout\\activity_capture.xml"
     },

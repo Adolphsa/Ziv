@@ -1,6 +1,14 @@
 [
     {
+        "merged": "F:\\github\\Android\\Ziv\\zXingProj\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-hdpi-v4\\zx_login_btn.xml",
+        "source": "F:\\github\\Android\\Ziv\\zXingProj\\build\\intermediates\\bundles\\debug\\res\\drawable-hdpi-v4\\zx_login_btn.xml"
+    },
+    {
         "merged": "F:\\github\\Android\\Ziv\\zXingProj\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-hdpi-v4\\scanner.png",
         "source": "F:\\github\\Android\\Ziv\\zXingProj\\build\\intermediates\\bundles\\debug\\res\\drawable-hdpi-v4\\scanner.png"
+    },
+    {
+        "merged": "F:\\github\\Android\\Ziv\\zXingProj\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-hdpi-v4\\selector_zx_button.xml",
+        "source": "F:\\github\\Android\\Ziv\\zXingProj\\build\\intermediates\\bundles\\debug\\res\\drawable-hdpi-v4\\selector_zx_button.xml"
     }
 ]

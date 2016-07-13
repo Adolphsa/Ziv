@@ -10,5 +10,9 @@
     {
         "merged": "F:\\github\\Android\\Ziv\\zXingProj\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-xhdpi-v4\\scanner.png",
         "source": "F:\\github\\Android\\Ziv\\zXingProj\\build\\intermediates\\bundles\\debug\\res\\drawable-xhdpi-v4\\scanner.png"
+    },
+    {
+        "merged": "F:\\github\\Android\\Ziv\\zXingProj\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-xhdpi-v4\\back_slecter.png",
+        "source": "F:\\github\\Android\\Ziv\\zXingProj\\build\\intermediates\\bundles\\debug\\res\\drawable-xhdpi-v4\\back_slecter.png"
     }
 ]

@@ -1,9 +1,11 @@
 package com.zividig.ziv.function;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import com.zivdigi.helloffmpeg.MainActivity;
 import com.zividig.ziv.R;
 
 import cn.sharesdk.onekeyshare.OnekeyShare;
@@ -48,5 +50,9 @@ public class TestShareVideo extends Activity {
 
         // 启动分享GUI
         oks.show(this);
+    }
+
+    public void ffmpeg(View view){
+        startActivity(new Intent(TestShareVideo.this, MainActivity.class));
     }
 }

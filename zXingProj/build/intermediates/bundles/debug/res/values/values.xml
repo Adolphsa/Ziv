@@ -18,6 +18,8 @@
     <color name="car_model_checked">#b9c778</color>
     <color name="car_model_unchecked">#767676</color>
     <color name="car_store_auction_rect">#aebe65</color>
+    <color name="csy_blue2">#00ccff</color>
+    <color name="csy_green">#00c8ff</color>
     <color name="cyan_86890c">#86890c</color>
     <color name="cyan_8e910d">#8E910D</color>
     <color name="cyan_f0f3e3">#f0f3e3</color>

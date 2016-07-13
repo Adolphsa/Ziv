@@ -17,10 +17,10 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/back"
+            android:drawableLeft="@drawable/selector_zx_button"
             android:background="@android:color/transparent"
             android:padding="15dp"
-
+            android:onClick="zxBackToMain"
             />
         <TextView
             android:layout_width="wrap_content"
