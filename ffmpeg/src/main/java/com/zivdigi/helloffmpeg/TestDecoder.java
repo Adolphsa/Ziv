@@ -87,7 +87,7 @@ public class TestDecoder implements Runnable{
     }
     private int testRTSPStream2()
     {
-        final String rtspUrlLocal = "rtsp://192.168.199.30";
+        final String rtspUrlLocal = "rtsp://192.168.199.30/stream0";
         final String rtspUrlPi02 = "rtsp://192.168.199.103:8554/stream0";
         final String rtspUrlCentOs = "rtsp://192.168.199.21:8554/stream0";
         final String rtspUrlDevServer = "rtsp://120.24.174.213:8554/live_1234567890123456789.sdp";
@@ -108,7 +108,7 @@ public class TestDecoder implements Runnable{
 
         display.start();
 
-        player.startStream(rtspUrlPi02);
+        player.startStream(rtspUrlLocal);
 
         //Never reach here except the player was stoped or error occur.
 

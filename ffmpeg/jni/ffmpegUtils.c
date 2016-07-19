@@ -9,7 +9,7 @@
 
 #include "libavformat/avformat.h"
 #include "libavutil/avutil.h"
-#include "libavdevice/avdevice.h"
+//#include "libavdevice/avdevice.h"
 #include "libavfilter/avfilter.h"
 #include "libswresample/swresample.h"
 #include "libavcodec/avcodec.h"
@@ -59,7 +59,7 @@ JNIEXPORT jstring JNICALL Java_com_zivdigi_helloffmpeg_FfmpegUtils_getAvDeviceVe
         //return (*env)->NewStringUTF(env, "Java_com_zivdigi_helloffmpeg_FfmpegUtils_getAvDeviceVersion");
 
         static char avdeviceVertion[64] = {0};
-        sprintf(avdeviceVertion, "AvDeviceVersion:%d", avdevice_version());
+        //sprintf(avdeviceVertion, "AvDeviceVersion:%d", avdevice_version());
         return (*env)->NewStringUTF(env, avdeviceVertion);
 }
 

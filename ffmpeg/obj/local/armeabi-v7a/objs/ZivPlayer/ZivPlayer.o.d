@@ -29,9 +29,6 @@ obj/local/armeabi-v7a/objs/ZivPlayer/ZivPlayer.o: jni/ZivPlayer.c \
  jni/ffmpeg-android-lib/armeabi-v7a/include/libavutil/rational.h \
  jni/ffmpeg-android-lib/armeabi-v7a/include/libavcodec/version.h \
  jni/ffmpeg-android-lib/armeabi-v7a/include/libavutil/version.h \
- jni/ffmpeg-android-lib/armeabi-v7a/include/libavdevice/avdevice.h \
- jni/ffmpeg-android-lib/armeabi-v7a/include/libavdevice/version.h \
- jni/ffmpeg-android-lib/armeabi-v7a/include/libavutil/opt.h \
  jni/ffmpeg-android-lib/armeabi-v7a/include/libavformat/avformat.h \
  jni/ffmpeg-android-lib/armeabi-v7a/include/libavformat/avio.h \
  jni/ffmpeg-android-lib/armeabi-v7a/include/libavutil/common.h \
@@ -100,12 +97,6 @@ jni/ffmpeg-android-lib/armeabi-v7a/include/libavutil/rational.h:
 jni/ffmpeg-android-lib/armeabi-v7a/include/libavcodec/version.h:
 
 jni/ffmpeg-android-lib/armeabi-v7a/include/libavutil/version.h:
-
-jni/ffmpeg-android-lib/armeabi-v7a/include/libavdevice/avdevice.h:
-
-jni/ffmpeg-android-lib/armeabi-v7a/include/libavdevice/version.h:
-
-jni/ffmpeg-android-lib/armeabi-v7a/include/libavutil/opt.h:
 
 jni/ffmpeg-android-lib/armeabi-v7a/include/libavformat/avformat.h:
 

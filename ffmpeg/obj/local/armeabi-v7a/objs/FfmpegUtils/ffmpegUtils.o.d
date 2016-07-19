@@ -33,9 +33,6 @@ obj/local/armeabi-v7a/objs/FfmpegUtils/ffmpegUtils.o: jni/ffmpegUtils.c \
  jni/ffmpeg-android-lib/armeabi-v7a/include/libavformat/avio.h \
  jni/ffmpeg-android-lib/armeabi-v7a/include/libavutil/common.h \
  jni/ffmpeg-android-lib/armeabi-v7a/include/libavformat/version.h \
- jni/ffmpeg-android-lib/armeabi-v7a/include/libavdevice/avdevice.h \
- jni/ffmpeg-android-lib/armeabi-v7a/include/libavdevice/version.h \
- jni/ffmpeg-android-lib/armeabi-v7a/include/libavutil/opt.h \
  jni/ffmpeg-android-lib/armeabi-v7a/include/libavfilter/avfilter.h \
  jni/ffmpeg-android-lib/armeabi-v7a/include/libavfilter/version.h \
  jni/ffmpeg-android-lib/armeabi-v7a/include/libswresample/swresample.h \
@@ -110,12 +107,6 @@ jni/ffmpeg-android-lib/armeabi-v7a/include/libavformat/avio.h:
 jni/ffmpeg-android-lib/armeabi-v7a/include/libavutil/common.h:
 
 jni/ffmpeg-android-lib/armeabi-v7a/include/libavformat/version.h:
-
-jni/ffmpeg-android-lib/armeabi-v7a/include/libavdevice/avdevice.h:
-
-jni/ffmpeg-android-lib/armeabi-v7a/include/libavdevice/version.h:
-
-jni/ffmpeg-android-lib/armeabi-v7a/include/libavutil/opt.h:
 
 jni/ffmpeg-android-lib/armeabi-v7a/include/libavfilter/avfilter.h:
 

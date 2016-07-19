@@ -29,9 +29,6 @@ obj/local/armeabi/objs/RTSPClient/RTSPClient.o: jni/RTSPClient.c \
  jni/ffmpeg-android-lib/armeabi/include/libavutil/rational.h \
  jni/ffmpeg-android-lib/armeabi/include/libavcodec/version.h \
  jni/ffmpeg-android-lib/armeabi/include/libavutil/version.h \
- jni/ffmpeg-android-lib/armeabi/include/libavdevice/avdevice.h \
- jni/ffmpeg-android-lib/armeabi/include/libavdevice/version.h \
- jni/ffmpeg-android-lib/armeabi/include/libavutil/opt.h \
  jni/ffmpeg-android-lib/armeabi/include/libavformat/avformat.h \
  jni/ffmpeg-android-lib/armeabi/include/libavformat/avio.h \
  jni/ffmpeg-android-lib/armeabi/include/libavutil/common.h \
@@ -100,12 +97,6 @@ jni/ffmpeg-android-lib/armeabi/include/libavutil/rational.h:
 jni/ffmpeg-android-lib/armeabi/include/libavcodec/version.h:
 
 jni/ffmpeg-android-lib/armeabi/include/libavutil/version.h:
-
-jni/ffmpeg-android-lib/armeabi/include/libavdevice/avdevice.h:
-
-jni/ffmpeg-android-lib/armeabi/include/libavdevice/version.h:
-
-jni/ffmpeg-android-lib/armeabi/include/libavutil/opt.h:
 
 jni/ffmpeg-android-lib/armeabi/include/libavformat/avformat.h:
 

@@ -5,7 +5,6 @@
 #include <android/log.h>
 
 #include <libavcodec/avcodec.h>
-#include <libavdevice/avdevice.h>
 #include <libavformat/avformat.h>
 #include <libavfilter/avfilter.h>
 #include <libavutil/avutil.h>
@@ -120,6 +119,14 @@ JNIEXPORT jint JNICALL Java_com_zivdigi_helloffmpeg_ZivPlayer_nativeInit
     ctx->codec_ctx = avcodec_alloc_context3(ctx->codec);
     ctx->codec_ctx->pix_fmt = AV_PIX_FMT_YUV420P;
     ctx->codec_ctx->flags2 |= CODEC_FLAG2_CHUNKS;
+    ctx->codec_ctx->width = 720;
+    ctx->codec_ctx->height = 576;
+    ctx->codec_ctx->gop_size = 100;
+    ctx->codec_ctx->bit_rate = 1500;
+    ctx->codec_ctx->time_base.num = 1;
+    ctx->codec_ctx->frame_number = 1;
+    ctx->codec_ctx->codec_type = AVMEDIA_TYPE_VIDEO;
+    ctx->codec_ctx->time_base.den = 15; //Frame Rate
 
     ctx->src_frame = av_frame_alloc();
     ctx->dst_frame = av_frame_alloc();
@@ -198,6 +205,13 @@ JNIEXPORT jboolean JNICALL Java_com_zivdigi_helloffmpeg_ZivPlayer_startStream
 
     AVPacket i_pkt;
     av_init_packet(&i_pkt);
+    DecoderContext *ctx = get_ctx(env, obj);
+
+    //Set codec context for decoder from RTSP response.
+#if 1
+    ZivPlayer_Debug("extradata_size:%d\n", i_fmt_ctx->streams[i]->codec->extradata_size);
+#endif
+    avcodec_copy_context(ctx->codec_ctx, i_fmt_ctx->streams[i]->codec);
 
     while(!bStop)
     {
@@ -207,6 +221,16 @@ JNIEXPORT jboolean JNICALL Java_com_zivdigi_helloffmpeg_ZivPlayer_startStream
         {
             ZivPlayer_Debug("av_read_frame error\n");
             break;
+        }
+
+        if(i_pkt.pts < 0)
+        {
+            i_pkt.pts = 0;
+        }
+
+        if(i_pkt.dts < 0)
+        {
+            i_pkt.dts = 0;
         }
 
         //pts and dts should increase monotonically pts should be >= dts
@@ -243,21 +267,34 @@ JNIEXPORT jboolean JNICALL Java_com_zivdigi_helloffmpeg_ZivPlayer_startStream
         }
 #endif//
 
+#if 1
+        int frameFinished = 0;
+
+        int res = avcodec_decode_video2(ctx->codec_ctx, ctx->src_frame, &frameFinished, &i_pkt);
+        if(res < 0)
+        {
+            ZivPlayer_Debug("avcodec_decode-video2 error.");
+        }
+        else if(res == 0)
+        {
+            ZivPlayer_Debug("no frame could be decompressed.");
+        }
+
+        if (frameFinished)
+        {
+            ctx->frame_ready = 1;
+            ZivPlayer_Debug("Frame read");
+        }
+#else
         if((i_pkt.data[4] & 0x1F) == 7)//SPS with PPS, SEI and IDR.
         {
-#if 0
-            consumeNalUnitsFromBuffer(env, obj, i_pkt.data, 15, i_pkt.pts);
-            consumeNalUnitsFromBuffer(env, obj, i_pkt.data + 15, 8, i_pkt.pts);
-            consumeNalUnitsFromBuffer(env, obj, i_pkt.data + 23, 9, i_pkt.pts);
-            consumeNalUnitsFromBuffer(env, obj, i_pkt.data + 32, i_pkt.size - 32, i_pkt.pts);
-#else
             consumeNalUnitsFromBuffer(env, obj, i_pkt.data, i_pkt.size, i_pkt.pts);
-#endif
         }
         else//P Slice.
         {
-            //consumeNalUnitsFromBuffer(env, obj, i_pkt.data, i_pkt.size, i_pkt.pts);
+            consumeNalUnitsFromBuffer(env, obj, i_pkt.data, i_pkt.size, i_pkt.pts);
         }
+#endif
     }
 
     last_dts += dts;
@@ -294,8 +331,9 @@ int consumeNalUnitsFromBuffer(JNIEnv *env, jobject thiz, char* nalBuf, int nalSi
     if (frameFinished)
     {
         ctx->frame_ready = 1;
-        ZivPlayer_Debug("Frame read");
+        //ZivPlayer_Debug("Frame read");
     }
+
     return;
 }
 
@@ -383,6 +421,9 @@ jlong JNICALL JNICALL Java_com_zivdigi_helloffmpeg_ZivPlayer_decodeFrameToDirect
     }
 
     ctx->frame_ready = 0;
+
+    //
+    //(*env)->DeleteLocalRef(env, directBuffer);
 
     if (ctx->src_frame->pkt_pts == AV_NOPTS_VALUE)
     {

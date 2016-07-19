@@ -41,13 +41,13 @@ endif
 
 
 LOCAL_C_INCLUDES := $(FFMPEG_INC_DIR)/
-LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libavdevice.a
+#LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libavdevice.a
 LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libavformat.a
 LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libavcodec.a
 LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libavutil.a
 LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libavfilter.a
 LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libswresample.a
-LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libpostproc.a
+#LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libpostproc.a
 LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libswscale.a
 
 
@@ -96,13 +96,13 @@ endif
 
 
 LOCAL_C_INCLUDES := $(FFMPEG_INC_DIR)/
-LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libavdevice.a
+#LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libavdevice.a
 LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libavformat.a
 LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libavcodec.a
 LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libavutil.a
 LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libavfilter.a
 LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libswresample.a
-LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libpostproc.a
+#LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libpostproc.a
 LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libswscale.a
 
 LOCAL_LDFLAGS += -lz
@@ -152,13 +152,13 @@ endif
 
 
 LOCAL_C_INCLUDES := $(FFMPEG_INC_DIR)/
-LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libavdevice.a
+#LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libavdevice.a
 LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libavformat.a
 LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libavcodec.a
 LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libavutil.a
 LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libavfilter.a
 LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libswresample.a
-LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libpostproc.a
+#LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libpostproc.a
 LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libswscale.a
 
 LOCAL_LDFLAGS += -lz
@@ -208,13 +208,13 @@ endif
 
 
 LOCAL_C_INCLUDES := $(FFMPEG_INC_DIR)/
-LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libavdevice.a
+#LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libavdevice.a
 LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libavformat.a
 LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libavcodec.a
 LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libavutil.a
 LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libavfilter.a
 LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libswresample.a
-LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libpostproc.a
+#LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libpostproc.a
 LOCAL_LDLIBS += $(FFMPEG_LIB_DIR)/libswscale.a
 
 LOCAL_LDFLAGS += -lz
