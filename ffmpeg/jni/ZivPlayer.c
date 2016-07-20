@@ -97,7 +97,6 @@ JNIEXPORT void JNI_OnUnload(JavaVM *vm, void *reserved) {
 JNIEXPORT jint JNICALL Java_com_zivdigi_helloffmpeg_ZivPlayer_nativeInit
         (JNIEnv *env, jobject obj, jint color_format)
 {
-#if 1
     DecoderContext *ctx = (DecoderContext*)calloc(1, sizeof(DecoderContext));
     ZivPlayer_Debug("Creating native H264 decoder context");
 
@@ -115,8 +114,14 @@ JNIEXPORT jint JNICALL Java_com_zivdigi_helloffmpeg_ZivPlayer_nativeInit
     }
 
     ctx->codec = avcodec_find_decoder(AV_CODEC_ID_H264);
+    if(!ctx->codec)
+    {
+        return -1;
+    }
+
 
     ctx->codec_ctx = avcodec_alloc_context3(ctx->codec);
+#if 1
     ctx->codec_ctx->pix_fmt = AV_PIX_FMT_YUV420P;
     ctx->codec_ctx->flags2 |= CODEC_FLAG2_CHUNKS;
     ctx->codec_ctx->width = 720;
@@ -127,13 +132,12 @@ JNIEXPORT jint JNICALL Java_com_zivdigi_helloffmpeg_ZivPlayer_nativeInit
     ctx->codec_ctx->frame_number = 1;
     ctx->codec_ctx->codec_type = AVMEDIA_TYPE_VIDEO;
     ctx->codec_ctx->time_base.den = 15; //Frame Rate
-
+#endif
     ctx->src_frame = av_frame_alloc();
     ctx->dst_frame = av_frame_alloc();
-    avcodec_open2(ctx->codec_ctx, ctx->codec, NULL);
 
     set_ctx(env, obj, ctx);
-#endif
+
     return 0;
 }
 
@@ -212,6 +216,8 @@ JNIEXPORT jboolean JNICALL Java_com_zivdigi_helloffmpeg_ZivPlayer_startStream
     ZivPlayer_Debug("extradata_size:%d\n", i_fmt_ctx->streams[i]->codec->extradata_size);
 #endif
     avcodec_copy_context(ctx->codec_ctx, i_fmt_ctx->streams[i]->codec);
+    int ret = avcodec_open2(ctx->codec_ctx, ctx->codec, NULL);
+    set_ctx(env, obj, ctx);
 
     while(!bStop)
     {
@@ -267,7 +273,6 @@ JNIEXPORT jboolean JNICALL Java_com_zivdigi_helloffmpeg_ZivPlayer_startStream
         }
 #endif//
 
-#if 1
         int frameFinished = 0;
 
         int res = avcodec_decode_video2(ctx->codec_ctx, ctx->src_frame, &frameFinished, &i_pkt);
@@ -285,16 +290,7 @@ JNIEXPORT jboolean JNICALL Java_com_zivdigi_helloffmpeg_ZivPlayer_startStream
             ctx->frame_ready = 1;
             ZivPlayer_Debug("Frame read");
         }
-#else
-        if((i_pkt.data[4] & 0x1F) == 7)//SPS with PPS, SEI and IDR.
-        {
-            consumeNalUnitsFromBuffer(env, obj, i_pkt.data, i_pkt.size, i_pkt.pts);
-        }
-        else//P Slice.
-        {
-            consumeNalUnitsFromBuffer(env, obj, i_pkt.data, i_pkt.size, i_pkt.pts);
-        }
-#endif
+
     }
 
     last_dts += dts;
@@ -310,33 +306,6 @@ JNIEXPORT jboolean JNICALL Java_com_zivdigi_helloffmpeg_ZivPlayer_stopStream
     bStop = 1;
     return JNI_TRUE;
 }
-
-int consumeNalUnitsFromBuffer(JNIEnv *env, jobject thiz, char* nalBuf, int nalSize, long pkt_pts)
-{
-    DecoderContext *ctx = get_ctx(env, thiz);
-
-    AVPacket packet = {
-        .data = (uint8_t*)nalBuf,
-        .size = nalSize,
-        .pts = pkt_pts
-    };
-
-    int frameFinished = 0;
-    int res = avcodec_decode_video2(ctx->codec_ctx, ctx->src_frame, &frameFinished, &packet);
-    if(res < 0)
-    {
-        ZivPlayer_Debug("avcodec_decode-video2 error.");
-    }
-
-    if (frameFinished)
-    {
-        ctx->frame_ready = 1;
-        //ZivPlayer_Debug("Frame read");
-    }
-
-    return;
-}
-
 
 JNIEXPORT jboolean JNICALL Java_com_zivdigi_helloffmpeg_ZivPlayer_setRender
         (JNIEnv *env, jobject obj, jstring urlStr)

@@ -8,7 +8,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -66,6 +68,20 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ffmpeg_activity_main);
+
+        // 标题
+        TextView txtTitle = (TextView) findViewById(R.id.tv_title);
+        txtTitle.setText("实时视频");
+
+        //返回按钮
+        Button btnBack = (Button) findViewById(R.id.btn_back);
+        btnBack.setVisibility(View.VISIBLE);
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         System.out.println("onCreate");
         image = (ImageView) findViewById(R.id.img_pic);
@@ -140,7 +156,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        zivPlayer.stopStream("rtsp://192.168.199.103:8554/stream0");
+        zivPlayer.stopStream("rtsp://192.168.199.30/stream0");
         test.setStop();
         zivPlayer.nativeDestroy();
         System.out.println("停止了");

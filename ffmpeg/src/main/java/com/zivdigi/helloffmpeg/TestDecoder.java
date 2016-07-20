@@ -109,26 +109,6 @@ public class TestDecoder implements Runnable{
         display.start();
 
         player.startStream(rtspUrlLocal);
-
-        //Never reach here except the player was stoped or error occur.
-
-//        while(true)
-//        {
-//            if(true){
-//                try {
-//                    Thread.sleep(1000);
-//                    Log.v("testRTSPStream2", "while loop running...");
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//
-//            int delayCount = 10000;
-//            if(delayCount < 3) {
-//                break;
-//            }
-//        }
-
         return 0;
     }
 
