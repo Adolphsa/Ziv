@@ -56,7 +56,7 @@ public class MyCarFragment extends Fragment {
         TextView title = (TextView) view.findViewById(R.id.tv_title);
         title.setText("我的车");
 
-        //设置添加设备按钮为可见
+        //设置添加设备按钮为可见,二维码扫描
 //        Button addDevice = (Button) view.findViewById(R.id.bt_add_device);
 //        addDevice.setVisibility(View.VISIBLE);
 //        addDevice.setOnClickListener(new View.OnClickListener() {

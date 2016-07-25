@@ -80,6 +80,7 @@ public class Register extends Activity {
                 case 0:
                     holder.itemTv.setText("用户名        ");
                     holder.itemEt.setHint("请输入手机号码");
+                    holder.itemEt.setInputType(InputType.TYPE_CLASS_NUMBER);
                     break;
                 case 1:
                     holder.itemTv.setText("密码            ");
@@ -90,8 +91,8 @@ public class Register extends Activity {
                     holder.itemEt.setHint("请再次确认密码");
                     break;
                 case 3:
-                    holder.itemTv.setText("紧急联系人");
-                    holder.itemEt.setHint("请输入紧急联系人手机号码");
+                    holder.itemTv.setText("验证码");
+                    holder.itemEt.setHint("请输入验证码");
                     holder.itemEt.setInputType(InputType.TYPE_CLASS_NUMBER);
                     break;
             }

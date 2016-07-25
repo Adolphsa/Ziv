@@ -16,6 +16,7 @@ public class ZivPlayer  {
     public static final int MSG_FAILURE = 1;//获取图片失败的标识
 
     private int cdata;
+    private TestDecoder client;
 
     public ZivPlayer(int colorFormat){
         nativeInit(colorFormat);
@@ -25,18 +26,34 @@ public class ZivPlayer  {
         nativeDestroy();
     }
 
-    private native int nativeInit(int colorFormat);
-    public native int nativeDestroy();
+    public int setPlayerUser(TestDecoder client)
+    {
+        this.client = client;
+        return 0;
+    }
 
+    public int getDecodedFrameCb(ByteBuffer buffer, int videoWidth, int videoHeight, int bufSize) {
+        Log.v("ZivPlayer", "getDecodedFrameCb was called");
+
+        if(client != null)
+        {
+            client.upgradeFrameInUI(buffer, videoWidth, videoHeight, bufSize);
+        }
+
+        return 0;
+    }
+
+    private native int nativeInit(int colorFormat);
+    private native int nativeDestroy();
     public native boolean startStream(String url);
     public native boolean stopStream(String url);
     public native boolean setRender(String url);
+    public native boolean isPlayerPlaying();//
 
     public native boolean isFrameReady();
     public native int getVideoWidth();
     public native int getVideoHeight();
     public native int getOutputByteSize();
-    public native long decodeFrameToDirectBuffer(ByteBuffer buffer);
 
     static {
         System.loadLibrary("ZivPlayer");

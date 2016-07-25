@@ -1,125 +1,111 @@
 package com.zivdigi.helloffmpeg;
 
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.os.Handler;
-import android.util.Log;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.view.ViewGroup;
 
-import java.io.FileNotFoundException;
 import java.nio.ByteBuffer;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by walker on 16-3-30.
  */
-public class TestDecoder implements Runnable{
-    private String inputFileName;
-    private String outputFileName;
-    private int readCount;
-    private int readTotal;
-    private int decodeBufferSize;
-    public byte[] decodeBuffer;
-    private int decodeBufferAvailable;
+public class TestDecoder{
 
-    ZivPlayer player;
-    private Handler mHandler;
-    private int nalBegin;
-    private Boolean findNalHead;
-    private Lock m_decodeBufLock;
-    private Object recvDisplayLock;
     ByteBuffer rgb565Buf;
+    ZivPlayer player;
+    Canvas canvas;
+
+    private SurfaceView surfaceView;
+    private SurfaceHolder holder;
+    private ViewGroup.LayoutParams params;
+    private int mVideoWidth;
+    private int mVideoHeight;
+    private Handler mHandler;
+
     private Bitmap bmp;
+    private volatile boolean stopRequested;
 
-    private boolean isPlayer = true;
-
-    public TestDecoder(Handler handler){
-        inputFileName = "";
-        outputFileName = "";
-        readCount = 0;
-        readTotal = 0;
-        decodeBufferSize = 1024 * 4096;
-        decodeBuffer = new byte[decodeBufferSize];
-        decodeBufferAvailable = decodeBufferSize;
-
-        m_decodeBufLock = new ReentrantLock();
-        recvDisplayLock = new Object();
+    public TestDecoder( SurfaceHolder holder){
         rgb565Buf = null;
         bmp = null;
-        mHandler = handler;
+
+//        mHandler = handler;
+        this.holder = holder;
+
+        player = new ZivPlayer(ZivPlayer.COLOR_FORMAT_RGB565LE);
+        player.setPlayerUser(this);
     }
 
+    //Upgrade the BMP frame to UI.
+    public  int upgradeFrameInUI(ByteBuffer buf, int videoWidth, int videoHeight, int bufSize)
+    {
+        bmp = Bitmap.createBitmap(videoWidth, videoHeight, Bitmap.Config.RGB_565);
+        bmp.copyPixelsFromBuffer(buf);
+        buf.position(0);
+        System.out.println("哈哈哈哈,宽度：" + videoWidth + "高度:" + videoHeight );
 
-    private int findNalInDecodeBuffer3() throws FileNotFoundException {
-        rgb565Buf = null;
-        bmp = null;
+        mVideoWidth = videoWidth;
+        mVideoHeight = videoHeight;
 
-        while(isPlayer) {
-            if (player !=  null && player.isFrameReady()) {
-                Log.v("TestDecoder", "width:" + player.getVideoWidth() + " height:" + player.getVideoHeight() + " outsize:" + player.getOutputByteSize());
-                int decodedBufLen = player.getOutputByteSize();
-                if(rgb565Buf == null){
-                    rgb565Buf = ByteBuffer.allocateDirect(decodedBufLen);
-                }
-
-                player.decodeFrameToDirectBuffer(rgb565Buf);
-
-                //prepare bitmap for message.
-                bmp = Bitmap.createBitmap(player.getVideoWidth(), player.getVideoHeight(), Bitmap.Config.RGB_565);
-                bmp.copyPixelsFromBuffer(rgb565Buf);
-                rgb565Buf.position(0);
-
-                //Send Update Picture Message to UI.
-                mHandler.obtainMessage(MainActivity.MSG_SUCCESS, bmp).sendToTarget();
-
-            }
-            else
-            {
-                //Log.v("TestDecoder", "isFrameReady == false.");
-
-                try {
-                    Thread.sleep(40);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        if (holder.getSurface().isValid()){
+            System.out.println("判断是否已经创建好");
+            canvas = holder.lockCanvas();
+            if (canvas != null){
+                Paint paint = new Paint();
+                paint.setAntiAlias(true);
+                paint.setFilterBitmap(true);
+                paint.setDither(true);
+                canvas.drawBitmap(bmp,0,0,paint);
+                holder.unlockCanvasAndPost(canvas);
             }
         }
+
         return 0;
     }
-    private int testRTSPStream2()
-    {
-        final String rtspUrlLocal = "rtsp://192.168.199.30/stream0";
+
+    public void startRequest(){
+        final String rtspUrlLocal = "rtsp://192.168.199.30/stream1";
         final String rtspUrlPi02 = "rtsp://192.168.199.103:8554/stream0";
         final String rtspUrlCentOs = "rtsp://192.168.199.21:8554/stream0";
         final String rtspUrlDevServer = "rtsp://120.24.174.213:8554/live_1234567890123456789.sdp";
+        final String rtspUrlDevServer2 = "rtsp://120.25.80.80:8554/live_1234567890123456789.sdp";
 
-        player = new ZivPlayer(ZivPlayer.COLOR_FORMAT_RGB565LE);
+        if(isPlaying()){
+            return;
+        }
 
-        //Start Display Thread.
-        Thread display = new Thread(new Runnable() {
-            @Override
-            public void run() {
-            try {
-                findNalInDecodeBuffer3();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            }
-        });
-
-        display.start();
-
-        player.startStream(rtspUrlLocal);
-        return 0;
+        if(player != null){
+            player.startStream(rtspUrlLocal);
+        }
     }
 
-    @Override
-    public void run() {
-
-        testRTSPStream2();
-
+    public void stopRequest() {
+        if(player != null && isPlaying()) {
+            player.stopStream("test");
+        }
     }
 
-    public void setStop(){
-        isPlayer = false;
+    public boolean isPlaying(){
+        if(player != null) {
+            return player.isPlayerPlaying();
+        }
+
+        return false;
     }
+
+    public int getWidth(){
+        System.out.println("宽度为：---" + mVideoWidth);
+        return mVideoWidth;
+    }
+
+    public int getHeight(){
+        System.out.println("高度为：---" + mVideoHeight);
+        return mVideoHeight;
+    }
+
+
 }

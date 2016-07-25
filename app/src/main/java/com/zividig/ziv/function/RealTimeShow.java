@@ -19,7 +19,7 @@ import android.widget.Toast;
 
 import com.bm.library.PhotoView;
 import com.google.gson.Gson;
-import com.zivdigi.helloffmpeg.MainActivity;
+import com.zivdigi.helloffmpeg.SurfaceActivity;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.RealTimeBean;
 import com.zividig.ziv.main.Login;
@@ -346,6 +346,6 @@ public class RealTimeShow extends Activity {
      * @param view
      */
     public void startVideo(View view){
-        startActivity(new Intent(RealTimeShow.this, MainActivity.class));
+        startActivity(new Intent(RealTimeShow.this, SurfaceActivity.class));
     }
 }

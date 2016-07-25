@@ -4,25 +4,40 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <include layout="@layout/ffmpeg_layout_titlebar"/>
-    <SurfaceView
-        android:id="@+id/surface"
+    <RelativeLayout
+        android:id="@+id/surface_relative"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:background="@android:color/white"
-        android:layout_centerInParent="true"
-        />
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="播放"
-        android:onClick="play"
-        android:visibility="gone"
-        />
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="停止"
-        android:onClick="stop"
-        android:visibility="gone"
-        />
+        >
+
+        <SurfaceView
+            android:id="@+id/surface"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_centerInParent="true"
+            />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="播放"
+            android:onClick="play"
+            android:layout_alignParentBottom="true"
+            android:background="@android:color/transparent"
+            android:drawableTop="@drawable/ffmpeg_selector_play_button"
+            />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="停止"
+            android:onClick="stop"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="80dp"
+            android:background="@android:color/transparent"
+            android:drawableTop="@drawable/ffmpeg_selector_pause_button"
+            />
+    </RelativeLayout>
+
 </LinearLayout>
