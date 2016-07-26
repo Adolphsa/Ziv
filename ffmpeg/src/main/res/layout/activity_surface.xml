@@ -4,40 +4,44 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <include layout="@layout/ffmpeg_layout_titlebar"/>
-    <RelativeLayout
-        android:id="@+id/surface_relative"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@android:color/white"
-        >
-
+        android:layout_height="match_parent">
         <SurfaceView
             android:id="@+id/surface"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_centerInParent="true"
-            />
-        <Button
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="播放"
-            android:onClick="play"
-            android:layout_alignParentBottom="true"
-            android:background="@android:color/transparent"
-            android:drawableTop="@drawable/ffmpeg_selector_play_button"
             />
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="停止"
-            android:onClick="stop"
-            android:layout_alignParentBottom="true"
-            android:layout_marginLeft="80dp"
-            android:background="@android:color/transparent"
-            android:drawableTop="@drawable/ffmpeg_selector_pause_button"
-            />
-    </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/surface_img"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/test_default"
+                />
+            <Button
+                android:id="@+id/surface_play"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="play"
+                android:drawablePadding="1dp"
+                android:layout_alignBottom="@+id/surface_img"
+                android:background="@android:color/transparent"
+                android:drawableLeft="@drawable/ffmpeg_selector_play_button"
+                />
+            <Button
+                android:id="@+id/surface_pause"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="stop"
+                android:layout_alignBottom="@+id/surface_img"
+                android:layout_toRightOf="@+id/surface_play"
+                android:background="@android:color/transparent"
+                android:drawableLeft="@drawable/ffmpeg_selector_pause_button"
+                />
+        </RelativeLayout>
 
+    </FrameLayout>
 </LinearLayout>

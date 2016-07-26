@@ -3,10 +3,7 @@ package com.zivdigi.helloffmpeg;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.os.Handler;
 import android.view.SurfaceHolder;
-import android.view.SurfaceView;
-import android.view.ViewGroup;
 
 import java.nio.ByteBuffer;
 
@@ -19,15 +16,8 @@ public class TestDecoder{
     ZivPlayer player;
     Canvas canvas;
 
-    private SurfaceView surfaceView;
     private SurfaceHolder holder;
-    private ViewGroup.LayoutParams params;
-    private int mVideoWidth;
-    private int mVideoHeight;
-    private Handler mHandler;
-
     private Bitmap bmp;
-    private volatile boolean stopRequested;
 
     public TestDecoder( SurfaceHolder holder){
         rgb565Buf = null;
@@ -43,13 +33,11 @@ public class TestDecoder{
     //Upgrade the BMP frame to UI.
     public  int upgradeFrameInUI(ByteBuffer buf, int videoWidth, int videoHeight, int bufSize)
     {
+
         bmp = Bitmap.createBitmap(videoWidth, videoHeight, Bitmap.Config.RGB_565);
         bmp.copyPixelsFromBuffer(buf);
         buf.position(0);
         System.out.println("哈哈哈哈,宽度：" + videoWidth + "高度:" + videoHeight );
-
-        mVideoWidth = videoWidth;
-        mVideoHeight = videoHeight;
 
         if (holder.getSurface().isValid()){
             System.out.println("判断是否已经创建好");
@@ -96,16 +84,5 @@ public class TestDecoder{
 
         return false;
     }
-
-    public int getWidth(){
-        System.out.println("宽度为：---" + mVideoWidth);
-        return mVideoWidth;
-    }
-
-    public int getHeight(){
-        System.out.println("高度为：---" + mVideoHeight);
-        return mVideoHeight;
-    }
-
 
 }

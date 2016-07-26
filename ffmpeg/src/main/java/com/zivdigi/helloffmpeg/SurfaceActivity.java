@@ -4,21 +4,24 @@ import android.app.Activity;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class SurfaceActivity extends Activity implements SurfaceHolder.Callback{
 
     private static final String TAG = "SurfaceActivity";
     private SurfaceView surfaceView;
     private SurfaceHolder surfaceHolder;
-    private ViewGroup.LayoutParams params;
     private TestDecoder test;
+    private ImageView img;
+    private int height;
 
 
     @Override
@@ -29,6 +32,8 @@ public class SurfaceActivity extends Activity implements SurfaceHolder.Callback{
         // 标题
         TextView txtTitle = (TextView) findViewById(R.id.tv_title);
         txtTitle.setText("实时视频");
+
+        img = (ImageView) findViewById(R.id.surface_img);
 
         //返回按钮
         Button btnBack = (Button) findViewById(R.id.btn_back);
@@ -41,12 +46,10 @@ public class SurfaceActivity extends Activity implements SurfaceHolder.Callback{
         });
 
         WindowManager manager = (WindowManager) getSystemService(WINDOW_SERVICE);
-        int width = manager.getDefaultDisplay().getWidth();
+        height = manager.getDefaultDisplay().getHeight();
 
         surfaceView = (SurfaceView) findViewById(R.id.surface);
         surfaceHolder = surfaceView.getHolder();
-
-//        surfaceView.setZOrderOnTop(true);
         surfaceHolder.setFormat(PixelFormat.TRANSPARENT);
         surfaceHolder.addCallback(this);
 
@@ -55,7 +58,7 @@ public class SurfaceActivity extends Activity implements SurfaceHolder.Callback{
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         test = new TestDecoder(surfaceHolder);
-//        test.startRequest();
+//      test.startRequest();
     }
 
     @Override
@@ -81,6 +84,10 @@ public class SurfaceActivity extends Activity implements SurfaceHolder.Callback{
         }
 
         test.startRequest();
+        img.setVisibility(View.INVISIBLE);
+        Toast toast = Toast.makeText(SurfaceActivity.this, "请等待...", Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.TOP,0,height/4);
+        toast.show();
 
     }
 
