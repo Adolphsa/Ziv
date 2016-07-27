@@ -18,6 +18,17 @@ android {
         versionCode 1
         versionName "1.0"
         signingConfig signingConfigs.config
+        //参数说明
+        manifestPlaceholders = [
+                GETUI_APP_ID : "Zalajf6AQ36E3Xw4c8YBq6",
+                GETUI_APP_KEY : "GtMcCwG7I88xIRVu9k0ve6",
+                GETUI_APP_SECRET : "RgaB13KL5p7x6rEOgRHSF5",
+                PACKAGE_NAME : applicationId
+        ]
+        ndk {
+            abiFilters "armeabi", "armeabi-v7a", "arm64-v8a", "mips", "mips64", "x86", "x86_64"
+        }
+
     }
     buildTypes {
         release {
@@ -48,4 +59,5 @@ dependencies {
     compile project(':sharesdk')
     compile project(':zXingProj')
     compile project(':ffmpeg')
+    compile 'com.getui:sdk:2.9.0.0'
 }

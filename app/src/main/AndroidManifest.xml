@@ -81,6 +81,16 @@
         <!-- </intent-filter> -->
         <!-- </receiver> -->
 
-    </application>
+        <!-- 配置第三方Receiver -->
+        <receiver
+        android:name=".getui.GetuiReceiver"
+        android:exported="false">
+        <intent-filter>
+            <action android:name="com.igexin.sdk.action.${GETUI_APP_ID}" />
+        </intent-filter>
+    </receiver>
+
+
+</application>
 
 </manifest>

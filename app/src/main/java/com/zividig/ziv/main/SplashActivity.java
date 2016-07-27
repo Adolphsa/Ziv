@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baidu.mapapi.SDKInitializer;
+import com.igexin.sdk.PushManager;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.ResponseInfo;
@@ -92,6 +93,9 @@ public class SplashActivity extends Activity {
         super.onCreate(savedInstanceState);
         SDKInitializer.initialize(getApplicationContext()); //初始化百度地图
         setContentView(R.layout.activity_splash);
+
+        //调用个推初始化
+        PushManager.getInstance().initialize(this.getApplicationContext());
 
         tvProgress = (TextView) findViewById(R.id.tv_progress);// 默认隐藏
 
