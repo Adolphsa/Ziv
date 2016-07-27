@@ -33,6 +33,7 @@ public class Register extends Activity {
     private String md5Yzm;
     private RegisterMd5Bean registerMd5Bean;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
