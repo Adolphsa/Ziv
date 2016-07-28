@@ -106,7 +106,7 @@
             android:textSize="16sp"
             android:padding="3dp"
             android:textColor="@drawable/selector_login_text_color"
-            android:onClick="register"
+            android:onClick="loginRegister"
             />
 
         <View
@@ -124,7 +124,7 @@
             android:textSize="16sp"
             android:padding="3dp"
             android:textColor="@drawable/selector_login_text_color"
-            android:onClick="findPassWord"
+            android:onClick="loginFindPassWord"
             />
     </LinearLayout>
 

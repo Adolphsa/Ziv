@@ -5,6 +5,7 @@ import android.os.Message;
 import android.os.SystemClock;
 
 /**
+ * 按钮倒计时
  * Created by Administrator on 2016-07-28.
  */
 public abstract class CountDownTimer {

@@ -4,17 +4,18 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
 import com.zividig.ziv.R;
-import com.zividig.ziv.bean.LoginBean;
-import com.zividig.ziv.service.LocationService;
+import com.zividig.ziv.utils.MD5;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
@@ -23,16 +24,18 @@ import org.xutils.x;
  * 登录界面
  * Created by Administrator on 2016-06-14.
  */
-public class Login extends Activity {
+public class Login2 extends Activity {
+
+    private static String LOGIN_URL = "http://api.caowei.name/login";
 
     private static final String ET_USER = "et_user";
+    private static final String ET_PWD = "et_pwd";
     private static final String CB_USER = "cb_user";
     private static final String CB_PWD = "cb_pwd";
 
     private EditText etUser;
     private EditText etPassword;
     private Button btLogin;
-    private static LoginBean loginBean;
     private SharedPreferences config;
     private CheckBox cbUser;
     private CheckBox cbPwd;
@@ -58,39 +61,45 @@ public class Login extends Activity {
         cbPwd = (CheckBox) findViewById(R.id.cb_password);
         btLogin = (Button) findViewById(R.id.bt_login);
 
+        //获取保存的账号密码
         String configUser = config.getString(ET_USER, "");
+        String configPwd = config.getString(ET_PWD,"");
         boolean configCbUser = this.config.getBoolean(CB_USER, false);
         if (configCbUser){
             cbUser.setChecked(true);  //为真就设置成勾选
-            if (!configUser.isEmpty()){
+            if (!configUser.isEmpty() && !configPwd.isEmpty()){  //填充账号密码
                 etUser.setText(configUser);
+                etPassword.setText(configPwd);
             }
         }else {
             cbUser.setChecked(false);
         }
 
+        //记住用户名勾选框
         cbUser.setOnClickListener(new View.OnClickListener() { //记住用户
             @Override
             public void onClick(View v) {
                 System.out.println("cbUser被点击了");
                 if (cbUser.isChecked()){
                     System.out.println("勾选");
-                    Login.this.config.edit().putBoolean(CB_USER,true).apply();
+                    Login2.this.config.edit().putBoolean(CB_USER,true).apply();
                 }else {
                     System.out.println("非勾选");
-                    Login.this.config.edit().putBoolean(CB_USER,false).apply();
+                    Login2.this.config.edit().putBoolean(CB_USER,false).apply();
                 }
             }
         });
+
+        //记住密码勾选框
         cbPwd.setOnClickListener(new View.OnClickListener() { //记住密码
             @Override
             public void onClick(View v) {
                 System.out.println("cbPwd被点击了");
                 if (cbPwd.isChecked()){
 
-                    Login.this.config.edit().putBoolean(CB_PWD,true).apply();
+                    Login2.this.config.edit().putBoolean(CB_PWD,true).apply();
                 }else {
-                    Login.this.config.edit().putBoolean(CB_PWD,false).apply();
+                    Login2.this.config.edit().putBoolean(CB_PWD,false).apply();
                 }
             }
         });
@@ -107,34 +116,47 @@ public class Login extends Activity {
      * 登录
      */
     private void login(){
-        final String user = etUser.getText().toString().trim();
-        if (!user.isEmpty()){
-            RequestParams params = new RequestParams("http://dev.caowei.name/mytest/uploadtest/getdevinfo.php");
-            params.addBodyParameter("userid", user);
-            x.http().get(params, new Callback.CommonCallback<String>() {
+        final String user = etUser.getText().toString().trim();  //获取账号
+        final String password = etPassword.getText().toString().trim();  //获取密码
+        if (!TextUtils.isEmpty(user) && !TextUtils.isEmpty(password)){
+            //配置json数据
+            JSONObject json = new JSONObject();
+            try {
+                json.put("username",user);
+                json.put("password", MD5.getMD5(password));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            //发起请求
+            RequestParams params = new RequestParams(LOGIN_URL);
+            params.setAsJsonContent(true);
+            params.setBodyContent(json.toString());
+            x.http().post(params, new Callback.CommonCallback<String>() {
 
                 @Override
                 public void onSuccess(String result) {
-
-                        Gson gson = new Gson();
-                        loginBean =  gson.fromJson(result, LoginBean.class);
-                        String devid =   loginBean.getDevinfo().get(0).getDevid();
-
-                        if (!devid.isEmpty()){
-
-                            System.out.println("登录成功" + loginBean.getDevinfo().get(0).getDevid());
-
-                            //开启获取GPS信息的服务
-                            Intent intent = new Intent(Login.this,LocationService.class);
-                            intent.putExtra("devid",loginBean.getDevinfo().get(0).getDevid());
-                            startService(intent);
+                    System.out.println("登录" + result);
+                    try {
+                        JSONObject json = new JSONObject(result);
+                        String isSuccess = json.getString("loginstatus");
+                        if (isSuccess.equals("success")){
+                            System.out.println("登录成功");
+                            //保存账号密码
+                            config.edit().putString(ET_USER,user).apply();
+                            config.edit().putString(ET_PWD,password).apply();
+                            enterMainActivity();
+                        }else {
+                            System.out.println("登录失败");
                         }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
 
                 }
 
                 @Override
                 public void onError(Throwable ex, boolean isOnCallback) {
-                    Toast.makeText(Login.this,"请输入正确的用户名",Toast.LENGTH_SHORT).show();
+                    System.out.println("登录请求错误" + ex);
                 }
 
                 @Override
@@ -144,18 +166,12 @@ public class Login extends Activity {
 
                 @Override
                 public void onFinished() {
-                    if (!loginBean.getDevinfo().get(0).getDevid().isEmpty()){
-                        //保存用户账号
-                        config.edit().putString(ET_USER,user).apply();
-                        enterMainActivity();
-                    }else {
-                        Toast.makeText(Login.this,"请输入正确的用户名",Toast.LENGTH_SHORT).show();
-                    }
+
 
                 }
             });
         }else {
-            Toast.makeText(Login.this,"用户名不能为空",Toast.LENGTH_SHORT).show();
+            Toast.makeText(Login2.this,"用户名或密码不能为空",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -163,7 +179,7 @@ public class Login extends Activity {
      * 注册账号
      */
     public void loginRegister(View view){
-        startActivity(new Intent(Login.this,Register.class));
+        startActivity(new Intent(Login2.this,Register.class));
     }
 
     /**
@@ -171,19 +187,16 @@ public class Login extends Activity {
      * @param view
      */
     public void loginFindPassWord(View view){
-        startActivity(new Intent(Login.this,FindPassWord.class));
+        startActivity(new Intent(Login2.this,FindPassWord.class));
     }
 
     /**
      * 进入登录界面
      */
     private void enterMainActivity() {
-        Intent intent = new Intent(Login.this, MainActivity.class);
+        Intent intent = new Intent(Login2.this, MainActivity.class);
         startActivity(intent);
         finish();
     }
 
-    public static String getDevId(){
-        return loginBean.getDevinfo().get(0).getDevid();
-    }
 }

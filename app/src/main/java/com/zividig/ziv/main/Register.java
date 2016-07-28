@@ -25,7 +25,7 @@ import org.xutils.x;
 public class Register extends Activity {
 
     private static String REGISTER_URL = "http://api.caowei.name/user";  //注册的URL
-    private static String GET_YZM_URL = "http://api.caowei.name/sms";    //获取验证码的URL
+    public static String GET_YZM_URL = "http://api.caowei.name/sms";    //获取验证码的URL
 
     private EditText etUser;
     private EditText etPwd;
@@ -104,11 +104,11 @@ public class Register extends Activity {
     public void getRegisterYzm(View view){
         if (checkValidity()){
             RequestParams params = new RequestParams(GET_YZM_URL + "/" + user);
-            System.out.println("获取验证码params:" + params);
+            System.out.println("获取注册验证码params:" + params);
             x.http().get(params, new Callback.CommonCallback<String>() {
                 @Override
                 public void onSuccess(String result) {
-                    System.out.println("获取验证码成功" + result);
+                    System.out.println("获取注册验证码成功" + result);
                     Gson gson = new Gson();
                     registerMd5Bean = gson.fromJson(result,RegisterMd5Bean.class);
                     md5Yzm = registerMd5Bean.getCode(); //获取加密的验证码
@@ -116,7 +116,7 @@ public class Register extends Activity {
 
                 @Override
                 public void onError(Throwable ex, boolean isOnCallback) {
-                    System.out.println("获取验证码错误");
+                    System.out.println("获取注册验证码错误");
                 }
 
                 @Override
@@ -152,7 +152,7 @@ public class Register extends Activity {
                     JSONObject json = new JSONObject();
                     try {
                         json.put("username",user);
-                        json.put("password",pwd);
+                        json.put("password",MD5.getMD5(pwd));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
