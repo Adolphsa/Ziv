@@ -43,13 +43,13 @@
         <activity android:name=".function.ShowPicture" />
         <activity android:name=".function.ElectronicFence" />
         <activity android:name=".function.TrackQuery" />
-        <activity android:name=".main.Login" />
+        <activity android:name=".main.GetDeviceInfo" />
         <activity android:name=".main.Register" />
         <activity android:name=".function.CarLocation2" />
         <activity android:name=".function.TestShareVideo" />
         <activity android:name=".main.FindPassWord" />
         <activity android:name=".function.TrackQueryDateChoose" />
-        <activity android:name=".main.Login2"/>
+        <activity android:name=".main.Login"/>
 
         <!-- 违章查询相关Activity -->
         <activity android:name=".weizhang.activity.WeiZhangMainActivity" />

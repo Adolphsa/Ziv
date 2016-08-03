@@ -134,6 +134,8 @@ public class FindPassWord extends Activity {
     //重置密码
     public void resetPassword(View view) throws JSONException {
         if (checkValidity()){
+            fdUser = etUser.getText().toString().trim();
+            fdPwd = etPwd.getText().toString().trim();
             fdYzm = etYzm.getText().toString().trim();
             if (TextUtils.isEmpty(fdYzm)){
                 Toast.makeText(FindPassWord.this,"请输入验证码",Toast.LENGTH_SHORT).show();
@@ -147,7 +149,7 @@ public class FindPassWord extends Activity {
                     //放入请求的json数据
                     JSONObject json = new JSONObject();
                     json.put("username",fdUser);
-                    json.put("password",fdPwd);
+                    json.put("password",MD5.getMD5(fdPwd));
                     //配置请求参数
                     RequestParams params = new RequestParams(RESET_PWD + "/" + fdUser);
                     params.setAsJsonContent(true);

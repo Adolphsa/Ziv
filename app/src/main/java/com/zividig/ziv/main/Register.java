@@ -136,6 +136,8 @@ public class Register extends Activity {
     //注册
     public void register(View view){
         if (checkValidity()){
+            user = etUser.getText().toString().trim();
+            pwd = etPwd.getText().toString().trim();
             yzm = etYzm.getText().toString().trim();
             if (TextUtils.isEmpty(yzm)){
                 Toast.makeText(Register.this,"请输入验证码",Toast.LENGTH_SHORT).show();

@@ -25,6 +25,7 @@ import com.zividig.ziv.bean.RealTimeBean;
 import com.zividig.ziv.main.Login;
 
 import org.xutils.common.Callback;
+import org.xutils.http.RequestParams;
 import org.xutils.image.ImageOptions;
 import org.xutils.x;
 
@@ -92,13 +93,15 @@ public class RealTimeShow extends Activity {
 
     }
 
-    //显示图片
+    /**
+     * 显示图片
+     */
     private void showImage() {
         progressBar.setVisibility(View.VISIBLE);
         btRefresh.setClickable(false);
         System.out.println("获取图片");
         //获取图片链接
-        org.xutils.http.RequestParams params = new org.xutils.http.RequestParams("http://120.24.174.213:9501/api/snap");
+        RequestParams params = new RequestParams("http://120.24.174.213:9501/api/snap");
         String devid = Login.getDevId();
         params.addBodyParameter("devid", devid);
         System.out.println("实时预览" + Login.getDevId());
@@ -164,7 +167,9 @@ public class RealTimeShow extends Activity {
 
     }
 
-    //获取图片
+    /**
+     * 获取图片
+     */
     private void getImageFromInternet() {
 
         //显示图片
@@ -205,7 +210,9 @@ public class RealTimeShow extends Activity {
 
     }
 
-    //下载图片到本地
+    /**
+     * 下载图片到本地
+     */
     private void downImage() {
 
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
