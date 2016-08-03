@@ -7,13 +7,15 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.KeyEvent;
+import android.widget.Toast;
 
 import com.lhh.apst.library.AdvancedPagerSlidingTabStrip;
 import com.zividig.ziv.R;
 import com.zividig.ziv.customView.CustomViewPager;
+import com.zividig.ziv.fragments.MessageFragment;
 import com.zividig.ziv.fragments.MyCarFragment;
 import com.zividig.ziv.fragments.MyFragment;
-import com.zividig.ziv.fragments.MessageFragment;
 import com.zividig.ziv.fragments.SettingFragment;
 
 public class MainActivity extends FragmentActivity implements ViewPager.OnPageChangeListener{
@@ -32,6 +34,8 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
     private MessageFragment mMessageFragment = null; //消息
     private SettingFragment mSettingFragment = null; //设置
     private MyFragment mMyFragment = null; //我
+
+    private long exitTime = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,5 +183,21 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
         public Rect getPageIconBounds(int position) {
             return null;
         }
+    }
+
+    //退出程序前的提示
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN){
+            if((System.currentTimeMillis()-exitTime) > 2000){
+                Toast.makeText(getApplicationContext(), "再按一次退出程序", Toast.LENGTH_SHORT).show();
+                exitTime = System.currentTimeMillis();
+            } else {
+                finish();
+                System.exit(0);
+            }
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }
