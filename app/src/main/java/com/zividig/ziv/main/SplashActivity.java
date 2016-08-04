@@ -23,10 +23,15 @@ import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.zividig.ziv.R;
+import com.zividig.ziv.utils.NetworkTypeUtils;
 import com.zividig.ziv.utils.StreamUtils;
+import com.zividig.ziv.wifi.WifiLogin;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.xutils.common.Callback;
+import org.xutils.http.RequestParams;
+import org.xutils.x;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,6 +45,8 @@ import java.net.URL;
  * Created by Administrator on 2016-05-31.
  */
 public class SplashActivity extends Activity {
+
+    private static String URL_GET_DEVICE_INFO = "http://192.168.1.1/api/getdevinfo";
 
     protected static final int CODE_UPDATE_DIALOG = 0;
     protected static final int CODE_URL_ERROR = 1;
@@ -110,7 +117,7 @@ public class SplashActivity extends Activity {
             checkVersion(); //检查版本更新
 
         }else {
-            mHandler.sendEmptyMessageDelayed(CODE_ENTER_HOME,2000); //延时2s后发送消息进入主页面
+            mHandler.sendEmptyMessageDelayed(CODE_ENTER_HOME,1000); //延时2s后发送消息进入主页面
         }
     }
 
@@ -334,8 +341,44 @@ public class SplashActivity extends Activity {
      * 进入登录界面
      */
     private void enterLoginActivity() {
-        Intent intent = new Intent(SplashActivity.this, Login.class);
-        startActivity(intent);
-        finish();
+        if (NetworkTypeUtils.getNetworkType(SplashActivity.this).equals(NetworkTypeUtils.WIFI)){
+            System.out.println("连接设备");
+            RequestParams params = new RequestParams(URL_GET_DEVICE_INFO);
+            x.http().get(params, new Callback.CommonCallback<String>() {
+                @Override
+                public void onSuccess(String result) {
+                    System.out.println("wifi直连" + result);
+                    if (!result.isEmpty()){
+                        startActivity(new Intent(SplashActivity.this, WifiLogin.class));
+                        finish();
+                    }
+
+                }
+
+                @Override
+                public void onError(Throwable ex, boolean isOnCallback) {
+                    System.out.println("wifi直连错误" + ex);
+                    startActivity(new Intent(SplashActivity.this,Login.class));
+                    finish();
+                }
+
+                @Override
+                public void onCancelled(CancelledException cex) {
+
+                }
+
+                @Override
+                public void onFinished() {
+
+                }
+            });
+        } else {
+            Intent intent = new Intent(SplashActivity.this, Login.class);
+            startActivity(intent);
+            finish();
+        }
+
     }
+
+
 }

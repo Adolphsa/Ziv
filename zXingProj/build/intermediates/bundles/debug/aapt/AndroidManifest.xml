@@ -3,7 +3,7 @@
     package="com.dtr.zxing" >
 
     <uses-sdk
-        android:minSdkVersion="10"
+        android:minSdkVersion="16"
         android:targetSdkVersion="19" />
 
     <supports-screens

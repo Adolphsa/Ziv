@@ -5,7 +5,7 @@ android {
     buildToolsVersion "19.1.0"
 
     defaultConfig {
-        minSdkVersion 10
+        minSdkVersion 16
         targetSdkVersion 19
     }
 
@@ -19,4 +19,5 @@ android {
 
 dependencies {
     compile files('libs/zxing.jar')
+    compile 'org.xutils:xutils:3.3.36'
 }
