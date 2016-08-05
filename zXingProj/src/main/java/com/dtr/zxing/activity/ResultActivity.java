@@ -1,6 +1,7 @@
 package com.dtr.zxing.activity;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -8,6 +9,8 @@ import android.widget.TextView;
 
 import com.dtr.zxing.R;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
@@ -17,11 +20,14 @@ public class ResultActivity extends Activity {
     private static String URL_SET_TWO_CODE = "http://192.168.1.1/api/setqrcode";
 
     private TextView mResultText;
+    private SharedPreferences spf;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
+
+        spf = getSharedPreferences("config",MODE_PRIVATE);
 
         Bundle extras = getIntent().getExtras();
 
@@ -38,22 +44,34 @@ public class ResultActivity extends Activity {
         if (null != extras) {
             String result = extras.getString("result");
             mResultText.setText(result);
-
         }
     }
 
-    public void bindDevice(View view){
+    /**
+     * 设置二维码到设备
+     * @param view
+     */
+    public void addTwoCode(View view){
 
         RequestParams params = new RequestParams(URL_SET_TWO_CODE);
         params.addParameter("code", "12345678");
         params.addParameter("username", "13480995624");
-//        params.addQueryStringParameter("code", "12345678");
-//        params.addQueryStringParameter("username", "13480995624");
+
         System.out.println("二维码请求的params:  " + params);
         x.http().get(params, new Callback.CommonCallback<String>() {
             @Override
             public void onSuccess(String result) {
                 System.out.println("二维码设置成功" + result);
+                if (!result.isEmpty()){
+                    try {
+                        JSONObject json = new JSONObject(result);
+                        String code = json.getString("code");
+                        //保存二维码
+                        spf.edit().putString("two_code",code).apply();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
 
             }
 

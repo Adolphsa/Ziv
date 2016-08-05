@@ -9,13 +9,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.DeviceInfoBean;
 import com.zividig.ziv.service.LocationService;
 import com.zividig.ziv.utils.MD5;
+import com.zividig.ziv.utils.ToastShow;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -142,6 +142,9 @@ public class Login extends Activity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+            ToastShow.setToatBytTime(Login.this,"登录中...",500);
+
             //发起请求
             RequestParams params = new RequestParams(LOGIN_URL);
             params.setAsJsonContent(true);
@@ -159,10 +162,13 @@ public class Login extends Activity {
                             //保存账号密码
                             config.edit().putString(ET_USER,user).apply();
                             config.edit().putString(ET_PWD,password).apply();
-                            //获取设备信息
-                            getDeviceInfo(user);
+
+                            ToastShow.showToast(Login.this,"登录成功");
+                            //进入主菜单
+                            enterMainActivity();
                             System.out.println("啦啦啦");
                         }else {
+                            ToastShow.showToast(Login.this,"账号或密码错误");
                             System.out.println("登录失败");
                         }
                     } catch (JSONException e) {
@@ -183,12 +189,14 @@ public class Login extends Activity {
 
                 @Override
                 public void onFinished() {
-
+                    //获取设备信息
+                    getDeviceInfo(user);
 
                 }
             });
         }else {
-            Toast.makeText(Login.this,"用户名或密码不能为空",Toast.LENGTH_SHORT).show();
+
+            ToastShow.showToast(Login.this,"用户名或密码不能为空");
         }
     }
 
@@ -209,15 +217,13 @@ public class Login extends Activity {
                 System.out.println("设备的ID---" + devid);
                 if (!devid.isEmpty()){
 
-                    System.out.println("登录成功" + deviceInfoBean.getDevinfo().get(0).getDevid());
+                    System.out.println("获取设备信息成功" + deviceInfoBean.getDevinfo().get(0).getDevid());
 
                     //开启获取GPS信息的服务
                     Intent intent = new Intent(Login.this,LocationService.class);
                     intent.putExtra("devid", deviceInfoBean.getDevinfo().get(0).getDevid());
                     startService(intent);
 
-                    //进入主菜单
-                    enterMainActivity();
                 }
 
             }
@@ -231,7 +237,8 @@ public class Login extends Activity {
             public void onCancelled(CancelledException cex) {}
 
             @Override
-            public void onFinished() {}
+            public void onFinished() {
+            }
         });
 
     }
@@ -248,7 +255,7 @@ public class Login extends Activity {
      * 注册账号
      */
     public void loginRegister(View view){
-        startActivity(new Intent(Login.this,Register.class));
+            startActivity(new Intent(Login.this,Register.class));
     }
 
     /**

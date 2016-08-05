@@ -54,7 +54,6 @@ public class RealTimeShow extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.acticity_real_time_show);
-
         // 标题
         TextView txtTitle = (TextView) findViewById(R.id.tv_title);
         txtTitle.setText("实时预览");
@@ -159,9 +158,7 @@ public class RealTimeShow extends Activity {
             }
 
             @Override
-            public void onFinished() {
-
-            }
+            public void onFinished() {}
         });
 
 

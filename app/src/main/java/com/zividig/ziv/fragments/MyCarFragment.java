@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,18 +19,20 @@ import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.bigkoo.convenientbanner.holder.Holder;
 import com.zividig.ziv.R;
+import com.zividig.ziv.function.AddDevice;
 import com.zividig.ziv.function.CarInfo;
 import com.zividig.ziv.function.CarLocation2;
 import com.zividig.ziv.function.ElectronicFence;
 import com.zividig.ziv.function.RealTimeShow;
 import com.zividig.ziv.function.TrackQueryDateChoose;
+import com.zividig.ziv.main.Login;
+import com.zividig.ziv.utils.ToastShow;
 import com.zividig.ziv.weizhang.activity.WeiZhangMainActivity;
 
 import java.util.ArrayList;
 
 /**
  * 我的车
- *
  */
 public class MyCarFragment extends Fragment {
 
@@ -38,33 +41,36 @@ public class MyCarFragment extends Fragment {
     private ConvenientBanner convenientBanner; //顶部广告栏控件
     private ArrayList<Integer> localImages = new ArrayList<Integer>();
 
-    private String[] itemTexts = {"实时预览","车辆信息","车辆定位",
-                                "电子围栏","违章查询","轨迹查询"};
-    private int[] itemImages = {R.drawable.selector_real_time,R.drawable.selector_car_info,R.drawable.selector_car_location,
-                                R.drawable.selector_electric_fence,R.drawable.selector_car_manage,R.drawable.selector_history_back};
+    private String[] itemTexts = {"实时预览", "车辆信息", "车辆定位",
+            "电子围栏", "违章查询", "轨迹查询"};
+    private int[] itemImages = {R.drawable.selector_real_time, R.drawable.selector_car_info, R.drawable.selector_car_location,
+            R.drawable.selector_electric_fence, R.drawable.selector_car_manage, R.drawable.selector_history_back};
+    private String devId;
+
     public static MyCarFragment instance() {
         MyCarFragment myCarView = new MyCarFragment();
-		return myCarView;
-	}
+        return myCarView;
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_mycar,null);
+        view = inflater.inflate(R.layout.fragment_mycar, null);
 
         //设置标题
         TextView title = (TextView) view.findViewById(R.id.tv_title);
         title.setText("我的车");
 
-        //设置添加设备按钮为可见,二维码扫描
-//        Button addDevice = (Button) view.findViewById(R.id.bt_add_device);
-//        addDevice.setVisibility(View.VISIBLE);
-//        addDevice.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                startActivity(new Intent(getContext(), CaptureActivity.class));
-//            }
-//        });
+        //添加设备按钮
+        Button addDevice = (Button) view.findViewById(R.id.bt_add_device);
+        addDevice.setVisibility(View.VISIBLE);
+        addDevice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getContext(), AddDevice.class));
+            }
+        });
+
 
         initAd();
         initFunctionButton();
@@ -73,7 +79,7 @@ public class MyCarFragment extends Fragment {
     }
 
     //初始化功能按钮
-    private void initFunctionButton(){
+    private void initFunctionButton() {
         GridView gridView = (GridView) view.findViewById(R.id.gv_mycar);
         gridView.setAdapter(new BaseAdapter() {
             @Override
@@ -93,7 +99,7 @@ public class MyCarFragment extends Fragment {
 
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
-                View view = View.inflate(getContext(),R.layout.layout_function_button,null);
+                View view = View.inflate(getContext(), R.layout.layout_function_button, null);
                 ImageView ivItem = (ImageView) view.findViewById(R.id.iv_item);
                 TextView tvItem = (TextView) view.findViewById(R.id.tv_item);
 
@@ -102,14 +108,19 @@ public class MyCarFragment extends Fragment {
                 return view;
             }
         });
-        //设置点击事件
+        //先判断是否能够获取到设备ID，然后再点击
+
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position){
+                switch (position) {
                     case 0:
                         System.out.println("实时预览" + position);
-                        startActivity(new Intent(getContext(), RealTimeShow.class));
+                        if (devId != null) {
+                            startActivity(new Intent(getContext(), RealTimeShow.class));
+                        } else {
+                            ToastShow.showToast(getContext(), "请先添加设备");
+                        }
                         break;
                     case 1:
                         System.out.println("车辆信息" + position);
@@ -117,11 +128,19 @@ public class MyCarFragment extends Fragment {
                         break;
                     case 2:
                         System.out.println("车辆定位" + position);
-                        startActivity(new Intent(getContext(), CarLocation2.class));
+                        if (devId != null) {
+                            startActivity(new Intent(getContext(), CarLocation2.class));
+                        } else {
+                            ToastShow.showToast(getContext(), "请先添加设备");
+                        }
                         break;
                     case 3:
                         System.out.println("电子围栏" + position);
-                        startActivity(new Intent(getContext(), ElectronicFence.class));
+                        if (devId != null) {
+                            startActivity(new Intent(getContext(), ElectronicFence.class));
+                        } else {
+                            ToastShow.showToast(getContext(), "请先添加设备");
+                        }
                         break;
                     case 4:
                         System.out.println("违章查询" + position);
@@ -129,14 +148,19 @@ public class MyCarFragment extends Fragment {
                         break;
                     case 5:
                         System.out.println("轨迹查询" + position);
-                        startActivity(new Intent(getContext(), TrackQueryDateChoose.class));
+                        if (devId != null) {
+                            startActivity(new Intent(getContext(), TrackQueryDateChoose.class));
+                        } else {
+                            ToastShow.showToast(getContext(), "请先添加设备");
+                        }
                         break;
                 }
             }
         });
     }
+
     //初始化广告控件
-    private void initAd(){
+    private void initAd() {
         convenientBanner = (ConvenientBanner) view.findViewById(R.id.convenientBanner);
         localImages = new ArrayList<>();
         localImages.add(R.mipmap.ad1);
@@ -148,7 +172,7 @@ public class MyCarFragment extends Fragment {
             public LocalImageHolderView createHolder() {
                 return new LocalImageHolderView();
             }
-        },localImages)
+        }, localImages)
                 //设置两个点图片作为翻页指示器，不设置则没有指示器，可以根据自己需求自行配合自己的指示器,不需要圆点指示器可用不设
                 .setPageIndicator(new int[]{R.mipmap.ic_page_indicator, R.mipmap.ic_page_indicator_focused})
                 //设置指示器的方向
@@ -184,5 +208,12 @@ public class MyCarFragment extends Fragment {
         super.onPause();
         //停止翻页
         convenientBanner.stopTurning();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        devId = Login.getDevId();
+        System.out.println("fragment---deviceId:" + devId);
     }
 }
