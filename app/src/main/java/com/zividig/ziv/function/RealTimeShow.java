@@ -49,6 +49,7 @@ public class RealTimeShow extends Activity {
     private int ScreenWidth;
     private Button btRefresh;
     private Button btDownImage;
+    private int errorCode; //错误码
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,10 +119,10 @@ public class RealTimeShow extends Activity {
                     System.out.println("url的值---" + url);
                 }
 
-                int  error = realTimeBean.getError();
-                System.out.println("error的值：---" + error);
+                errorCode = realTimeBean.getError();
+                System.out.println("error的值：---" + errorCode);
 
-                switch (error) {
+                switch (errorCode) {
                     case 200: //返回正常
                         if (!url.isEmpty()){
                             getImageFromInternet();
@@ -350,6 +351,25 @@ public class RealTimeShow extends Activity {
      * @param view
      */
     public void startVideo(View view){
-        startActivity(new Intent(RealTimeShow.this, SurfaceActivity.class));
+        switch (errorCode) {
+            case 200: //返回正常
+                startActivity(new Intent(RealTimeShow.this, SurfaceActivity.class));
+                break;
+            case 400:
+                showToast("错误请求-请求中有语法问题");
+                break;
+            case 401:
+                showToast("未授权");
+                break;
+            case 501:
+                showToast("设备不在线");
+                break;
+            case 502:
+                showToast("服务器内部出错");
+                break;
+            case 503:
+                showToast("不支持此操作");
+                break;
+        }
     }
 }

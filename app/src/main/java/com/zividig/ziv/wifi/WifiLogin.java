@@ -16,6 +16,10 @@ public class WifiLogin extends Activity {
         setContentView(R.layout.activity_wifi_login);
     }
 
+    /**
+     * 设置二维码
+     * @param view
+     */
     public void setTwoDimensionCode(View view){
         startActivity(new Intent(WifiLogin.this, CaptureActivity.class));
     }

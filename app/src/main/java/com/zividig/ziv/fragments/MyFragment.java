@@ -17,7 +17,6 @@ import android.widget.Toast;
 
 import com.zividig.ziv.R;
 import com.zividig.ziv.function.MyPicture;
-import com.zividig.ziv.function.TestShareVideo;
 
 import java.io.File;
 
@@ -50,7 +49,7 @@ public class MyFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position){
                     case 0: //我的账号
-                        startActivity(new Intent(getContext(), TestShareVideo.class));
+//                        startActivity(new Intent(getContext(), TestShareVideo.class));
                         break;
                     case 1: //我的图片
                         File file = new File(path);

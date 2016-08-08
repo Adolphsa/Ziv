@@ -1,6 +1,7 @@
 package com.dtr.zxing.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
@@ -68,6 +69,9 @@ public class ResultActivity extends Activity {
                         String code = json.getString("code");
                         //保存二维码
                         spf.edit().putString("two_code",code).apply();
+                        Intent intent = new Intent();
+                        intent.setClassName(ResultActivity.this,"com.zividig.ziv.function.AddDevice");
+                        startActivity(intent);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

@@ -191,7 +191,8 @@ public class Login extends Activity {
                 public void onFinished() {
                     //获取设备信息
                     getDeviceInfo(user);
-
+                    boolean isWifiOrMobile = ((ZivApp) getApplication()).getIsWifiOrMobile();
+                    System.out.println("判断是设备wifi还是手机网络:---" + isWifiOrMobile);
                 }
             });
         }else {
@@ -237,8 +238,7 @@ public class Login extends Activity {
             public void onCancelled(CancelledException cex) {}
 
             @Override
-            public void onFinished() {
-            }
+            public void onFinished() {}
         });
 
     }

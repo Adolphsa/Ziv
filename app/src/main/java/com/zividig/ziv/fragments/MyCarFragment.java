@@ -71,7 +71,6 @@ public class MyCarFragment extends Fragment {
             }
         });
 
-
         initAd();
         initFunctionButton();
 
@@ -113,6 +112,7 @@ public class MyCarFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                getDevID();
                 switch (position) {
                     case 0:
                         System.out.println("实时预览" + position);
@@ -210,9 +210,7 @@ public class MyCarFragment extends Fragment {
         convenientBanner.stopTurning();
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    private void getDevID(){
         devId = Login.getDevId();
         System.out.println("fragment---deviceId:" + devId);
     }
