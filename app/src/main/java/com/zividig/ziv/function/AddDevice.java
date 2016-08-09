@@ -12,7 +12,6 @@ import android.widget.TextView;
 import com.dtr.zxing.activity.CaptureActivity;
 import com.zividig.ziv.R;
 import com.zividig.ziv.main.Login;
-import com.zividig.ziv.main.ZivApp;
 import com.zividig.ziv.utils.ToastShow;
 
 public class AddDevice extends Activity {
@@ -51,7 +50,7 @@ public class AddDevice extends Activity {
         setTwoCode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean isWifiOrMobile = ((ZivApp) getApplication()).getIsWifiOrMobile();
+                boolean isWifiOrMobile = spf.getBoolean("network_type",false);
                 System.out.println("判断是设备wifi还是手机网络:---" + isWifiOrMobile);
                 if (isWifiOrMobile){
                     startActivity(new Intent(AddDevice.this, CaptureActivity.class));

@@ -191,7 +191,7 @@ public class Login extends Activity {
                 public void onFinished() {
                     //获取设备信息
                     getDeviceInfo(user);
-                    boolean isWifiOrMobile = ((ZivApp) getApplication()).getIsWifiOrMobile();
+                    boolean isWifiOrMobile = config.getBoolean("network_type",false);
                     System.out.println("判断是设备wifi还是手机网络:---" + isWifiOrMobile);
                 }
             });

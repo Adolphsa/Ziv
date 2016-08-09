@@ -284,7 +284,7 @@ public class RealTimeShow extends Activity {
                 @Override
                 public void onFinished() {
                     updateImage();
-                    Toast.makeText(RealTimeShow.this, "图片已保存", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(RealTimeShow.this, "图片已保存", Toast.LENGTH_SHORT).show();
                 }
             });
 

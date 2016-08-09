@@ -27,7 +27,7 @@ public class CarInfo extends Activity {
     private  ImageView turnSpeedPoint;
     private  ImageView temperaturePoint;
     private RotateAnimation speedRotate; //速度动画
-    private int [] speedTest = {10,50,100,80,180,60,30,150,50};
+    private int [] speedTest = {120,50,100,80,180,60,30,150,50};
     private int i;
 
     private Handler mHandler = new Handler(){
@@ -39,7 +39,7 @@ public class CarInfo extends Activity {
                 speedRotate = new RotateAnimation(0,speedTest[n], Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
                 speedRotate.setDuration(1000);
                 speedRotate.setFillAfter(true);
-                speedRotate.setRepeatCount(Animation.INFINITE);
+//                speedRotate.setRepeatCount(Animation.INFINITE);
                 speedPoint.setAnimation(speedRotate);
                 i++;
             }
@@ -84,7 +84,7 @@ public class CarInfo extends Activity {
                 System.out.println("执行一次");
                 mHandler.sendEmptyMessage(0);
             }
-        }, 0, 1000);
+        }, 0, 10000000);
     }
 
     public void initAnimation(){
@@ -107,8 +107,7 @@ public class CarInfo extends Activity {
         //转速动画
         RotateAnimation turnRotate = new RotateAnimation(0,110, Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
         turnRotate.setDuration(1000);
-        turnRotate.setFillAfter(false);
-        turnRotate.setRepeatCount(Animation.INFINITE);
+        turnRotate.setFillAfter(true);
         turnSpeedPoint.setAnimation(turnRotate);
 
         //水温动画
