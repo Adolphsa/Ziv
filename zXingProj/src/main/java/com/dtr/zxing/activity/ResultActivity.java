@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.dtr.zxing.R;
+import com.dtr.zxing.utils.ToastShow;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,6 +23,7 @@ public class ResultActivity extends Activity {
 
     private TextView mResultText;
     private SharedPreferences spf;
+    private String result;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +45,7 @@ public class ResultActivity extends Activity {
         mResultText = (TextView) findViewById(R.id.result_text);
 
         if (null != extras) {
-            String result = extras.getString("result");
+            result = extras.getString("result");
             mResultText.setText(result);
         }
     }
@@ -53,18 +55,19 @@ public class ResultActivity extends Activity {
      * @param view
      */
     public void addTwoCode(View view){
-
+        ToastShow.setToatBytTime(ResultActivity.this,"请等待...",500);
         RequestParams params = new RequestParams(URL_SET_TWO_CODE);
-        params.addParameter("code", "12345678");
-        params.addParameter("username", "13480995624");
+        params.addParameter("code", result);
 
         System.out.println("二维码请求的params:  " + params);
         x.http().get(params, new Callback.CommonCallback<String>() {
+
             @Override
             public void onSuccess(String result) {
                 System.out.println("二维码设置成功" + result);
                 if (!result.isEmpty()){
                     try {
+                        ToastShow.showToast(ResultActivity.this,"设置成功");
                         JSONObject json = new JSONObject(result);
                         String code = json.getString("code");
                         //保存二维码
@@ -82,6 +85,7 @@ public class ResultActivity extends Activity {
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
                 System.out.println("二维码设置错误" + ex);
+                ToastShow.showToast(ResultActivity.this,"设置失败，请检查是否为设备WIFI");
             }
 
             @Override

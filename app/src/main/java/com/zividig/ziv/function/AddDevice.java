@@ -12,9 +12,18 @@ import android.widget.TextView;
 import com.dtr.zxing.activity.CaptureActivity;
 import com.zividig.ziv.R;
 import com.zividig.ziv.main.Login;
+import com.zividig.ziv.utils.NetworkTypeUtils;
 import com.zividig.ziv.utils.ToastShow;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.xutils.common.Callback;
+import org.xutils.http.RequestParams;
+import org.xutils.x;
+
 public class AddDevice extends Activity {
+
+    private static String URL_BIND_DEVICE = "http://api.caowei.name/devicebind";
 
     private TextView deviceId;
     private TextView tvTwoCode;
@@ -26,6 +35,7 @@ public class AddDevice extends Activity {
         setContentView(R.layout.activity_add_device);
 
         spf = getSharedPreferences("config",MODE_PRIVATE);
+
 
         initView();
     }
@@ -50,10 +60,37 @@ public class AddDevice extends Activity {
         setTwoCode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean isWifiOrMobile = spf.getBoolean("network_type",false);
-                System.out.println("判断是设备wifi还是手机网络:---" + isWifiOrMobile);
-                if (isWifiOrMobile){
-                    startActivity(new Intent(AddDevice.this, CaptureActivity.class));
+
+                if (NetworkTypeUtils.getNetworkType(AddDevice.this).equals(NetworkTypeUtils.WIFI)){
+                    System.out.println("连接设备");
+                    RequestParams params = new RequestParams("http://192.168.1.1/api/getdevinfo");
+                    x.http().get(params, new Callback.CommonCallback<String>() {
+                        @Override
+                        public void onSuccess(String result) {
+                            System.out.println("wifi直连" + result);
+                            if (!result.isEmpty()){
+                                startActivity(new Intent(AddDevice.this, CaptureActivity.class));
+                            }
+
+                        }
+
+                        @Override
+                        public void onError(Throwable ex, boolean isOnCallback) {
+                            System.out.println("wifi直连错误" + ex);
+                            ToastShow.showToast(AddDevice.this,"请连接设备WIFI");
+
+                        }
+
+                        @Override
+                        public void onCancelled(CancelledException cex) {
+
+                        }
+
+                        @Override
+                        public void onFinished() {
+
+                        }
+                    });
                 }else {
                     ToastShow.showToast(AddDevice.this,"请连接设备WIFI");
                 }
@@ -76,5 +113,59 @@ public class AddDevice extends Activity {
         }
     }
 
+    //提交用户名和二维码
+    public void BindDevice(View v){
+        String userName = spf.getString(Login.ET_USER,"");
+        String code = spf.getString("two_code","");
+        if (code.isEmpty()){
+            ToastShow.showToast(AddDevice.this,"请先添加二维码");
+            return;
+        }
+        JSONObject json = new JSONObject();
+        try {
+            json.put("username",userName);
+            json.put("code",code);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestParams params = new RequestParams(URL_BIND_DEVICE);
+        params.setAsJsonContent(true);
+        params.setBodyContent(json.toString());
+        x.http().post(params, new Callback.CommonCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                System.out.println("绑定设备---" + result);
+                if (!result.isEmpty()){
+                    ToastShow.showToast(AddDevice.this,"绑定设备成功");
+                }else {
+                    ToastShow.showToast(AddDevice.this,"绑定设备失败");
+                }
+            }
+
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+                System.out.println("绑定设备--" + ex);
+                ToastShow.showToast(AddDevice.this,"绑定设备失败");
+            }
+
+            @Override
+            public void onCancelled(CancelledException cex) {
+
+            }
+
+            @Override
+            public void onFinished() {
+
+            }
+        });
+    }
+
+    //切换网络
+    public void changeNetwork(View view){
+//      startActivity(new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS));
+        Intent intent = new Intent();
+        intent.setAction("android.net.wifi.PICK_WIFI_NETWORK");
+        startActivity(intent);
+    }
 
 }

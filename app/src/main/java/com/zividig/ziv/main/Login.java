@@ -31,7 +31,7 @@ public class Login extends Activity {
 
     private static String LOGIN_URL = "http://api.caowei.name/login";
 
-    private static final String ET_USER = "et_user";
+    public static final String ET_USER = "et_user";
     private static final String ET_PWD = "et_pwd";
     private static final String CB_USER = "cb_user";
     private static final String CB_PWD = "cb_pwd";
@@ -180,6 +180,7 @@ public class Login extends Activity {
                 @Override
                 public void onError(Throwable ex, boolean isOnCallback) {
                     System.out.println("登录请求错误" + ex);
+                    ToastShow.showToast(Login.this,"登录请求失败");
                 }
 
                 @Override

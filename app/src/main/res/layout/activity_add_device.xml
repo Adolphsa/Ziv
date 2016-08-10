@@ -15,11 +15,16 @@
         android:padding="20dp"
         >
         <TextView
+            android:id="@+id/tv_change_network"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="1.请在设备WIFI网络下扫描二维码"
-            android:textSize="18sp"
+            android:textSize="17sp"
             android:padding="10dp"
+            android:clickable="true"
+            android:onClick="changeNetwork"
+            android:drawableRight="@drawable/selector_change_network"
+            android:gravity="center_vertical"
             />
         <Button
             android:id="@+id/bt_set_two_code"
@@ -36,7 +41,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="2.请点击添加设备"
-            android:textSize="18sp"
+            android:textSize="17sp"
             android:padding="10dp"
             android:layout_marginTop="20dp"
             />
@@ -50,6 +55,7 @@
             android:background="@drawable/login_btn"
             android:padding="10dp"
             android:layout_marginTop="10dp"
+            android:onClick="BindDevice"
             />
 
     </LinearLayout>
