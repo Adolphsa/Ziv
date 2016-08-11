@@ -24,7 +24,7 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="绑定设备"
+        android:text="添加二维码"
         android:textColor="@android:color/white"
         android:background="@drawable/zx_login_btn"
         android:layout_marginLeft="20dp"
@@ -32,6 +32,7 @@
         android:layout_marginTop="40dp"
         android:textSize="18sp"
         android:padding="10dp"
+        android:onClick="addTwoCode"
         />
 
 </LinearLayout>

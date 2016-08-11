@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zividig.ziv.R;
+import com.zividig.ziv.function.MyDevice;
 import com.zividig.ziv.function.MyPicture;
 
 import java.io.File;
@@ -58,7 +59,9 @@ public class MyFragment extends Fragment {
                         }else {
                             Toast.makeText(getContext(),"无图片",Toast.LENGTH_SHORT).show();
                         }
-
+                        break;
+                    case 2: //我的设备
+                        startActivity(new Intent(getContext(), MyDevice.class));
                         break;
                 }
             }
@@ -104,6 +107,10 @@ public class MyFragment extends Fragment {
                 case 1:
                     holder.leftIcon.setImageResource(R.mipmap.my_ablum);
                     holder.itemText.setText("我的图片");
+                    break;
+                case 2:
+
+                    holder.itemText.setText("我的设备");
                     break;
             }
             return convertView;

@@ -73,7 +73,7 @@ public class SettingFragment extends Fragment {
                         System.out.println("恢复出厂设置" + position);
                         break;
                     case 2:
-                        System.out.println("重启设备" + position);
+                        System.out.println("解绑设备" + position);
                         break;
                     case 3:
                         System.out.println("关于" + position);
@@ -134,7 +134,7 @@ public class SettingFragment extends Fragment {
                    break;
                case 2:
                    holder.leftIcon.setImageResource(R.mipmap.restaet);
-                   holder.itemText.setText("重启设备");
+                   holder.itemText.setText("解绑设备");
                    holder.RightIcon.setImageResource(R.mipmap.rights);
                    break;
                case 3:

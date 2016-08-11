@@ -49,12 +49,10 @@
         <activity android:name=".main.FindPassWord" />
         <activity android:name=".function.TrackQueryDateChoose" />
         <activity android:name=".main.Login" />
+        <activity android:name=".function.MyDevice"/>
         <activity
             android:name=".function.AddDevice"
             android:exported="true" />
-
-        <!-- WIFI直连相关Activity -->
-        <activity android:name=".wifi.WifiLogin" />
 
         <!-- 违章查询相关Activity -->
         <activity android:name=".weizhang.activity.WeiZhangMainActivity" />
@@ -80,11 +78,11 @@
             android:enabled="true"
             android:exported="true" />
 
-        <!--获取网络信息的服务-->
+        <!-- 获取网络信息的服务 -->
         <service
             android:name=".service.NetWorkTypeService"
             android:enabled="true"
-            android:exported="true"/>
+            android:exported="true" />
 
         <!-- 获取位置信息的广播 -->
         <!-- <receiver android:name=".service.LocationBroadcast"> -->
@@ -102,7 +100,6 @@
                 <action android:name="com.igexin.sdk.action.${GETUI_APP_ID}" />
             </intent-filter>
         </receiver>
-
 
     </application>
 

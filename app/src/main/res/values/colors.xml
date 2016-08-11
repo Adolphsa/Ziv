@@ -25,4 +25,7 @@
 
     <color name="loginTrueBlack">#ff555555</color>
     <color name="loginFalseGray">#ff000000</color>
+
+    <color name="red_normal">#FF0000</color>
+    <color name="red_pressed">#FF6666</color>
 </resources>

@@ -10,12 +10,16 @@ import org.xutils.x;
  */
 public class ZivApp extends Application{
 
-
+    private static ZivApp instance;
 
     @Override
     public void onCreate() {
         super.onCreate();
         x.Ext.init(this); //初始化xutils
+
+        if (instance == null) {
+            instance = this;
+        }
 
         //开启获取网络类型的服务
 //        startService(new Intent(this, NetWorkTypeService.class));
@@ -25,5 +29,7 @@ public class ZivApp extends Application{
 //        spf.edit().putString("two_code","").apply();
     }
 
-
+    public static ZivApp getInstance() {
+        return instance;
+    }
 }
