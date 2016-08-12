@@ -23,6 +23,8 @@ import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
 
+import java.util.List;
+
 /**
  * 登录界面
  * Created by Administrator on 2016-06-14.
@@ -45,6 +47,7 @@ public class Login extends Activity {
 
     private DeviceInfoBean deviceInfoBean;
     private static String devid;
+    private static List<DeviceInfoBean.DevinfoBean> devinfoList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -214,7 +217,8 @@ public class Login extends Activity {
             public void onSuccess(String result) {
                 Gson gson = new Gson();
                 deviceInfoBean =  gson.fromJson(result, DeviceInfoBean.class);
-                devid =   deviceInfoBean.getDevinfo().get(0).getDevid();
+                devinfoList = deviceInfoBean.getDevinfo(); //设备列表
+                devid =   deviceInfoBean.getDevinfo().get(0).getDevid(); //设备ID
                 System.out.println("设备的ID---" + devid);
                 if (!devid.isEmpty()){
 
@@ -244,11 +248,26 @@ public class Login extends Activity {
     }
 
     /**
+     * 设置设备ID
+     * @param currentDevid
+     */
+    public static void setDevid(String currentDevid){
+        devid = currentDevid;
+    }
+
+    /**
      * 获取设备ID
      * @return devid
      */
     public static String getDevId(){
             return devid;
+    }
+
+    /**
+     * 获取设备列表
+     */
+    public static List<DeviceInfoBean.DevinfoBean> getDeviceList(){
+        return devinfoList;
     }
 
     /**

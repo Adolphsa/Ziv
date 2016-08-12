@@ -19,14 +19,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuAdapter;
 import com.zividig.ziv.R;
+import com.zividig.ziv.main.Login;
 
 import java.util.List;
 
 /**
+ * 适配器
  * Created by YOLANDA on 2016/7/22.
  */
 public class MenuAdapter extends SwipeMenuAdapter<MenuAdapter.DefaultViewHolder> {
@@ -62,16 +65,21 @@ public class MenuAdapter extends SwipeMenuAdapter<MenuAdapter.DefaultViewHolder>
     public void onBindViewHolder(DefaultViewHolder holder, int position) {
         holder.setData(titles.get(position));
         holder.setOnItemClickListener(mOnItemClickListener);
+        if (titles.get(position) == Login.getDevId()){
+            holder.setDuigouShow(true);
+        }
     }
 
     static class DefaultViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView tvTitle;
+        ImageView duiGou;
         OnItemClickListener mOnItemClickListener;
 
         public DefaultViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
             tvTitle = (TextView) itemView.findViewById(R.id.tv_title);
+            duiGou = (ImageView) itemView.findViewById(R.id.iv_duigou);
         }
 
         public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
@@ -82,10 +90,20 @@ public class MenuAdapter extends SwipeMenuAdapter<MenuAdapter.DefaultViewHolder>
             this.tvTitle.setText(title);
         }
 
+        public  void setDuigouShow(boolean isShow){
+            if (isShow){
+                duiGou.setVisibility(View.VISIBLE);
+            }else {
+                duiGou.setVisibility(View.INVISIBLE);
+            }
+
+        }
+
         @Override
         public void onClick(View v) {
             if (mOnItemClickListener != null) {
                 mOnItemClickListener.onItemClick(getAdapterPosition());
+
             }
         }
     }
