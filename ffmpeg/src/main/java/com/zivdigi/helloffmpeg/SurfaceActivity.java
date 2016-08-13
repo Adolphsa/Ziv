@@ -71,7 +71,7 @@ public class SurfaceActivity extends Activity implements SurfaceHolder.Callback{
         test.stopRequest();
     }
 
-    public void play(View view) {
+    public void playVideo(View view) {
         Log.i(TAG, "播放");
         Log.v("HelloFFMPEG", "onStartButtonClick");
         if (test == null) {

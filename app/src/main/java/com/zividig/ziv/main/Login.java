@@ -218,15 +218,15 @@ public class Login extends Activity {
                 Gson gson = new Gson();
                 deviceInfoBean =  gson.fromJson(result, DeviceInfoBean.class);
                 devinfoList = deviceInfoBean.getDevinfo(); //设备列表
-                devid =   deviceInfoBean.getDevinfo().get(0).getDevid(); //设备ID
+                devid =   deviceInfoBean.getDevinfo().get(2).getDevid(); //设备ID
                 System.out.println("设备的ID---" + devid);
                 if (!devid.isEmpty()){
 
-                    System.out.println("获取设备信息成功" + deviceInfoBean.getDevinfo().get(0).getDevid());
+                    System.out.println("获取设备信息成功" + devid);
 
                     //开启获取GPS信息的服务
                     Intent intent = new Intent(Login.this,LocationService.class);
-                    intent.putExtra("devid", deviceInfoBean.getDevinfo().get(0).getDevid());
+                    intent.putExtra("devid", devid);
                     startService(intent);
 
                 }

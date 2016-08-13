@@ -20,9 +20,13 @@ import android.widget.Toast;
 import com.bm.library.PhotoView;
 import com.google.gson.Gson;
 import com.zivdigi.helloffmpeg.SurfaceActivity;
+import com.zivdigi.helloffmpeg.TestDecoder;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.RealTimeBean;
+import com.zividig.ziv.bean.VideoInfoBean;
 import com.zividig.ziv.main.Login;
+import com.zividig.ziv.utils.NetworkTypeUtils;
+import com.zividig.ziv.utils.ToastShow;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
@@ -40,6 +44,7 @@ import java.text.SimpleDateFormat;
  */
 public class RealTimeShow extends Activity {
 
+    private static String URL_VIDEO = "http://120.24.174.213:9501/api/requestrtspstream";
 
     private PhotoView photoView;
     private ProgressBar progressBar;
@@ -50,6 +55,7 @@ public class RealTimeShow extends Activity {
     private Button btRefresh;
     private Button btDownImage;
     private int errorCode; //错误码
+    private String devid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +64,8 @@ public class RealTimeShow extends Activity {
         // 标题
         TextView txtTitle = (TextView) findViewById(R.id.tv_title);
         txtTitle.setText("实时预览");
+
+        devid = Login.getDevId();
 
         //返回按钮
         Button btnBack = (Button) findViewById(R.id.btn_back);
@@ -102,7 +110,7 @@ public class RealTimeShow extends Activity {
         System.out.println("获取图片");
         //获取图片链接
         RequestParams params = new RequestParams("http://120.24.174.213:9501/api/snap");
-        String devid = Login.getDevId();
+
         params.addBodyParameter("devid", devid);
         System.out.println("实时预览" + Login.getDevId());
         System.out.println("请求连接" + params);
@@ -114,7 +122,7 @@ public class RealTimeShow extends Activity {
                 Gson gson = new Gson();
                 RealTimeBean realTimeBean = gson.fromJson(result, RealTimeBean.class);
 
-                if (realTimeBean.getPicinfo().size() > 0){
+                if (realTimeBean.getPicinfo().size() > 0) {
                     url = realTimeBean.getPicinfo().get(0).getUrl();
                     System.out.println("url的值---" + url);
                 }
@@ -124,7 +132,7 @@ public class RealTimeShow extends Activity {
 
                 switch (errorCode) {
                     case 200: //返回正常
-                        if (!url.isEmpty()){
+                        if (!url.isEmpty()) {
                             getImageFromInternet();
                         }
                         break;
@@ -159,7 +167,8 @@ public class RealTimeShow extends Activity {
             }
 
             @Override
-            public void onFinished() {}
+            public void onFinished() {
+            }
         });
 
 
@@ -215,10 +224,10 @@ public class RealTimeShow extends Activity {
 
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             long freeSpace = Environment.getExternalStorageDirectory().getFreeSpace();
-            System.out.println("可用空间:" + freeSpace/1000000 + "MB");
+            System.out.println("可用空间:" + freeSpace / 1000000 + "MB");
 //            freeSpace = (long) 0.5;
-            if ((freeSpace/1000000.0) < 1 ){
-                Toast.makeText(RealTimeShow.this,"存储空间不足",Toast.LENGTH_SHORT).show();
+            if ((freeSpace / 1000000.0) < 1) {
+                Toast.makeText(RealTimeShow.this, "存储空间不足", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -307,9 +316,10 @@ public class RealTimeShow extends Activity {
 
     /**
      * 显示提示信息
-     * @param str  字符
+     *
+     * @param str 字符
      */
-    private void showToast(String str){
+    private void showToast(String str) {
         progressBar.setVisibility(View.INVISIBLE);
         btRefresh.setClickable(true);
         Toast toast = Toast.makeText(RealTimeShow.this, str, Toast.LENGTH_LONG);
@@ -348,28 +358,82 @@ public class RealTimeShow extends Activity {
 
     /**
      * 开启实时视频
+     *
      * @param view
      */
-    public void startVideo(View view){
-        switch (errorCode) {
-            case 200: //返回正常
-                startActivity(new Intent(RealTimeShow.this, SurfaceActivity.class));
-                break;
-            case 400:
-                showToast("错误请求-请求中有语法问题");
-                break;
-            case 401:
-                showToast("未授权");
-                break;
-            case 501:
-                showToast("设备不在线");
-                break;
-            case 502:
-                showToast("服务器内部出错");
-                break;
-            case 503:
-                showToast("不支持此操作");
-                break;
+    public void startVideo(View view) {
+
+        RequestParams params = new RequestParams(URL_VIDEO);
+        params.addQueryStringParameter("devid",devid);
+        params.addParameter("channel","0");
+
+        x.http().get(params, new Callback.CommonCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                System.out.println(result);
+                Gson gson = new Gson();
+                VideoInfoBean videoInfoBean = gson.fromJson(result, VideoInfoBean.class);
+                int code = videoInfoBean.getError();
+                if (code == 200) {
+                    System.out.println("视频URL:" + videoInfoBean.getUrl());
+                    TestDecoder.setUrl(videoInfoBean.getUrl());
+                    startActivity(new Intent(RealTimeShow.this, SurfaceActivity.class));
+                }else {
+//                    showVideoInDeviceWifi();
+                    System.out.println("非200");
+                    ToastShow.showToast(RealTimeShow.this,"设备不在线");
+                }
+            }
+
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+                System.out.println("访问错误" + ex);
+//                showVideoInDeviceWifi();
+            }
+
+            @Override
+            public void onCancelled(CancelledException cex) {
+
+            }
+
+            @Override
+            public void onFinished() {
+
+            }
+        });
+    }
+
+    /**
+     * 在设备wifi情况下看视频
+     */
+    private void showVideoInDeviceWifi(){
+        if (NetworkTypeUtils.getNetworkType(RealTimeShow.this) == NetworkTypeUtils.WIFI){
+            RequestParams params = new RequestParams("http://192.168.1.1/api/getdevinfo");
+            x.http().get(params, new Callback.CommonCallback<String>() {
+                @Override
+                public void onSuccess(String result) {
+                    if (!result.isEmpty()){
+                        TestDecoder.setUrl("rtsp://192.168.1.1/stream1");
+                        startActivity(new Intent(RealTimeShow.this, SurfaceActivity.class));
+
+                    }
+                }
+
+                @Override
+                public void onError(Throwable ex, boolean isOnCallback) {
+                    System.out.println("设备WIFI网络下播放错误" + ex);
+                }
+
+                @Override
+                public void onCancelled(CancelledException cex) {
+
+                }
+
+                @Override
+                public void onFinished() {
+
+                }
+            });
         }
     }
 }

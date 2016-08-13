@@ -8,6 +8,7 @@ import android.view.SurfaceHolder;
 import java.nio.ByteBuffer;
 
 /**
+ * 解码
  * Created by walker on 16-3-30.
  */
 public class TestDecoder{
@@ -15,6 +16,8 @@ public class TestDecoder{
     ByteBuffer rgb565Buf;
     ZivPlayer player;
     Canvas canvas;
+
+    private static String vedioUrl = "rtsp://120.24.174.213:8554/live_1234567890123456789.sdp";
 
     private SurfaceHolder holder;
     private Bitmap bmp;
@@ -55,25 +58,24 @@ public class TestDecoder{
         return 0;
     }
 
+    public static void setUrl(String url){
+        vedioUrl = url;
+    }
+
     public void startRequest(){
-        final String rtspUrlLocal = "rtsp://192.168.199.30/stream1";
-        final String rtspUrlPi02 = "rtsp://192.168.199.103:8554/stream0";
-        final String rtspUrlCentOs = "rtsp://192.168.199.21:8554/stream0";
-        final String rtspUrlDevServer = "rtsp://120.24.174.213:8554/live_1234567890123456789.sdp";
-        final String rtspUrlDevServer2 = "rtsp://120.25.80.80:8554/live_1234567890123456789.sdp";
 
         if(isPlaying()){
             return;
         }
 
         if(player != null){
-            player.startStream(rtspUrlLocal);
+            player.startStream(vedioUrl);
         }
     }
 
     public void stopRequest() {
         if(player != null && isPlaying()) {
-            player.stopStream("test");
+            player.stopStream(vedioUrl);
         }
     }
 

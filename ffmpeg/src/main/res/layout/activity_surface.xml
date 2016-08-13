@@ -25,7 +25,7 @@
                 android:id="@+id/surface_play"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="play"
+                android:onClick="playVideo"
                 android:drawablePadding="1dp"
                 android:layout_alignBottom="@+id/surface_img"
                 android:background="@android:color/transparent"
