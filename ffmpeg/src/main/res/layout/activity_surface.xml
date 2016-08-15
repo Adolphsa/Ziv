@@ -35,7 +35,7 @@
                 android:id="@+id/surface_pause"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="stop"
+                android:onClick="playPause"
                 android:layout_alignBottom="@+id/surface_img"
                 android:layout_toRightOf="@+id/surface_play"
                 android:background="@android:color/transparent"

@@ -22,6 +22,7 @@ public class SurfaceActivity extends Activity implements SurfaceHolder.Callback{
     private TestDecoder test;
     private ImageView img;
     private int height;
+    private int width;
 
 
     @Override
@@ -47,6 +48,7 @@ public class SurfaceActivity extends Activity implements SurfaceHolder.Callback{
 
         WindowManager manager = (WindowManager) getSystemService(WINDOW_SERVICE);
         height = manager.getDefaultDisplay().getHeight();
+        width = manager.getDefaultDisplay().getWidth();
 
         surfaceView = (SurfaceView) findViewById(R.id.surface);
         surfaceHolder = surfaceView.getHolder();
@@ -57,7 +59,7 @@ public class SurfaceActivity extends Activity implements SurfaceHolder.Callback{
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        test = new TestDecoder(surfaceHolder);
+        test = new TestDecoder(surfaceHolder,width);
 //      test.startRequest();
     }
 
@@ -91,7 +93,7 @@ public class SurfaceActivity extends Activity implements SurfaceHolder.Callback{
 
     }
 
-    public void stop(View view){
+    public void playPause(View view){
         Log.i(TAG, "停止");
         Log.v("HelloFFMPEG", "onStopButtonClick");
 

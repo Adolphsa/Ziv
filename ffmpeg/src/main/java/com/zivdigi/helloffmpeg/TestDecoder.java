@@ -16,18 +16,22 @@ public class TestDecoder{
     ByteBuffer rgb565Buf;
     ZivPlayer player;
     Canvas canvas;
+    int width;
+    int height;
 
     private static String vedioUrl = "rtsp://120.24.174.213:8554/live_1234567890123456789.sdp";
 
     private SurfaceHolder holder;
     private Bitmap bmp;
+    private  Bitmap scaleBmp;
 
-    public TestDecoder( SurfaceHolder holder){
+    public TestDecoder( SurfaceHolder holder,int width){
         rgb565Buf = null;
         bmp = null;
 
 //        mHandler = handler;
         this.holder = holder;
+        this.width = width;
 
         player = new ZivPlayer(ZivPlayer.COLOR_FORMAT_RGB565LE);
         player.setPlayerUser(this);
@@ -36,11 +40,14 @@ public class TestDecoder{
     //Upgrade the BMP frame to UI.
     public  int upgradeFrameInUI(ByteBuffer buf, int videoWidth, int videoHeight, int bufSize)
     {
-
+        System.out.println("原始宽度：" + videoWidth + "原始高度:" + videoHeight );
+        height = videoHeight*width/videoWidth;
+        System.out.println("缩放宽度：" + width + "缩放高度:" + height );
         bmp = Bitmap.createBitmap(videoWidth, videoHeight, Bitmap.Config.RGB_565);
         bmp.copyPixelsFromBuffer(buf);
         buf.position(0);
-        System.out.println("哈哈哈哈,宽度：" + videoWidth + "高度:" + videoHeight );
+        scaleBmp = Bitmap.createScaledBitmap(bmp,width,height,true); //缩放图片
+
 
         if (holder.getSurface().isValid()){
             System.out.println("判断是否已经创建好");
@@ -50,7 +57,7 @@ public class TestDecoder{
                 paint.setAntiAlias(true);
                 paint.setFilterBitmap(true);
                 paint.setDither(true);
-                canvas.drawBitmap(bmp,0,0,paint);
+                canvas.drawBitmap(scaleBmp,0,0,paint);
                 holder.unlockCanvasAndPost(canvas);
             }
         }

@@ -120,7 +120,7 @@ public class MyDevice extends Activity {
      */
     private OnSwipeMenuItemClickListener menuItemClickListener = new OnSwipeMenuItemClickListener() {
         @Override
-        public void onItemClick(final Closeable closeable, int adapterPosition, int menuPosition, int direction) {
+        public void onItemClick(final Closeable closeable, final int adapterPosition, int menuPosition, int direction) {
 
             if (direction == SwipeMenuRecyclerView.RIGHT_DIRECTION) {
 
@@ -140,7 +140,9 @@ public class MyDevice extends Activity {
                             String status = json.getString("status");
                             if (status.equals("ok")){
                                 ToastShow.showToast(MyDevice.this,"解绑成功");
+//                                mMenuAdapter.notifyItemRemoved(adapterPosition);
                                 swipeMenuRecyclerView.setAdapter(mMenuAdapter);
+
                             }else {
                                 ToastShow.showToast(MyDevice.this,"解绑失败");
                             }
