@@ -68,4 +68,5 @@ public class DeviceInfoBean {
             this.devtype = devtype;
         }
     }
+
 }

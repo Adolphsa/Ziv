@@ -17,13 +17,13 @@ import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MarkerOptions;
-import com.baidu.mapapi.map.Overlay;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.CoordinateConverter;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.LocationBean;
 import com.zividig.ziv.service.LocationService;
+import com.zividig.ziv.utils.ToastShow;
 
 /**
  * 获取GPS的定位的信息的车辆定位
@@ -79,29 +79,31 @@ public class CarLocation2 extends Activity{
 
     public void initMap(Double lat,Double lon){
 
-        mBaiduMap.clear();
-        LatLng sourceLatLng = new LatLng(lat,lon);
-        //坐标转换
-        CoordinateConverter converter = new CoordinateConverter();
-        converter.from(CoordinateConverter.CoordType.GPS);
-        converter.coord(sourceLatLng);
-        LatLng desLatLng = converter.convert();
-
-        //标注
-        overlay = new MarkerOptions().position(desLatLng).icon(carIcon).zIndex(9).draggable(true);
-
-        if (isFirst){
-            isFirst = false;
-            MapStatus.Builder builder = new MapStatus.Builder();
-            builder.target(desLatLng).zoom(18.0f);
-            mBaiduMap.addOverlay(overlay);
-            mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
-
+        if (lat == 0 && lon == 0){
+            ToastShow.showToast(CarLocation2.this,"暂无地图数据");
         }else {
-            mBaiduMap.addOverlay(overlay);
+            mBaiduMap.clear();
+            LatLng sourceLatLng = new LatLng(lat,lon);
+            //坐标转换
+            CoordinateConverter converter = new CoordinateConverter();
+            converter.from(CoordinateConverter.CoordType.GPS);
+            converter.coord(sourceLatLng);
+            LatLng desLatLng = converter.convert();
+
+            //标注
+            overlay = new MarkerOptions().position(desLatLng).icon(carIcon).zIndex(9).draggable(true);
+
+            if (isFirst){
+                isFirst = false;
+                MapStatus.Builder builder = new MapStatus.Builder();
+                builder.target(desLatLng).zoom(18.0f);
+                mBaiduMap.addOverlay(overlay);
+                mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
+
+            }else {
+                mBaiduMap.addOverlay(overlay);
+            }
         }
-
-
     }
 
     @Override

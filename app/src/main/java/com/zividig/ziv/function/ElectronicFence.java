@@ -41,8 +41,8 @@ import com.baidu.trace.OnGeoFenceListener;
 import com.baidu.trace.TraceLocation;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.LocationBean;
-import com.zividig.ziv.main.MainActivity;
 import com.zividig.ziv.service.LocationService;
+import com.zividig.ziv.utils.ToastShow;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -178,32 +178,35 @@ public class ElectronicFence extends Activity {
      *初始化地图    这个地方要一直接收经度来实时更新位置
      */
     public void initMap(Double lat,Double lon){
-        LatLng sourceLatLng = new LatLng(lat,lon);
-        //坐标转换
-        CoordinateConverter converter = new CoordinateConverter();
-        converter.from(CoordinateConverter.CoordType.GPS);
-        converter.coord(sourceLatLng);
-        LatLng desLatLng = converter.convert();
+        if (lat == 0 && lon == 0){
+            ToastShow.showToast(ElectronicFence.this,"暂无地图数据");
+        }else {
+            LatLng sourceLatLng = new LatLng(lat,lon);
+            //坐标转换
+            CoordinateConverter converter = new CoordinateConverter();
+            converter.from(CoordinateConverter.CoordType.GPS);
+            converter.coord(sourceLatLng);
+            LatLng desLatLng = converter.convert();
 
-        if (isFirst){
-            isFirst = false;
+            if (isFirst){
+                isFirst = false;
 //            overlay = new MarkerOptions().position(ll)
 //                    .icon(realtimeBitmap).zIndex(9).draggable(true);
-            MarkerOptions markerOptions = new MarkerOptions().icon(realtimeBitmap).position(desLatLng);
-            Overlay overlay = mBaiduMap.addOverlay(markerOptions);
-            marker = (Marker) overlay;
-            MapStatus.Builder builder = new MapStatus.Builder();
+                MarkerOptions markerOptions = new MarkerOptions().icon(realtimeBitmap).position(desLatLng);
+                Overlay overlay = mBaiduMap.addOverlay(markerOptions);
+                marker = (Marker) overlay;
+                MapStatus.Builder builder = new MapStatus.Builder();
 
-            builder.target(desLatLng).zoom(18.0f);
+                builder.target(desLatLng).zoom(18.0f);
 //            mBaiduMap.addOverlay(overlay);
-            mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
-        }else {
+                mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
+            }else {
 
-            marker.remove();
-            MarkerOptions markerOptions = new MarkerOptions().icon(realtimeBitmap).position(desLatLng);
-            marker = (Marker) mBaiduMap.addOverlay(markerOptions);
+                marker.remove();
+                MarkerOptions markerOptions = new MarkerOptions().icon(realtimeBitmap).position(desLatLng);
+                marker = (Marker) mBaiduMap.addOverlay(markerOptions);
+            }
         }
-
     }
 
     /**

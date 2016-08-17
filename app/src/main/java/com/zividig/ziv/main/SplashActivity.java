@@ -93,6 +93,7 @@ public class SplashActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //百度地图的初始化
         SDKInitializer.initialize(getApplicationContext()); //初始化百度地图
         setContentView(R.layout.activity_splash);
 

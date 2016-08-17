@@ -1,6 +1,8 @@
 package com.zividig.ziv.fragments;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
@@ -18,7 +20,6 @@ import android.widget.Toast;
 import com.zividig.ziv.R;
 import com.zividig.ziv.function.MyDevice;
 import com.zividig.ziv.function.MyPicture;
-import com.zividig.ziv.main.Login;
 import com.zividig.ziv.utils.ToastShow;
 
 import java.io.File;
@@ -40,6 +41,9 @@ public class MyFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my, null);
+
+        SharedPreferences spf = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
+        final String deviceInfo = spf.getString("device_info","");
 
         //设置标题
         TextView title = (TextView)view.findViewById(R.id.tv_title);
@@ -63,7 +67,7 @@ public class MyFragment extends Fragment {
                         }
                         break;
                     case 2: //我的设备
-                        if (Login.getDeviceList().size() > 0){
+                        if (deviceInfo != ""){
                             startActivity(new Intent(getContext(), MyDevice.class));
                         }else {
                             ToastShow.showToast(getContext(),"无设备");

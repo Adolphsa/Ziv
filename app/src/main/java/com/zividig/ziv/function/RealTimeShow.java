@@ -2,6 +2,7 @@ package com.zividig.ziv.function;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
@@ -24,7 +25,6 @@ import com.zivdigi.helloffmpeg.TestDecoder;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.RealTimeBean;
 import com.zividig.ziv.bean.VideoInfoBean;
-import com.zividig.ziv.main.Login;
 import com.zividig.ziv.utils.NetworkTypeUtils;
 import com.zividig.ziv.utils.ToastShow;
 
@@ -65,7 +65,9 @@ public class RealTimeShow extends Activity {
         TextView txtTitle = (TextView) findViewById(R.id.tv_title);
         txtTitle.setText("实时预览");
 
-        devid = Login.getDevId();
+        SharedPreferences spf = getSharedPreferences("config",MODE_PRIVATE);
+        devid = spf.getString("devid","");
+
 
         //返回按钮
         Button btnBack = (Button) findViewById(R.id.btn_back);
@@ -112,7 +114,7 @@ public class RealTimeShow extends Activity {
         RequestParams params = new RequestParams("http://120.24.174.213:9501/api/snap");
 
         params.addBodyParameter("devid", devid);
-        System.out.println("实时预览" + Login.getDevId());
+        System.out.println("实时预览" + devid);
         System.out.println("请求连接" + params);
         x.http().get(params, new Callback.CommonCallback<String>() {
 

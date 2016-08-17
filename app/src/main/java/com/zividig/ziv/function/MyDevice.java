@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.yanzhenjie.recyclerview.swipe.Closeable;
 import com.yanzhenjie.recyclerview.swipe.OnSwipeMenuItemClickListener;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenu;
@@ -44,6 +45,7 @@ public class MyDevice extends Activity {
     private static MenuAdapter mMenuAdapter;
     private SwipeMenuRecyclerView swipeMenuRecyclerView;
     private SharedPreferences spf;
+    private String devid;
 
 
     @Override
@@ -52,6 +54,7 @@ public class MyDevice extends Activity {
         setContentView(R.layout.activity_my_device);
 
         spf = getSharedPreferences("config",MODE_PRIVATE);
+        devid = spf.getString("devid","");
 
         getDeviceList();
 
@@ -80,7 +83,7 @@ public class MyDevice extends Activity {
         // 设置菜单Item点击监听。
         swipeMenuRecyclerView.setSwipeMenuItemClickListener(menuItemClickListener);
 
-        mMenuAdapter = new MenuAdapter(mStrings);
+        mMenuAdapter = new MenuAdapter(mStrings,spf);
         mMenuAdapter.setOnItemClickListener(onItemClickListener);
         swipeMenuRecyclerView.setAdapter(mMenuAdapter);
     }
@@ -109,7 +112,10 @@ public class MyDevice extends Activity {
         @Override
         public void onItemClick(int position) {
             System.out.println(mStrings.get(position));
-            Login.setDevid(mStrings.get(position));
+//            Login.setDevid(mStrings.get(position));
+            spf.edit().putString("devid",mStrings.get(position)).apply();
+            devid = spf.getString("devid","");
+//            mMenuAdapter = new MenuAdapter(mStrings,devid);
             ToastShow.showToast(MyDevice.this,"已切换");
             swipeMenuRecyclerView.setAdapter(mMenuAdapter);
         }
@@ -180,10 +186,20 @@ public class MyDevice extends Activity {
      */
     private void getDeviceList(){
         mStrings = new ArrayList<>();
-        devinfoList = Login.getDeviceList();
-        for (DeviceInfoBean.DevinfoBean devinfoBean: devinfoList){
-            mStrings.add(devinfoBean.getDevid());
-            System.out.println(devinfoBean.getDevid());
+        String deviceInfo = spf.getString("device_info","");
+        System.out.println("我的设备中的" + deviceInfo);
+        if (deviceInfo != ""){
+            Gson gson = new Gson();
+            DeviceInfoBean deviceInfoBean =  gson.fromJson(deviceInfo, DeviceInfoBean.class);
+            devinfoList = deviceInfoBean.getDevinfo();
+
+            for (DeviceInfoBean.DevinfoBean devinfoBean: devinfoList){
+                mStrings.add(devinfoBean.getDevid());
+                System.out.println("列表--" + devinfoBean.getDevid());
+            }
+        }else {
+            ToastShow.showToast(MyDevice.this,"出错啦");
         }
+
     }
 }

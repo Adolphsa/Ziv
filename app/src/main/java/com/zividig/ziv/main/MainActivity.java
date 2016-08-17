@@ -1,5 +1,6 @@
 package com.zividig.ziv.main;
 
+import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -36,11 +37,14 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
     private MyFragment mMyFragment = null; //我
 
     private long exitTime = 0;
+    private SharedPreferences spf;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        spf = getSharedPreferences("config",MODE_PRIVATE);
 
         findViews();
         init();
@@ -193,6 +197,7 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
                 Toast.makeText(getApplicationContext(), "再按一次退出程序", Toast.LENGTH_SHORT).show();
                 exitTime = System.currentTimeMillis();
             } else {
+                spf.edit().remove("devid").apply();
                 finish();
                 System.exit(0);
             }

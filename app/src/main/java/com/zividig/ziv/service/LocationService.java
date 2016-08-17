@@ -2,11 +2,11 @@ package com.zividig.ziv.service;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.IBinder;
 
 import com.google.gson.Gson;
 import com.zividig.ziv.bean.LocationBean;
-import com.zividig.ziv.main.Login;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
@@ -41,8 +41,9 @@ public class LocationService extends Service {
     public void onCreate() {
         super.onCreate();
         System.out.println("位置信息服务开启");
-        String devid = Login.getDevId();
-        System.out.println("devid---" + devid);
+        SharedPreferences spf = getSharedPreferences("config",MODE_PRIVATE);
+        String devid = spf.getString("devid","");
+        System.out.println("服务中的devid---" + devid);
 
         //请求参数相关
         params = new RequestParams(URL);

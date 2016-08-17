@@ -15,6 +15,7 @@
  */
 package com.zividig.ziv.adapter;
 
+import android.content.SharedPreferences;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,7 +25,6 @@ import android.widget.TextView;
 
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuAdapter;
 import com.zividig.ziv.R;
-import com.zividig.ziv.main.Login;
 
 import java.util.List;
 
@@ -35,11 +35,14 @@ import java.util.List;
 public class MenuAdapter extends SwipeMenuAdapter<MenuAdapter.DefaultViewHolder> {
 
     private List<String> titles;
+    private String devid;
+    private SharedPreferences spf;
 
     private OnItemClickListener mOnItemClickListener;
 
-    public MenuAdapter(List<String> titles) {
+    public MenuAdapter(List<String> titles,SharedPreferences spf) {
         this.titles = titles;
+        this.spf = spf;
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
@@ -63,9 +66,12 @@ public class MenuAdapter extends SwipeMenuAdapter<MenuAdapter.DefaultViewHolder>
 
     @Override
     public void onBindViewHolder(DefaultViewHolder holder, int position) {
+        devid = spf.getString("devid","");
+        System.out.println("获取保存的devid" + devid);
         holder.setData(titles.get(position));
         holder.setOnItemClickListener(mOnItemClickListener);
-        if (titles.get(position) == Login.getDevId()){
+        if (titles.get(position).equals(devid)){
+            System.out.println("titles  id:---" + titles.get(position) + "\ndevid---" + devid);
             holder.setDuigouShow(true);
         }
     }

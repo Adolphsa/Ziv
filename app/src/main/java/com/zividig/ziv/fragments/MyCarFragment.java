@@ -2,6 +2,7 @@ package com.zividig.ziv.fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -25,7 +26,6 @@ import com.zividig.ziv.function.CarLocation2;
 import com.zividig.ziv.function.ElectronicFence;
 import com.zividig.ziv.function.RealTimeShow;
 import com.zividig.ziv.function.TrackQueryDateChoose;
-import com.zividig.ziv.main.Login;
 import com.zividig.ziv.utils.ToastShow;
 import com.zividig.ziv.weizhang.activity.WeiZhangMainActivity;
 
@@ -211,7 +211,8 @@ public class MyCarFragment extends Fragment {
     }
 
     private void getDevID(){
-        devId = Login.getDevId();
+        SharedPreferences spf = getActivity().getSharedPreferences("config",Context.MODE_PRIVATE);
+        devId = spf.getString("devid","");
         System.out.println("fragment---deviceId:" + devId);
     }
 }

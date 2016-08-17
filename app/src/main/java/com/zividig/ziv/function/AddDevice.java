@@ -99,9 +99,10 @@ public class AddDevice extends Activity {
 
         //显示设备ID
         deviceId = (TextView) findViewById(R.id.tv_device_id);
-        String devId = Login.getDevId();
-        if (devId != null){
-            deviceId.setText(Login.getDevId());
+
+        String devid = spf.getString("devid","");
+        if (devid != null){
+            deviceId.setText(devid);
         }
 
         //显示二维码

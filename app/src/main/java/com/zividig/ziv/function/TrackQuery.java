@@ -1,6 +1,7 @@
 package com.zividig.ziv.function;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -21,7 +22,6 @@ import com.baidu.mapapi.model.LatLngBounds;
 import com.google.gson.Gson;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.MapTrackBean;
-import com.zividig.ziv.main.Login;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
@@ -83,7 +83,9 @@ public class TrackQuery extends Activity {
     }
 
     private void initData(){
-        System.out.println("设备ID：" + Login.getDevId());
+        SharedPreferences spf = getSharedPreferences("config",MODE_PRIVATE);
+        String devid = spf.getString("devid","");
+        System.out.println("设备ID：" + devid);
     }
 
     /**

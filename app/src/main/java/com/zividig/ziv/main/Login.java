@@ -218,7 +218,9 @@ public class Login extends Activity {
                 Gson gson = new Gson();
                 deviceInfoBean =  gson.fromJson(result, DeviceInfoBean.class);
                 devinfoList = deviceInfoBean.getDevinfo(); //设备列表
-                devid =   deviceInfoBean.getDevinfo().get(2).getDevid(); //设备ID
+                devid =   deviceInfoBean.getDevinfo().get(0).getDevid(); //设备ID
+                config.edit().putString("devid",devid).apply();
+                config.edit().putString("device_info",result).apply();
                 System.out.println("设备的ID---" + devid);
                 if (!devid.isEmpty()){
 
@@ -259,9 +261,9 @@ public class Login extends Activity {
      * 获取设备ID
      * @return devid
      */
-    public static String getDevId(){
-            return devid;
-    }
+//    public static String getDevId(){
+//            return devid;
+//    }
 
     /**
      * 获取设备列表
@@ -293,5 +295,4 @@ public class Login extends Activity {
         startActivity(intent);
         finish();
     }
-
 }

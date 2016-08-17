@@ -19,7 +19,7 @@ public class TestDecoder{
     int width;
     int height;
 
-    private static String vedioUrl = "rtsp://120.24.174.213:8554/live_1234567890123456789.sdp";
+    private static String vedioUrl;
 
     private SurfaceHolder holder;
     private Bitmap bmp;
