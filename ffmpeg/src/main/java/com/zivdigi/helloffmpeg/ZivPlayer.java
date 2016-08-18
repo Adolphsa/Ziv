@@ -37,9 +37,21 @@ public class ZivPlayer  {
 
         if(client != null)
         {
+
             client.upgradeFrameInUI(buffer, videoWidth, videoHeight, bufSize);
         }
 
+        return 0;
+    }
+
+    public int getErrorCodeCb(int errorCode){
+        /*
+            ZIV_ERR_CODECLOAD = 1,  加载库出错
+            ZIV_ERR_CONNECT = 2,    第一次连接失败
+            ZIV_ERR_READFRAME = 3,   连接成功   中途断开
+        */
+        Log.v("ZivPlayer", "getErrorCodeCb was called");
+        client.getErrorCode(errorCode);
         return 0;
     }
 

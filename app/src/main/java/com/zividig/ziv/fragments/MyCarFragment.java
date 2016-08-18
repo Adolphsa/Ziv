@@ -116,7 +116,7 @@ public class MyCarFragment extends Fragment {
                 switch (position) {
                     case 0:
                         System.out.println("实时预览" + position);
-                        if (devId != null) {
+                        if (!devId.equals("")) {
                             startActivity(new Intent(getContext(), RealTimeShow.class));
                         } else {
                             ToastShow.showToast(getContext(), "请先添加设备");
@@ -128,7 +128,7 @@ public class MyCarFragment extends Fragment {
                         break;
                     case 2:
                         System.out.println("车辆定位" + position);
-                        if (devId != null) {
+                        if (!devId.equals("")) {
                             startActivity(new Intent(getContext(), CarLocation2.class));
                         } else {
                             ToastShow.showToast(getContext(), "请先添加设备");
@@ -136,7 +136,7 @@ public class MyCarFragment extends Fragment {
                         break;
                     case 3:
                         System.out.println("电子围栏" + position);
-                        if (devId != null) {
+                        if (!devId.equals("")) {
                             startActivity(new Intent(getContext(), ElectronicFence.class));
                         } else {
                             ToastShow.showToast(getContext(), "请先添加设备");
@@ -148,7 +148,7 @@ public class MyCarFragment extends Fragment {
                         break;
                     case 5:
                         System.out.println("轨迹查询" + position);
-                        if (devId != null) {
+                        if (!devId.equals("")) {
                             startActivity(new Intent(getContext(), TrackQueryDateChoose.class));
                         } else {
                             ToastShow.showToast(getContext(), "请先添加设备");

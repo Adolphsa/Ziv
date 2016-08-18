@@ -1,8 +1,11 @@
 package com.zivdigi.helloffmpeg;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.SurfaceHolder;
@@ -24,6 +27,25 @@ public class SurfaceActivity extends Activity implements SurfaceHolder.Callback{
     private int height;
     private int width;
 
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case 1:
+                    img.setVisibility(View.VISIBLE);
+                    showToast(SurfaceActivity.this,"加载库文件出错");
+                    break;
+                case 2:
+                    img.setVisibility(View.VISIBLE);
+                    showToast(SurfaceActivity.this,"无法连接设备");
+                    break;
+                case 3:
+                    img.setVisibility(View.VISIBLE);
+                    showToast(SurfaceActivity.this,"网络断开");
+                    break;
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +81,7 @@ public class SurfaceActivity extends Activity implements SurfaceHolder.Callback{
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        test = new TestDecoder(surfaceHolder,width);
+        test = new TestDecoder(surfaceHolder,width,SurfaceActivity.this,handler);
 //      test.startRequest();
     }
 
@@ -87,9 +109,8 @@ public class SurfaceActivity extends Activity implements SurfaceHolder.Callback{
 
         test.startRequest();
         img.setVisibility(View.INVISIBLE);
-        Toast toast = Toast.makeText(SurfaceActivity.this, "请等待...", Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.TOP,0,height/4);
-        toast.show();
+        showToast(SurfaceActivity.this, "请等待...");
+
 
     }
 
@@ -110,5 +131,11 @@ public class SurfaceActivity extends Activity implements SurfaceHolder.Callback{
 
         test.stopRequest();
 
+    }
+
+    public void showToast(Context context, String str){
+        Toast toast = Toast.makeText(context, str, Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.CENTER, 0, 0);
+        toast.show();
     }
 }

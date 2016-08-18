@@ -20,17 +20,16 @@ import android.widget.Toast;
 import com.zividig.ziv.R;
 import com.zividig.ziv.function.MyDevice;
 import com.zividig.ziv.function.MyPicture;
-import com.zividig.ziv.utils.ToastShow;
 
 import java.io.File;
 
 /**
  * 我
- *
  */
 public class MyFragment extends Fragment {
 
     private static String path = Environment.getExternalStorageDirectory() + "/Ziv";
+    private String deviceInfo;
 
     public static MyFragment instance() {
         MyFragment view = new MyFragment();
@@ -43,10 +42,11 @@ public class MyFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_my, null);
 
         SharedPreferences spf = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
-        final String deviceInfo = spf.getString("device_info","");
+        deviceInfo = spf.getString("device_info", "");
+        System.out.println(deviceInfo.toString());
 
         //设置标题
-        TextView title = (TextView)view.findViewById(R.id.tv_title);
+        TextView title = (TextView) view.findViewById(R.id.tv_title);
         title.setText("我");
 
         ListView lvMy = (ListView) view.findViewById(R.id.lv_my);
@@ -54,25 +54,20 @@ public class MyFragment extends Fragment {
         lvMy.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position){
+                switch (position) {
                     case 0: //我的账号
 //                        startActivity(new Intent(getContext(), TestShareVideo.class));
                         break;
                     case 1: //我的图片
                         File file = new File(path);
-                        if (file.exists()){
+                        if (file.exists()) {
                             startActivity(new Intent(getContext(), MyPicture.class));
-                        }else {
-                            Toast.makeText(getContext(),"无图片",Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(getContext(), "无图片", Toast.LENGTH_SHORT).show();
                         }
                         break;
                     case 2: //我的设备
-                        if (deviceInfo != ""){
-                            startActivity(new Intent(getContext(), MyDevice.class));
-                        }else {
-                            ToastShow.showToast(getContext(),"无设备");
-                        }
-
+                        startActivity(new Intent(getContext(), MyDevice.class));
                         break;
                 }
             }
@@ -80,7 +75,7 @@ public class MyFragment extends Fragment {
         return view;
     }
 
-    class MyAdapter extends BaseAdapter{
+    class MyAdapter extends BaseAdapter {
 
         @Override
         public int getCount() {
@@ -100,17 +95,17 @@ public class MyFragment extends Fragment {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             ViewHolder holder;
-            if (convertView == null){
-                convertView = View.inflate(getContext(),R.layout.layout_setting_list_view,null);
+            if (convertView == null) {
+                convertView = View.inflate(getContext(), R.layout.layout_setting_list_view, null);
                 holder = new ViewHolder();
                 holder.leftIcon = (ImageView) convertView.findViewById(R.id.item_left_icon);
                 holder.itemText = (TextView) convertView.findViewById(R.id.item_text);
                 holder.RightIcon = (ImageView) convertView.findViewById(R.id.item_right_icon);
                 convertView.setTag(holder);
-            }else {
+            } else {
                 holder = (ViewHolder) convertView.getTag();
             }
-            switch (position){
+            switch (position) {
                 case 0:
                     holder.leftIcon.setImageResource(R.mipmap.my_account);
                     holder.itemText.setText("我的帐号");
@@ -128,7 +123,7 @@ public class MyFragment extends Fragment {
         }
     }
 
-    static class ViewHolder{
+    static class ViewHolder {
         ImageView leftIcon;
         TextView itemText;
         ImageView RightIcon;

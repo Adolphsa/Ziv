@@ -182,7 +182,7 @@ public class MyDevice extends Activity {
     };
 
     /**
-     * 获取设备ID
+     * 获取设备ID列表
      */
     private void getDeviceList(){
         mStrings = new ArrayList<>();
