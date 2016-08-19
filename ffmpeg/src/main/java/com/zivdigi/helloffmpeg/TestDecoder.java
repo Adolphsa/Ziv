@@ -6,9 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Handler;
 import android.os.Message;
-import android.view.Gravity;
 import android.view.SurfaceHolder;
-import android.widget.Toast;
 
 import java.nio.ByteBuffer;
 
@@ -46,16 +44,6 @@ public class TestDecoder {
     }
 
     public void getErrorCode(int errorCode){
-//        Looper.prepare();
-//        if (errorCode ==1){
-//            showToast(context,"加载库文件出错");
-//        }else if (errorCode == 2){
-//            showToast(context,"无法连接设备");
-//        }else if (errorCode == 3 ){
-//            showToast(context,"连接成功   中途断开");
-//        }
-//        Looper.loop();
-
         Message msg = mHandler.obtainMessage();
         msg.what = errorCode;
         mHandler.sendMessage(msg);
@@ -116,9 +104,4 @@ public class TestDecoder {
         return false;
     }
 
-    public void showToast(Context context,String str){
-        Toast toast = Toast.makeText(context, str, Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.CENTER, 0, 0);
-        toast.show();
-    }
 }
