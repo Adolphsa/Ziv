@@ -56,6 +56,7 @@ public class RealTimeShow extends Activity {
     private Button btDownImage;
     private int errorCode; //错误码
     private String devid;
+    private Button btVideo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,14 +91,16 @@ public class RealTimeShow extends Activity {
         display.getSize(size);
         ScreenWidth = size.x;
 
-        //按钮
+        //按钮监听
         BtnListener listener = new BtnListener();
-        //图片刷新
-        btRefresh = (Button) findViewById(R.id.bt_refresh);
-        //图片下载
-        btDownImage = (Button) findViewById(R.id.bt_downImage);
+
+        btRefresh = (Button) findViewById(R.id.bt_refresh); //图片刷新
+        btDownImage = (Button) findViewById(R.id.bt_downImage);  //图片下载
+        btVideo = (Button)findViewById(R.id.bt_video);
+
         btRefresh.setOnClickListener(listener);
         btDownImage.setOnClickListener(listener);
+        btVideo.setOnClickListener(listener);
 
         showImage(); //显示图片
 
@@ -354,6 +357,8 @@ public class RealTimeShow extends Activity {
                 case R.id.bt_downImage:
                     downImage();
                     break;
+                case R.id.bt_video:
+                    startVideo();
             }
         }
     }
@@ -361,10 +366,9 @@ public class RealTimeShow extends Activity {
     /**
      * 开启实时视频
      *
-     * @param view
+     * @param
      */
-    public void startVideo(View view) {
-
+    public void startVideo() {
         RequestParams params = new RequestParams(URL_VIDEO);
         params.addQueryStringParameter("devid",devid);
         params.addParameter("channel","0");
