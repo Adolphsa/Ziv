@@ -1,6 +1,7 @@
 package com.zividig.ziv.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,6 +16,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.zividig.ziv.R;
+import com.zividig.ziv.function.About;
 
 /**
  * 设置
@@ -73,10 +75,11 @@ public class SettingFragment extends Fragment {
                         System.out.println("恢复出厂设置" + position);
                         break;
                     case 2:
-                        System.out.println("解绑设备" + position);
+                        System.out.println("参数设置" + position);
                         break;
                     case 3:
                         System.out.println("关于" + position);
+                        startActivity(new Intent(getContext(), About.class));
                         break;
                 }
             }
@@ -134,7 +137,7 @@ public class SettingFragment extends Fragment {
                    break;
                case 2:
                    holder.leftIcon.setImageResource(R.mipmap.restaet);
-                   holder.itemText.setText("解绑设备");
+                   holder.itemText.setText("参数设置");
                    holder.RightIcon.setImageResource(R.mipmap.rights);
                    break;
                case 3:
