@@ -40,6 +40,7 @@ public class MyAccountInfo extends Activity {
             }
         });
 
+        //我的账号信息
         TextView myAccount = (TextView) findViewById(R.id.my_account_tv);
         String user = spf.getString(Login.ET_USER,"");
         if (!user.equals(""))

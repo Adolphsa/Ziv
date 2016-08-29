@@ -20,7 +20,6 @@ import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.bigkoo.convenientbanner.holder.Holder;
 import com.zividig.ziv.R;
-import com.zividig.ziv.customView.CountDownTimer;
 import com.zividig.ziv.function.AddDevice;
 import com.zividig.ziv.function.CarInfo;
 import com.zividig.ziv.function.CarLocation2;
@@ -58,18 +57,18 @@ public class MyCarFragment extends Fragment {
 
     private Button deviceRefresh;
 
-    CountDownTimer countDownTimer = new CountDownTimer(5000,1000) {  //按钮倒计时
-        @Override
-        public void onTick(long millisUntilFinished) {
-            deviceRefresh.setText(millisUntilFinished/1000 + "秒");
-        }
-
-        @Override
-        public void onFinish() {
-            deviceRefresh.setEnabled(true);
-            deviceRefresh.setText("刷新");
-        }
-    };
+//    CountDownTimer countDownTimer = new CountDownTimer(5000,1000) {  //按钮倒计时
+//        @Override
+//        public void onTick(long millisUntilFinished) {
+//            deviceRefresh.setText(millisUntilFinished/1000 + "秒");
+//        }
+//
+//        @Override
+//        public void onFinish() {
+//            deviceRefresh.setEnabled(true);
+//            deviceRefresh.setText("刷新");
+//        }
+//    };
     private TextView currentDeviceId;  //当前的设备号
     private TextView isOnline;  //设备是否在线
 
@@ -99,28 +98,28 @@ public class MyCarFragment extends Fragment {
         });
 
 
-        currentDeviceId = (TextView) view.findViewById(R.id.mycar_tv2);
-        isOnline = (TextView) view.findViewById(R.id.mycar_tv3);
-        getDevID();
-        if (!devId.equals("")){
-            currentDeviceId.setText(devId);
-            isOnline.setText("在线");
-        }
-        //设备信息刷新
-        deviceRefresh = (Button) view.findViewById(R.id.mycar_refresh);
-        deviceRefresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                countDownTimer.start();
-                getDevID();
-                if (!devId.equals("")){
-                    currentDeviceId.setText(devId);
-                    isOnline.setText("在线");
-                }else {
-                    ToastShow.showToast(getContext(), "请先添加设备");
-                }
-            }
-        });
+//        currentDeviceId = (TextView) view.findViewById(R.id.mycar_tv2);
+//        isOnline = (TextView) view.findViewById(R.id.mycar_tv3);
+//        getDevID();
+//        if (!devId.equals("")){
+//            currentDeviceId.setText(devId);
+//            isOnline.setText("在线");
+//        }
+//        //设备信息刷新
+//        deviceRefresh = (Button) view.findViewById(R.id.mycar_refresh);
+//        deviceRefresh.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                countDownTimer.start();
+//                getDevID();
+//                if (!devId.equals("")){
+//                    currentDeviceId.setText(devId);
+//                    isOnline.setText("在线");
+//                }else {
+//                    ToastShow.showToast(getContext(), "请先添加设备");
+//                }
+//            }
+//        });
 
         initAd();
         initFunctionButton();
@@ -264,7 +263,7 @@ public class MyCarFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        countDownTimer.cancel();
+//        countDownTimer.cancel();
     }
 
     private void getDevID(){
