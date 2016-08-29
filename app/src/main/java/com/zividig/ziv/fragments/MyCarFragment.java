@@ -20,6 +20,7 @@ import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.bigkoo.convenientbanner.holder.Holder;
 import com.zividig.ziv.R;
+import com.zividig.ziv.customView.CountDownTimer;
 import com.zividig.ziv.function.AddDevice;
 import com.zividig.ziv.function.CarInfo;
 import com.zividig.ziv.function.CarLocation2;
@@ -41,11 +42,37 @@ public class MyCarFragment extends Fragment {
     private ConvenientBanner convenientBanner; //顶部广告栏控件
     private ArrayList<Integer> localImages = new ArrayList<Integer>();
 
-    private String[] itemTexts = {"实时预览", "车辆信息", "车辆定位",
-            "电子围栏", "违章查询", "轨迹查询"};
-    private int[] itemImages = {R.drawable.selector_real_time, R.drawable.selector_car_info, R.drawable.selector_car_location,
-            R.drawable.selector_electric_fence, R.drawable.selector_car_manage, R.drawable.selector_history_back};
+    private String[] itemTexts = {"实时预览",
+                                  "车辆信息",
+                                  "车辆定位",
+                                  "电子围栏",
+                                  "违章查询",
+                                  "轨迹查询"};
+    private int[] itemImages = {R.drawable.selector_real_time,
+                                 R.drawable.selector_car_info,
+                                 R.drawable.selector_car_location,
+                                 R.drawable.selector_electric_fence,
+                                 R.drawable.selector_car_manage,
+                                 R.drawable.selector_history_back};
     private String devId;
+
+    private Button deviceRefresh;
+
+    CountDownTimer countDownTimer = new CountDownTimer(5000,1000) {  //按钮倒计时
+        @Override
+        public void onTick(long millisUntilFinished) {
+            deviceRefresh.setText(millisUntilFinished/1000 + "秒");
+        }
+
+        @Override
+        public void onFinish() {
+            deviceRefresh.setEnabled(true);
+            deviceRefresh.setText("刷新");
+        }
+    };
+    private TextView currentDeviceId;  //当前的设备号
+    private TextView isOnline;  //设备是否在线
+
 
     public static MyCarFragment instance() {
         MyCarFragment myCarView = new MyCarFragment();
@@ -68,6 +95,30 @@ public class MyCarFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(getContext(), AddDevice.class));
+            }
+        });
+
+
+        currentDeviceId = (TextView) view.findViewById(R.id.mycar_tv2);
+        isOnline = (TextView) view.findViewById(R.id.mycar_tv3);
+        getDevID();
+        if (!devId.equals("")){
+            currentDeviceId.setText(devId);
+            isOnline.setText("在线");
+        }
+        //设备信息刷新
+        deviceRefresh = (Button) view.findViewById(R.id.mycar_refresh);
+        deviceRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                countDownTimer.start();
+                getDevID();
+                if (!devId.equals("")){
+                    currentDeviceId.setText(devId);
+                    isOnline.setText("在线");
+                }else {
+                    ToastShow.showToast(getContext(), "请先添加设备");
+                }
             }
         });
 
@@ -107,8 +158,8 @@ public class MyCarFragment extends Fragment {
                 return view;
             }
         });
-        //先判断是否能够获取到设备ID，然后再点击
 
+        //先判断是否能够获取到设备ID，然后再点击
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -208,6 +259,12 @@ public class MyCarFragment extends Fragment {
         super.onPause();
         //停止翻页
         convenientBanner.stopTurning();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        countDownTimer.cancel();
     }
 
     private void getDevID(){

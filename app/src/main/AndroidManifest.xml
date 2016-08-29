@@ -50,7 +50,9 @@
         <activity android:name=".function.TrackQueryDateChoose" />
         <activity android:name=".main.Login" />
         <activity android:name=".function.MyDevice" />
-        <activity android:name=".function.About"/>
+        <activity android:name=".function.About" />
+        <activity android:name=".function.MyAccountInfo"/>
+
         <activity
             android:name=".function.AddDevice"
             android:exported="true" />

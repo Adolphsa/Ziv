@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zividig.ziv.R;
+import com.zividig.ziv.function.MyAccountInfo;
 import com.zividig.ziv.function.MyDevice;
 import com.zividig.ziv.function.MyPicture;
 
@@ -56,7 +57,7 @@ public class MyFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0: //我的账号
-//                        startActivity(new Intent(getContext(), TestShareVideo.class));
+                        startActivity(new Intent(getContext(), MyAccountInfo.class));
                         break;
                     case 1: //我的图片
                         File file = new File(path);
@@ -115,7 +116,6 @@ public class MyFragment extends Fragment {
                     holder.itemText.setText("我的图片");
                     break;
                 case 2:
-
                     holder.itemText.setText("我的设备");
                     break;
             }
