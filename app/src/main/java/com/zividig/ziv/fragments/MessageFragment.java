@@ -1,6 +1,8 @@
 package com.zividig.ziv.fragments;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -47,6 +49,7 @@ public class MessageFragment extends Fragment {
 
     private int size = 5;
     private View view;
+    private SharedPreferences spf;
 
     public static MessageFragment instance() {
         MessageFragment view = new MessageFragment();
@@ -57,6 +60,8 @@ public class MessageFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_message, null);
+
+        spf = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
 
         //设置标题
         TextView title = (TextView) view.findViewById(R.id.tv_title);
@@ -90,7 +95,7 @@ public class MessageFragment extends Fragment {
         // 设置菜单Item点击监听。
         mSwipeMenuRecyclerView.setSwipeMenuItemClickListener(menuItemClickListener);
 
-        mMenuAdapter = new MenuAdapter2(mStrings);
+        mMenuAdapter = new MenuAdapter2(mStrings,spf);
         mMenuAdapter.setOnItemClickListener(onItemClickListener);
         mSwipeMenuRecyclerView.setAdapter(mMenuAdapter);
     }
@@ -174,6 +179,8 @@ public class MessageFragment extends Fragment {
         @Override
         public void onItemClick(int position) {
             Toast.makeText(mContext, "我是第" + position + "条。", Toast.LENGTH_SHORT).show();
+            spf.edit().putBoolean("red_point",false).apply();
+
         }
     };
 

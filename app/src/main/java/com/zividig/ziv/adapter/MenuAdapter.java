@@ -29,7 +29,7 @@ import com.zividig.ziv.R;
 import java.util.List;
 
 /**
- * 适配器
+ * 我的设备的适配器
  * Created by YOLANDA on 2016/7/22.
  */
 public class MenuAdapter extends SwipeMenuAdapter<MenuAdapter.DefaultViewHolder> {

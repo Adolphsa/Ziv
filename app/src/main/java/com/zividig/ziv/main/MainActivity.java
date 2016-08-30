@@ -67,7 +67,7 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
         mTabs.setOnPageChangeListener(this);
 
         mViewPager.setCurrentItem(VIEW_FIRST); //设置默认选中的选项卡
-        mTabs.showDot(VIEW_SECOND,"99+"); //设置消息
+//        mTabs.showDot(VIEW_SECOND); //设置消息
     }
 
     @Override
@@ -199,7 +199,7 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
             } else {
                 spf.edit().remove("devid").apply();
                 spf.edit().remove("device_info").apply();
-                System.out.println("清楚一些数据");
+                System.out.println("清除一些数据");
                 finish();
                 System.exit(0);
             }

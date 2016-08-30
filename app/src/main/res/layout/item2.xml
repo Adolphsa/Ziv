@@ -13,7 +13,13 @@
         android:src="@mipmap/message"
         android:layout_centerVertical="true"
         />
-
+    <ImageView
+        android:id="@+id/iv_red_point"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/red_point"
+        android:layout_alignRight="@+id/iv_icon"
+        />
     <TextView
         android:id="@+id/tv_item_title"
         android:layout_width="wrap_content"
