@@ -147,7 +147,9 @@ public class MyDevice extends Activity {
                             if (status.equals("ok")){
                                 ToastShow.showToast(MyDevice.this,"解绑成功");
 //                                mMenuAdapter.notifyItemRemoved(adapterPosition);
-                                swipeMenuRecyclerView.setAdapter(mMenuAdapter);
+//                                swipeMenuRecyclerView.setAdapter(mMenuAdapter);
+                                mStrings.remove(adapterPosition);
+                                mMenuAdapter.notifyItemRemoved(adapterPosition);
 
                             }else {
                                 ToastShow.showToast(MyDevice.this,"解绑失败");
@@ -155,7 +157,7 @@ public class MyDevice extends Activity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        ToastShow.showToast(MyDevice.this,"解绑成功");
+
                     }
 
                     @Override
