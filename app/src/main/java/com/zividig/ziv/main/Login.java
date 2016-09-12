@@ -11,6 +11,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.google.gson.Gson;
+import com.igexin.sdk.PushManager;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.DeviceInfoBean;
 import com.zividig.ziv.service.LocationService;
@@ -32,6 +33,7 @@ import java.util.List;
 public class Login extends Activity {
 
     private static String LOGIN_URL = "http://api.caowei.name/login";
+    private static String GET_DEVICE_LIST = "http://api.caowei.name/devicelist";
 
     public static final String ET_USER = "et_user";
     private static final String ET_PWD = "et_pwd";
@@ -48,15 +50,16 @@ public class Login extends Activity {
     private DeviceInfoBean deviceInfoBean;
     private static String devid;
     private static List<DeviceInfoBean.DevinfoBean> devinfoList;
+    private PushManager pushManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        pushManager = PushManager.getInstance(); //获取个推Manager
         config = getSharedPreferences("config", MODE_PRIVATE);
-
-       initView();
+        initView();
     }
 
     /**
@@ -134,14 +137,16 @@ public class Login extends Activity {
      * 登录
      */
     private void login(){
-        final String user = etUser.getText().toString().trim();  //获取账号
+        final String user =  etUser.getText().toString().trim();  //获取账号
         final String password = etPassword.getText().toString().trim();  //获取密码
+        final String getuiId = pushManager.getClientid(Login.this);
         if (!TextUtils.isEmpty(user) && !TextUtils.isEmpty(password)){
             //配置json数据
             JSONObject json = new JSONObject();
             try {
                 json.put("username",user);
                 json.put("password", MD5.getMD5(password));
+                json.put("getuiid",getuiId);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -169,7 +174,7 @@ public class Login extends Activity {
                             ToastShow.showToast(Login.this,"登录成功");
                             //进入主菜单
                             enterMainActivity();
-                            System.out.println("啦啦啦");
+                            System.out.println("clientId: " + getuiId);
                         }else {
                             ToastShow.showToast(Login.this,"账号或密码错误");
                             System.out.println("登录失败");
@@ -209,8 +214,8 @@ public class Login extends Activity {
      */
     private void getDeviceInfo(String user){
         System.out.println("执行获取设备信息");
-        RequestParams params = new RequestParams("http://dev.caowei.name/mytest/uploadtest/getdevinfo.php");
-        params.addBodyParameter("userid", user);
+
+        RequestParams params = new RequestParams(GET_DEVICE_LIST + "/" + user);
         x.http().get(params, new Callback.CommonCallback<String>() {
 
             @Override

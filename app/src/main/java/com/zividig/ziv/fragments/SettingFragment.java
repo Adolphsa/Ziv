@@ -18,6 +18,10 @@ import android.widget.TextView;
 import com.zividig.ziv.R;
 import com.zividig.ziv.function.About;
 
+import org.xutils.common.Callback;
+import org.xutils.http.RequestParams;
+import org.xutils.x;
+
 /**
  * 设置
  *
@@ -29,6 +33,7 @@ public class SettingFragment extends Fragment {
     private SettingAdapter adapter;
     Boolean autoUpdate;
     private SharedPreferences sp;
+    private String devID;
 
     public static SettingFragment instance() {
         SettingFragment view = new SettingFragment();
@@ -46,6 +51,7 @@ public class SettingFragment extends Fragment {
         title.setText("设置");
 
         autoUpdate = sp.getBoolean("auto_update",false);
+
 
         lvSetting = (ListView) view.findViewById(R.id.lv_setting);
         adapter = new SettingAdapter();
@@ -72,7 +78,32 @@ public class SettingFragment extends Fragment {
 
                         break;
                     case 1:
-                        System.out.println("恢复出厂设置" + position);
+                        System.out.println("主机唤醒" + position);
+                        devID = sp.getString("devid","");
+                        RequestParams params = new RequestParams("http://120.24.174.213:9501/api/wakeupdevice");
+                        params.addQueryStringParameter("devid",devID);
+                        System.out.println("主机唤醒：" + params);
+                        x.http().get(params, new Callback.CommonCallback<String>() {
+                            @Override
+                            public void onSuccess(String result) {
+                                System.out.println("主机唤醒结果：" + result);
+                            }
+
+                            @Override
+                            public void onError(Throwable ex, boolean isOnCallback) {
+                                System.out.println("主机唤醒错误：" + ex);
+                            }
+
+                            @Override
+                            public void onCancelled(CancelledException cex) {
+
+                            }
+
+                            @Override
+                            public void onFinished() {
+
+                            }
+                        });
                         break;
                     case 2:
                         System.out.println("参数设置" + position);
@@ -86,7 +117,6 @@ public class SettingFragment extends Fragment {
         });
         return view;
     }
-
     class SettingAdapter extends BaseAdapter{
 
         @Override
@@ -132,7 +162,7 @@ public class SettingFragment extends Fragment {
                    break;
                case 1:
                    holder.leftIcon.setImageResource(R.mipmap.recover);
-                   holder.itemText.setText("恢复出厂设置");
+                   holder.itemText.setText("主机唤醒");
                    holder.RightIcon.setImageResource(R.mipmap.rights);
                    break;
                case 2:
