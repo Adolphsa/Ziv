@@ -13,6 +13,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,6 +27,7 @@ public class SurfaceActivity extends Activity implements SurfaceHolder.Callback{
     private ImageView img;
     private int height;
     private int width;
+    private FrameLayout frameLayout;
 
     private Handler handler = new Handler(){
         @Override
@@ -57,6 +59,13 @@ public class SurfaceActivity extends Activity implements SurfaceHolder.Callback{
         txtTitle.setText("实时视频");
 
         img = (ImageView) findViewById(R.id.surface_img);
+//        frameLayout = (FrameLayout) findViewById(R.id.ffmpeg_fl);
+//        frameLayout.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                System.out.println("FrameLayout被点击了");
+//            }
+//        });
 
         //返回按钮
         Button btnBack = (Button) findViewById(R.id.btn_back);

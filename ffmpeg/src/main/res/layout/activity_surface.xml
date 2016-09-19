@@ -5,6 +5,7 @@
     android:layout_height="match_parent">
     <include layout="@layout/ffmpeg_layout_titlebar"/>
     <FrameLayout
+        android:id="@+id/ffmpeg_fl"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <SurfaceView
@@ -14,7 +15,8 @@
             />
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            >
             <ImageView
                 android:id="@+id/surface_img"
                 android:layout_width="match_parent"
