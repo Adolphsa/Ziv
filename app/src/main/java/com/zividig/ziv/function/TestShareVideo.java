@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import com.zivdigi.helloffmpeg.MainActivity;
+import com.zivdigi.helloffmpeg.MyTestActivity;
 import com.zividig.ziv.R;
 
 import cn.sharesdk.framework.ShareSDK;
@@ -56,6 +56,6 @@ public class TestShareVideo extends Activity {
     }
 
     public void ffmpeg(View view){
-        startActivity(new Intent(TestShareVideo.this, MainActivity.class));
+        startActivity(new Intent(TestShareVideo.this, MyTestActivity.class));
     }
 }

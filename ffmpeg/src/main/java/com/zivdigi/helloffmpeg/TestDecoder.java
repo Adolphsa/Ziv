@@ -1,107 +1,117 @@
 package com.zivdigi.helloffmpeg;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.os.Handler;
-import android.os.Message;
-import android.view.SurfaceHolder;
+import android.util.Log;
 
-import java.nio.ByteBuffer;
+import java.util.Vector;
 
 /**
- * 解码
  * Created by walker on 16-3-30.
  */
-public class TestDecoder {
+public class TestDecoder{
 
-    ByteBuffer rgb565Buf;
-    ZivPlayer player;
-    Canvas canvas;
-    int width;
-    int height;
-
+    private static String TAG = "testDecoder";
     private static String vedioUrl;
+    ZivPlayer player;
 
-    private SurfaceHolder holder;
-    private Bitmap bmp;
-    private Bitmap scaleBmp;
+    private volatile boolean stopRequested;
 
-    private Handler mHandler;
-    private Context context;
-    public TestDecoder(SurfaceHolder holder, int width, Context context,Handler handler) {
-        rgb565Buf = null;
-        bmp = null;
-
-        mHandler = handler;
-        this.context = context;
-        this.holder = holder;
-        this.width = width;
-
-        player = new ZivPlayer(ZivPlayer.COLOR_FORMAT_RGB565LE);
-        player.setPlayerUser(this);
+    public Vector<FrameBean> getVector() {
+        return mVector;
     }
 
-    public void getErrorCode(int errorCode){
-        Message msg = mHandler.obtainMessage();
-        msg.what = errorCode;
-        mHandler.sendMessage(msg);
+    public void setVector(Vector<FrameBean> vector) {
+        mVector = vector;
+    }
+
+    private  FrameBean mFrameBean;
+    private Vector<FrameBean> mVector;
+
+    public TestDecoder(){
+        player = new ZivPlayer(ZivPlayer.COLOR_FORMAT_YUV420);
+        player.setPlayerUser(this);
+
+        mFrameBean = new FrameBean();
+        mVector = new Vector<FrameBean>();  //创建一个存放数据帧的容器
     }
 
     //Upgrade the BMP frame to UI.
-    public int upgradeFrameInUI(ByteBuffer buf, int videoWidth, int videoHeight, int bufSize) {
+    public  int upgradeFrameInUI(byte[] buf, int videoWidth, int videoHeight, int bufSize)
+    {
+        mFrameBean.width = videoWidth;
+        mFrameBean.height = videoHeight;
+        mFrameBean.pix = buf;
 
-                System.out.println("原始宽度：" + videoWidth + "原始高度:" + videoHeight);
-                height = videoHeight * width / videoWidth;
-                System.out.println("缩放宽度：" + width + "缩放高度:" + height);
-                bmp = Bitmap.createBitmap(videoWidth, videoHeight, Bitmap.Config.RGB_565);
-                bmp.copyPixelsFromBuffer(buf);
-                buf.position(0);
-                scaleBmp = Bitmap.createScaledBitmap(bmp, width, height, true); //缩放图片
-
-
-                if (holder.getSurface().isValid()) {
-                    System.out.println("判断是否已经创建好");
-                canvas = holder.lockCanvas();
-                if (canvas != null) {
-                    Paint paint = new Paint();
-                    paint.setAntiAlias(true);
-                    paint.setFilterBitmap(true);
-                    paint.setDither(true);
-                    canvas.drawBitmap(scaleBmp, 0, 0, paint);
-                    holder.unlockCanvasAndPost(canvas);
-                }
-            }
-
+//        System.out.println("buf的长度：" + mFrameBean.getPix().length);
+        mVector.add(mFrameBean);
+        setVector(mVector);
         return 0;
+    }
+
+    /**
+     * 方法待定
+     * @return
+     */
+    public Vector<FrameBean> getDataQueue(){
+        Log.i(TAG, "Vector的长度：" + mVector.size());
+        return mVector;
     }
 
     public static void setUrl(String url) {
         vedioUrl = url;
     }
 
-    public void startRequest() {
-
-        if (isPlaying()) {
+    public void startRequest(){
+        final String rtspUrlPi02 = "rtsp://192.168.199.30:554/stream1";
+        if(isPlaying()){
             return;
         }
+
         if(player != null){
             player.startStream(vedioUrl);
         }
     }
 
     public void stopRequest() {
-        if (player != null && isPlaying()) {
-            player.stopStream(vedioUrl);
+        if(player != null && isPlaying()) {
+            player.stopStream("test");
         }
     }
 
-    public boolean isPlaying() {
-        if (player != null) {
+    public boolean isPlaying(){
+        if(player != null) {
             return player.isPlayerPlaying();
         }
+
         return false;
     }
 
+    class FrameBean {
+        int width;
+        int height;
+        byte[] pix;
+
+        public int getWidth() {
+            return width;
+        }
+
+        public void setWidth(int width) {
+            this.width = width;
+        }
+
+        public int getHeight() {
+            return height;
+        }
+
+        public void setHeight(int height) {
+            this.height = height;
+        }
+
+        public byte[] getPix() {
+            return pix;
+        }
+
+        public void setPix(byte[] pix) {
+            this.pix = pix;
+        }
+    }
 }

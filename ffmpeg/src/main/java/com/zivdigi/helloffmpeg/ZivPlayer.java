@@ -1,6 +1,5 @@
 package com.zivdigi.helloffmpeg;
 
-import java.nio.ByteBuffer;
 import android.util.Log;
 
 /**
@@ -32,26 +31,25 @@ public class ZivPlayer  {
         return 0;
     }
 
-    public int getDecodedFrameCb(ByteBuffer buffer, int videoWidth, int videoHeight, int bufSize) {
-        Log.v("ZivPlayer", "getDecodedFrameCb was called");
+    public int getDecodedFrameCb(byte[] buffer, int videoWidth, int videoHeight, int bufSize) {
+        //Log.v("ZivPlayer", "getDecodedFrameCb was called");
 
         if(client != null)
         {
-
             client.upgradeFrameInUI(buffer, videoWidth, videoHeight, bufSize);
         }
 
         return 0;
     }
 
+
     public int getErrorCodeCb(int errorCode){
         /*
-            ZIV_ERR_CODECLOAD = 1,  加载库出错
-            ZIV_ERR_CONNECT = 2,    第一次连接失败
-            ZIV_ERR_READFRAME = 3,   连接成功   中途断开
+            ZIV_ERR_CODECLOAD = 1,
+            ZIV_ERR_CONNECT = 2,
+            ZIV_ERR_READFRAME = 3,
         */
         Log.v("ZivPlayer", "getErrorCodeCb was called");
-        client.getErrorCode(errorCode);
         return 0;
     }
 

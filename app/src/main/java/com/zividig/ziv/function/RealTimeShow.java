@@ -20,13 +20,11 @@ import android.widget.Toast;
 
 import com.bm.library.PhotoView;
 import com.google.gson.Gson;
-import com.zivdigi.helloffmpeg.SurfaceActivity;
+import com.zivdigi.helloffmpeg.MyTestActivity;
 import com.zivdigi.helloffmpeg.TestDecoder;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.RealTimeBean;
-import com.zividig.ziv.bean.VideoInfoBean;
 import com.zividig.ziv.utils.NetworkTypeUtils;
-import com.zividig.ziv.utils.ToastShow;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
@@ -369,44 +367,46 @@ public class RealTimeShow extends Activity {
      * @param
      */
     public void startVideo() {
-        RequestParams params = new RequestParams(URL_VIDEO);
-        params.addQueryStringParameter("devid",devid);
-        params.addParameter("channel","0");
-
-        x.http().get(params, new Callback.CommonCallback<String>() {
-            @Override
-            public void onSuccess(String result) {
-                System.out.println(result);
-                Gson gson = new Gson();
-                VideoInfoBean videoInfoBean = gson.fromJson(result, VideoInfoBean.class);
-                int code = videoInfoBean.getError();
-                if (code == 200) {
-                    System.out.println("视频URL:" + videoInfoBean.getUrl());
-                    TestDecoder.setUrl(videoInfoBean.getUrl());
-                    startActivity(new Intent(RealTimeShow.this, SurfaceActivity.class));
-                }else {
-//                    showVideoInDeviceWifi();
-                    System.out.println("非200");
-                    ToastShow.showToast(RealTimeShow.this,"设备不在线");
-                }
-            }
-
-            @Override
-            public void onError(Throwable ex, boolean isOnCallback) {
-                System.out.println("访问错误" + ex);
-//                showVideoInDeviceWifi();
-            }
-
-            @Override
-            public void onCancelled(CancelledException cex) {
-
-            }
-
-            @Override
-            public void onFinished() {
-
-            }
-        });
+        TestDecoder.setUrl("rtsp://192.168.199.30:554/stream1");
+        startActivity(new Intent(RealTimeShow.this, MyTestActivity.class));
+//        RequestParams params = new RequestParams(URL_VIDEO);
+//        params.addQueryStringParameter("devid",devid);
+//        params.addParameter("channel","0");
+//
+//        x.http().get(params, new Callback.CommonCallback<String>() {
+//            @Override
+//            public void onSuccess(String result) {
+//                System.out.println(result);
+//                Gson gson = new Gson();
+//                VideoInfoBean videoInfoBean = gson.fromJson(result, VideoInfoBean.class);
+//                int code = videoInfoBean.getError();
+//                if (code == 200) {
+//                    System.out.println("视频URL:" + videoInfoBean.getUrl());
+////                    TestDecoder.setUrl(videoInfoBean.getUrl());
+////                    startActivity(new Intent(RealTimeShow.this, SurfaceActivity.class));
+//                }else {
+////                    showVideoInDeviceWifi();
+//                    System.out.println("非200");
+//                    ToastShow.showToast(RealTimeShow.this,"设备不在线");
+//                }
+//            }
+//
+//            @Override
+//            public void onError(Throwable ex, boolean isOnCallback) {
+//                System.out.println("访问错误" + ex);
+////                showVideoInDeviceWifi();
+//            }
+//
+//            @Override
+//            public void onCancelled(CancelledException cex) {
+//
+//            }
+//
+//            @Override
+//            public void onFinished() {
+//
+//            }
+//        });
     }
 
     /**
@@ -419,8 +419,8 @@ public class RealTimeShow extends Activity {
                 @Override
                 public void onSuccess(String result) {
                     if (!result.isEmpty()){
-                        TestDecoder.setUrl("rtsp://192.168.1.1/stream1");
-                        startActivity(new Intent(RealTimeShow.this, SurfaceActivity.class));
+//                        TestDecoder.setUrl("rtsp://192.168.1.1/stream1");
+//                        startActivity(new Intent(RealTimeShow.this, SurfaceActivity.class));
 
                     }
                 }

@@ -8,9 +8,10 @@
         android:allowBackup="true"
         android:supportsRtl="true">
         <activity
-            android:name=".MainActivity"
+            android:name=".MyTestActivity"
+            android:configChanges="orientation|screenSize|keyboard|keyboardHidden"
             android:screenOrientation="portrait"/>
-        <activity android:name=".SurfaceActivity" />
+
     </application>
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
