@@ -235,7 +235,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
             while (isPlaying) {
                 videoFrameBuf = td.getVector();//获取视频数据
                 size = videoFrameBuf.size();
-                Log.i(TAG, "run: Vector的长度是：" + size);
+//                Log.i(TAG, "run: Vector的长度是：" + size);
                 if (size > 2) {
                     fb = videoFrameBuf.remove(0);
 //                    Log.i("realvideo","WITH=="+fb.width+",Height==="+fb.height);

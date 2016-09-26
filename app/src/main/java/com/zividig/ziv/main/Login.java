@@ -17,6 +17,7 @@ import com.zividig.ziv.bean.DeviceInfoBean;
 import com.zividig.ziv.service.LocationService;
 import com.zividig.ziv.utils.MD5;
 import com.zividig.ziv.utils.ToastShow;
+import com.zividig.ziv.utils.Urls;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,8 +33,8 @@ import java.util.List;
  */
 public class Login extends Activity {
 
-    private static String LOGIN_URL = "http://api.caowei.name/login";
-    private static String GET_DEVICE_LIST = "http://api.caowei.name/devicelist";
+//    private static String LOGIN_URL = "http://api.caowei.name/login";
+//    private static String GET_DEVICE_LIST = "http://api.caowei.name/devicelist";
 
     public static final String ET_USER = "et_user";
     private static final String ET_PWD = "et_pwd";
@@ -154,7 +155,7 @@ public class Login extends Activity {
             ToastShow.setToatBytTime(Login.this,"登录中...",500);
 
             //发起请求
-            RequestParams params = new RequestParams(LOGIN_URL);
+            RequestParams params = new RequestParams(Urls.LOGIN_URL);
             params.setAsJsonContent(true);
             params.setBodyContent(json.toString());
             x.http().post(params, new Callback.CommonCallback<String>() {
@@ -215,7 +216,7 @@ public class Login extends Activity {
     private void getDeviceInfo(String user){
         System.out.println("执行获取设备信息");
 
-        RequestParams params = new RequestParams(GET_DEVICE_LIST + "/" + user);
+        RequestParams params = new RequestParams(Urls.GET_DEVICE_LIST + "/" + user);
         x.http().get(params, new Callback.CommonCallback<String>() {
 
             @Override

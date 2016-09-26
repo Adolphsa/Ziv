@@ -35,6 +35,7 @@ public class CarLocation2 extends Activity{
     private BaiduMap mBaiduMap;
     protected static OverlayOptions overlay;  // 覆盖物
     private boolean isFirst = true;
+    private boolean once = true;
     BitmapDescriptor carIcon = BitmapDescriptorFactory
             .fromResource(R.mipmap.car_icon);
 
@@ -80,7 +81,11 @@ public class CarLocation2 extends Activity{
     public void initMap(Double lat,Double lon){
 
         if (lat == 0 && lon == 0){
-            ToastShow.showToast(CarLocation2.this,"暂无地图数据");
+            if (once){
+                ToastShow.showToast(CarLocation2.this,"暂无地图数据");
+                once = false;
+            }
+
         }else {
             mBaiduMap.clear();
             LatLng sourceLatLng = new LatLng(lat,lon);

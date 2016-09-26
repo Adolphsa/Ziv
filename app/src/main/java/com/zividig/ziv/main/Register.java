@@ -15,6 +15,7 @@ import com.zividig.ziv.R;
 import com.zividig.ziv.bean.RegisterMd5Bean;
 import com.zividig.ziv.customView.CountDownTimer;
 import com.zividig.ziv.utils.MD5;
+import com.zividig.ziv.utils.Urls;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,8 +25,8 @@ import org.xutils.x;
 
 public class Register extends Activity {
 
-    private static String REGISTER_URL = "http://api.caowei.name/user";  //注册的URL
-    public static String GET_YZM_URL = "http://api.caowei.name/sms";    //获取验证码的URL
+//    private static String REGISTER_URL = "http://api.caowei.name/user";  //注册的URL
+//    public static String GET_YZM_URL = "http://api.caowei.name/sms";    //获取验证码的URL
 
     private EditText etUser;
     private EditText etPwd;
@@ -103,7 +104,7 @@ public class Register extends Activity {
     //获取验证码
     public void getRegisterYzm(View view){
         if (checkValidity()){
-            RequestParams params = new RequestParams(GET_YZM_URL + "/" + user);
+            RequestParams params = new RequestParams(Urls.GET_YZM_URL + "/" + user);
             System.out.println("获取注册验证码params:" + params);
             x.http().get(params, new Callback.CommonCallback<String>() {
                 @Override
@@ -158,7 +159,7 @@ public class Register extends Activity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    RequestParams params = new RequestParams(REGISTER_URL);
+                    RequestParams params = new RequestParams(Urls.REGISTER_URL);
                     params.setAsJsonContent(true);
                     params.setBodyContent(json.toString());
 

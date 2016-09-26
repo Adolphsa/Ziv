@@ -89,6 +89,7 @@ public class ElectronicFence extends Activity {
     protected static OverlayOptions fenceOverlayTemp = null;
 
     protected static boolean isShow = false;
+    private boolean once = true;
 
     /**
      * 地图点击事件
@@ -179,7 +180,11 @@ public class ElectronicFence extends Activity {
      */
     public void initMap(Double lat,Double lon){
         if (lat == 0 && lon == 0){
-            ToastShow.showToast(ElectronicFence.this,"暂无地图数据");
+            if (once){
+                ToastShow.showToast(ElectronicFence.this,"暂无地图数据");
+                once = false;
+            }
+
         }else {
             LatLng sourceLatLng = new LatLng(lat,lon);
             //坐标转换

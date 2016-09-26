@@ -15,6 +15,7 @@ import com.zividig.ziv.R;
 import com.zividig.ziv.bean.RegisterMd5Bean;
 import com.zividig.ziv.customView.CountDownTimer;
 import com.zividig.ziv.utils.MD5;
+import com.zividig.ziv.utils.Urls;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,7 +26,7 @@ import org.xutils.x;
 
 public class FindPassWord extends Activity {
 
-    private static String RESET_PWD = "http://api.caowei.name/user";
+//    private static String RESET_PWD = "http://api.caowei.name/user";
 
     private EditText etUser;
     private EditText etPwd;
@@ -100,7 +101,7 @@ public class FindPassWord extends Activity {
     //获取验证码
     public void getFindPwdYzm(View view){
         if (checkValidity()){
-            RequestParams params = new RequestParams(Register.GET_YZM_URL + "/" + fdUser);
+            RequestParams params = new RequestParams(Urls.GET_YZM_URL + "/" + fdUser);
             System.out.println("获取注册验证码params:" + params);
             x.http().get(params, new Callback.CommonCallback<String>() {
                 @Override
@@ -151,7 +152,7 @@ public class FindPassWord extends Activity {
                     json.put("username",fdUser);
                     json.put("password",MD5.getMD5(fdPwd));
                     //配置请求参数
-                    RequestParams params = new RequestParams(RESET_PWD + "/" + fdUser);
+                    RequestParams params = new RequestParams(Urls.REGISTER_URL + "/" + fdUser);
                     params.setAsJsonContent(true);
                     params.setBodyContent(json.toString());
                     //开始请求

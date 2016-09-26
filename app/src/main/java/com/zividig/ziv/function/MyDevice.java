@@ -25,6 +25,7 @@ import com.zividig.ziv.adapter.OnItemClickListener;
 import com.zividig.ziv.bean.DeviceInfoBean;
 import com.zividig.ziv.main.Login;
 import com.zividig.ziv.utils.ToastShow;
+import com.zividig.ziv.utils.Urls;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -134,7 +135,7 @@ public class MyDevice extends Activity {
                 String user = spf.getString(Login.ET_USER,"");
                 String devid = mStrings.get(adapterPosition);
                 System.out.println("devid---" + devid);
-                RequestParams params = new RequestParams(URL_UNBIND_DEVICE + user + "/" + devid);
+                RequestParams params = new RequestParams(Urls.URL_BIND_DEVICE + user + "/" + devid);
                 System.out.println(params.toString());
                 //请求
                 x.http().request(HttpMethod.DELETE, params, new Callback.CommonCallback<String>() {

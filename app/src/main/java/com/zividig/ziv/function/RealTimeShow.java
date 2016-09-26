@@ -25,6 +25,7 @@ import com.zivdigi.helloffmpeg.TestDecoder;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.RealTimeBean;
 import com.zividig.ziv.utils.NetworkTypeUtils;
+import com.zividig.ziv.utils.Urls;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
@@ -112,7 +113,7 @@ public class RealTimeShow extends Activity {
         btRefresh.setClickable(false);
         System.out.println("获取图片");
         //获取图片链接
-        RequestParams params = new RequestParams("http://120.24.174.213:9501/api/snap");
+        RequestParams params = new RequestParams(Urls.URL_PIC_SNAP);
 
         params.addBodyParameter("devid", devid);
         System.out.println("实时预览" + devid);
@@ -369,7 +370,7 @@ public class RealTimeShow extends Activity {
     public void startVideo() {
         TestDecoder.setUrl("rtsp://192.168.199.30:554/stream1");
         startActivity(new Intent(RealTimeShow.this, MyTestActivity.class));
-//        RequestParams params = new RequestParams(URL_VIDEO);
+//        RequestParams params = new RequestParams(Urls.REQUEST_VIDEO);
 //        params.addQueryStringParameter("devid",devid);
 //        params.addParameter("channel","0");
 //
@@ -382,8 +383,8 @@ public class RealTimeShow extends Activity {
 //                int code = videoInfoBean.getError();
 //                if (code == 200) {
 //                    System.out.println("视频URL:" + videoInfoBean.getUrl());
-////                    TestDecoder.setUrl(videoInfoBean.getUrl());
-////                    startActivity(new Intent(RealTimeShow.this, SurfaceActivity.class));
+//                    TestDecoder.setUrl(videoInfoBean.getUrl());
+//                    startActivity(new Intent(RealTimeShow.this, MyTestActivity.class));
 //                }else {
 ////                    showVideoInDeviceWifi();
 //                    System.out.println("非200");
@@ -414,7 +415,7 @@ public class RealTimeShow extends Activity {
      */
     private void showVideoInDeviceWifi(){
         if (NetworkTypeUtils.getNetworkType(RealTimeShow.this) == NetworkTypeUtils.WIFI){
-            RequestParams params = new RequestParams("http://192.168.1.1/api/getdevinfo");
+            RequestParams params = new RequestParams(Urls.GET_DEVICE_INFO);
             x.http().get(params, new Callback.CommonCallback<String>() {
                 @Override
                 public void onSuccess(String result) {

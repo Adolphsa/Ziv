@@ -14,6 +14,7 @@ import com.zividig.ziv.R;
 import com.zividig.ziv.main.Login;
 import com.zividig.ziv.utils.NetworkTypeUtils;
 import com.zividig.ziv.utils.ToastShow;
+import com.zividig.ziv.utils.Urls;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -129,7 +130,7 @@ public class AddDevice extends Activity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        RequestParams params = new RequestParams(URL_BIND_DEVICE);
+        RequestParams params = new RequestParams(Urls.URL_BIND_DEVICE);
         params.setAsJsonContent(true);
         params.setBodyContent(json.toString());
         x.http().post(params, new Callback.CommonCallback<String>() {
