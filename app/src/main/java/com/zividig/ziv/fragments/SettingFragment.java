@@ -17,7 +17,11 @@ import android.widget.TextView;
 
 import com.zividig.ziv.R;
 import com.zividig.ziv.function.About;
+import com.zividig.ziv.function.LightColor;
+import com.zividig.ziv.utils.ToastShow;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
@@ -87,6 +91,16 @@ public class SettingFragment extends Fragment {
                             @Override
                             public void onSuccess(String result) {
                                 System.out.println("主机唤醒结果：" + result);
+                                try {
+                                    JSONObject json = new JSONObject(result);
+                                    int errorCode = json.getInt("error");
+                                    System.out.println("错误码是：" + errorCode);
+                                    if (errorCode == 200){
+                                        ToastShow.showToast(getActivity(),"主机正在唤醒中...");
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
                             }
 
                             @Override
@@ -106,7 +120,8 @@ public class SettingFragment extends Fragment {
                         });
                         break;
                     case 2:
-                        System.out.println("参数设置" + position);
+                        System.out.println("灯光设置" + position);
+                        startActivity(new Intent(getContext(), LightColor.class));
                         break;
                     case 3:
                         System.out.println("关于" + position);
@@ -167,7 +182,7 @@ public class SettingFragment extends Fragment {
                    break;
                case 2:
                    holder.leftIcon.setImageResource(R.mipmap.restaet);
-                   holder.itemText.setText("参数设置");
+                   holder.itemText.setText("灯光设置");
                    holder.RightIcon.setImageResource(R.mipmap.rights);
                    break;
                case 3:

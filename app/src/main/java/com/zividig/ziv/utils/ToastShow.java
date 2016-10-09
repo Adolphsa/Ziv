@@ -11,10 +11,16 @@ import android.widget.Toast;
  */
 public class ToastShow {
 
+    private static Toast sToast = null;
+
     public static void showToast(Context context,String str){
-        Toast toast = Toast.makeText(context, str, Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.CENTER, 0, 0);
-        toast.show();
+        if (sToast == null) {
+            sToast = Toast.makeText(context, str, Toast.LENGTH_SHORT);
+        }else {
+            sToast.setText(str);
+        }
+        sToast.setGravity(Gravity.CENTER, 0, 0);
+        sToast.show();
     }
 
     /**

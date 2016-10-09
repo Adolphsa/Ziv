@@ -24,9 +24,13 @@ import com.zivdigi.helloffmpeg.MyTestActivity;
 import com.zivdigi.helloffmpeg.TestDecoder;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.RealTimeBean;
+import com.zividig.ziv.bean.VideoInfoBean;
 import com.zividig.ziv.utils.NetworkTypeUtils;
+import com.zividig.ziv.utils.ToastShow;
 import com.zividig.ziv.utils.Urls;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.image.ImageOptions;
@@ -43,7 +47,7 @@ import java.text.SimpleDateFormat;
  */
 public class RealTimeShow extends Activity {
 
-    private static String URL_VIDEO = "http://120.24.174.213:9501/api/requestrtspstream";
+//    private static String URL_VIDEO = "http://120.24.174.213:9501/api/requestrtspstream";
 
     private PhotoView photoView;
     private ProgressBar progressBar;
@@ -368,46 +372,87 @@ public class RealTimeShow extends Activity {
      * @param
      */
     public void startVideo() {
-        TestDecoder.setUrl("rtsp://192.168.199.30:554/stream1");
-        startActivity(new Intent(RealTimeShow.this, MyTestActivity.class));
-//        RequestParams params = new RequestParams(Urls.REQUEST_VIDEO);
-//        params.addQueryStringParameter("devid",devid);
-//        params.addParameter("channel","0");
-//
-//        x.http().get(params, new Callback.CommonCallback<String>() {
-//            @Override
-//            public void onSuccess(String result) {
-//                System.out.println(result);
-//                Gson gson = new Gson();
-//                VideoInfoBean videoInfoBean = gson.fromJson(result, VideoInfoBean.class);
-//                int code = videoInfoBean.getError();
-//                if (code == 200) {
-//                    System.out.println("视频URL:" + videoInfoBean.getUrl());
-//                    TestDecoder.setUrl(videoInfoBean.getUrl());
-//                    startActivity(new Intent(RealTimeShow.this, MyTestActivity.class));
-//                }else {
-////                    showVideoInDeviceWifi();
-//                    System.out.println("非200");
-//                    ToastShow.showToast(RealTimeShow.this,"设备不在线");
-//                }
-//            }
-//
-//            @Override
-//            public void onError(Throwable ex, boolean isOnCallback) {
-//                System.out.println("访问错误" + ex);
-////                showVideoInDeviceWifi();
-//            }
-//
-//            @Override
-//            public void onCancelled(CancelledException cex) {
-//
-//            }
-//
-//            @Override
-//            public void onFinished() {
-//
-//            }
-//        });
+//        TestDecoder.setUrl("rtsp://192.168.199.30:554/stream1");
+//        startActivity(new Intent(RealTimeShow.this, MyTestActivity.class));
+        System.out.println("点击了开启实时视频1");
+        RequestParams params = new RequestParams(Urls.REQUEST_VIDEO);
+        params.addQueryStringParameter("devid",devid);
+        params.addParameter("channel","0");
+
+        x.http().get(params, new Callback.CommonCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                System.out.println(result);
+                Gson gson = new Gson();
+                VideoInfoBean videoInfoBean = gson.fromJson(result, VideoInfoBean.class);
+                int code = videoInfoBean.getError();
+                if (code == 200) {
+                    System.out.println("视频URL:" + videoInfoBean.getUrl());
+                    TestDecoder.setUrl(videoInfoBean.getUrl());
+                    startActivity(new Intent(RealTimeShow.this, MyTestActivity.class));
+                }else {
+//                    showVideoInDeviceWifi();
+                    System.out.println("非200");
+                    ToastShow.showToast(RealTimeShow.this,"设备不在线");
+                }
+            }
+
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+                System.out.println("访问错误" + ex);
+//                showVideoInDeviceWifi();
+            }
+
+            @Override
+            public void onCancelled(CancelledException cex) {
+
+            }
+
+            @Override
+            public void onFinished() {
+
+            }
+        });
+    }
+
+    /**
+     * 主机唤醒
+     */
+    private void wakeupDevice(){
+        RequestParams params = new RequestParams("http://120.24.174.213:9501/api/wakeupdevice");
+        params.addQueryStringParameter("devid",devid);
+        System.out.println("主机唤醒：" + params);
+        x.http().get(params, new Callback.CommonCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                System.out.println("主机唤醒结果：" + result);
+                try {
+                    JSONObject json = new JSONObject(result);
+                    int errorCode = json.getInt("error");
+                    System.out.println("错误码是：" + errorCode);
+                    if (errorCode == 200){
+                        ToastShow.showToast(RealTimeShow.this,"主机正在唤醒中...");
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+                System.out.println("主机唤醒错误：" + ex);
+            }
+
+            @Override
+            public void onCancelled(CancelledException cex) {
+
+            }
+
+            @Override
+            public void onFinished() {
+
+            }
+        });
     }
 
     /**

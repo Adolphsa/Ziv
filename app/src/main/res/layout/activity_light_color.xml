@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_light_color"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.zividig.ziv.function.LightColor">
+
+    <include
+        android:id="@+id/light_color_title"
+        layout="@layout/layout_titlebar"/>
+
+    <ImageView
+        android:id="@+id/light_color_light"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/light_color_title"
+        android:background="@mipmap/light"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/light_color_light"
+        android:layout_marginTop="15dp"
+        >
+        <ImageView
+            android:id="@+id/light_color_sgreen"
+            style="@style/colorLightYuanStyle"
+            android:src="@mipmap/yuan_sgreen"
+            android:layout_marginLeft="15dp"
+            />
+        <ImageView
+            android:id="@+id/duigou1"
+            style="@style/colorLightDuiGou"
+            android:layout_marginLeft="20dp"
+            />
+        <ImageView
+            android:id="@+id/light_color_red"
+            style="@style/colorLightYuanStyle"
+            android:src="@mipmap/yuan_red"
+            android:layout_centerHorizontal="true"
+            />
+        <ImageView
+            android:id="@+id/duigou2"
+            style="@style/colorLightDuiGou"
+            android:layout_marginLeft="20dp"
+            android:layout_centerHorizontal="true"
+            />
+        <ImageView
+            android:id="@+id/light_color_blue"
+            style="@style/colorLightYuanStyle"
+            android:src="@mipmap/yuan_blue"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="15dp"
+            />
+        <ImageView
+            android:id="@+id/duigou3"
+            style="@style/colorLightDuiGou"
+            android:layout_marginLeft="20dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="15dp"
+            />
+    </RelativeLayout>
+</RelativeLayout>

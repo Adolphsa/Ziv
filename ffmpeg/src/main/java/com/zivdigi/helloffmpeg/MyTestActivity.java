@@ -94,9 +94,8 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
         mTitle = (TextView) findViewById(R.id.mat_tv);
         playToolsBottom = (RelativeLayout) findViewById(R.id.mta_rl);
         playToolstop = (RelativeLayout) findViewById(R.id.mta_rl_top);
-
-
         mCycleProgressBar = (ProgressBar) findViewById(R.id.mta_recycle_pb); //圆形进度条
+
         //播放按钮
         mPlay = (Button) findViewById(R.id.mta_play);
         mPlay.setOnClickListener(this);
@@ -122,9 +121,8 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
 
 //        glSurfaceView.setZOrderMediaOverlay(true);
 
-
-        isPlaying = true;
         //开始播放视频
+        isPlaying = true;
         td = new TestDecoder();
         td.startRequest();
         new VideoPlayTask().start();

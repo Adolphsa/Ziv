@@ -39,8 +39,6 @@ import java.util.List;
 
 public class MyDevice extends Activity {
 
-    private static String URL_UNBIND_DEVICE = "http://api.caowei.name/devicebind/";
-
     private static List<DeviceInfoBean.DevinfoBean> devinfoList;
     private List<String> mStrings;
     private static MenuAdapter mMenuAdapter;

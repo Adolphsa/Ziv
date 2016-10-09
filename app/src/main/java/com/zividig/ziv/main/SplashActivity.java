@@ -113,7 +113,7 @@ public class SplashActivity extends Activity {
             checkVersion(); //检查版本更新
 
         }else {
-            mHandler.sendEmptyMessageDelayed(CODE_ENTER_HOME,1000); //延时2s后发送消息进入主页面
+            mHandler.sendEmptyMessageDelayed(CODE_ENTER_HOME,500); //延时2s后发送消息进入主页面
         }
     }
 

@@ -17,7 +17,7 @@ public class Urls {
     public static final String LOGIN_URL = "http://api.caowei.name/login";
 
     //设备绑定
-    public static final String URL_BIND_DEVICE = "http://api.caowei.name/devicebind";
+    public static final String URL_BIND_DEVICE = "http://api.caowei.name/devicebind/";
 
     //获取设备列表  GET_DEVICE_LIST+ "/" + user
     public static final String GET_DEVICE_LIST = "http://api.caowei.name/devicelist";
@@ -30,4 +30,8 @@ public class Urls {
 
     //请求视频
     public static final String REQUEST_VIDEO = "http://120.24.174.213:9501/api/requestrtspstream";
+
+    //主机唤醒
+    public static final String DEVICE_WAKEUP = "http://120.24.174.213:9501/api/wakeupdevice";
+
 }

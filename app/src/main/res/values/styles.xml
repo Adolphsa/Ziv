@@ -42,6 +42,20 @@
         <item name="android:drawablePadding">3dp</item>
     </style>
 
+    <!--灯光颜色-->
+    <style name="colorLightYuanStyle">
+        <item name="android:layout_width">60dp</item>
+        <item name="android:layout_height">60dp</item>
+        <item name="android:scaleType">fitXY</item>
+    </style>
+    <style name="colorLightDuiGou">
+        <item name="android:layout_width">50dp</item>
+        <item name="android:layout_height">50dp</item>
+        <item name="android:scaleType">fitXY</item>
+        <item name="android:visibility">gone</item>
+        <item name="android:src">@mipmap/duigou</item>
+    </style>
+
     <style name="csy_row">
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">@dimen/csy_row_h</item>

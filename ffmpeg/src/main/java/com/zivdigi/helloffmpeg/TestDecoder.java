@@ -61,7 +61,7 @@ public class TestDecoder{
     }
 
     public void startRequest(){
-        final String rtspUrlPi02 = "rtsp://192.168.199.30:554/stream1";
+//        final String rtspUrlPi02 = "rtsp://192.168.199.30:554/stream1";
         if(isPlaying()){
             return;
         }
