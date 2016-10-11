@@ -1,6 +1,5 @@
 package com.zividig.ziv.function;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -12,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.zividig.ziv.R;
+import com.zividig.ziv.main.BaseActivity;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -20,7 +20,7 @@ import java.util.TimerTask;
  * 车辆信息
  * Created by Administrator on 2016-05-30.
  */
-public class CarInfo extends Activity {
+public class CarInfo extends BaseActivity {
 
     private ImageView speedPoint;
     private  ImageView oilPoint;

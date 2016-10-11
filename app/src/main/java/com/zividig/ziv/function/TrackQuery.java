@@ -1,6 +1,5 @@
 package com.zividig.ziv.function;
 
-import android.app.Activity;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -22,6 +21,7 @@ import com.baidu.mapapi.model.LatLngBounds;
 import com.google.gson.Gson;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.MapTrackBean;
+import com.zividig.ziv.main.BaseActivity;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
@@ -33,7 +33,7 @@ import java.util.List;
 /**
  * 轨迹查询
  */
-public class TrackQuery extends Activity {
+public class TrackQuery extends BaseActivity {
 
     BitmapDescriptor realtimeBitmap = BitmapDescriptorFactory
             .fromResource(R.mipmap.icon_gcoding);

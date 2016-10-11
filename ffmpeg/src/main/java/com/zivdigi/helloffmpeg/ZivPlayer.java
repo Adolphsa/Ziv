@@ -49,7 +49,9 @@ public class ZivPlayer  {
             ZIV_ERR_CONNECT = 2,
             ZIV_ERR_READFRAME = 3,
         */
+        client.getErrorCode(errorCode);
         Log.v("ZivPlayer", "getErrorCodeCb was called");
+
         return 0;
     }
 

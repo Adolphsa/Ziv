@@ -1,6 +1,5 @@
 package com.zividig.ziv.function;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -8,8 +7,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.zividig.ziv.R;
+import com.zividig.ziv.main.BaseActivity;
 
-public class LightColor extends Activity implements View.OnClickListener{
+public class LightColor extends BaseActivity implements View.OnClickListener{
 
     private ImageView mLightImage;
     private ImageView mDuigou1;

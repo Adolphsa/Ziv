@@ -1,6 +1,5 @@
 package com.zividig.ziv.function;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +21,7 @@ import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.CoordinateConverter;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.LocationBean;
+import com.zividig.ziv.main.BaseActivity;
 import com.zividig.ziv.service.LocationService;
 import com.zividig.ziv.utils.ToastShow;
 
@@ -29,7 +29,7 @@ import com.zividig.ziv.utils.ToastShow;
  * 获取GPS的定位的信息的车辆定位
  * Created by Administrator on 2016-06-14.
  */
-public class CarLocation2 extends Activity{
+public class CarLocation2 extends BaseActivity {
 
     private MapView mMapView;
     private BaiduMap mBaiduMap;

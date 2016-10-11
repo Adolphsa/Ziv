@@ -1,6 +1,5 @@
 package com.zividig.ziv.function;
 
-import android.app.Activity;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
@@ -8,6 +7,7 @@ import android.widget.Button;
 
 import com.bm.library.PhotoView;
 import com.zividig.ziv.R;
+import com.zividig.ziv.main.BaseActivity;
 
 import cn.sharesdk.framework.ShareSDK;
 import cn.sharesdk.onekeyshare.OnekeyShare;
@@ -16,7 +16,7 @@ import cn.sharesdk.onekeyshare.OnekeyShare;
  * 展示图片
  * Created by Administrator on 2016-06-04.
  */
-public class ShowPicture extends Activity {
+public class ShowPicture extends BaseActivity {
 
     private PhotoView photoView;
     private String picUrl;

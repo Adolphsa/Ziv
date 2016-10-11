@@ -1,6 +1,5 @@
 package com.zividig.ziv.function;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -25,6 +24,7 @@ import com.zivdigi.helloffmpeg.TestDecoder;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.RealTimeBean;
 import com.zividig.ziv.bean.VideoInfoBean;
+import com.zividig.ziv.main.BaseActivity;
 import com.zividig.ziv.utils.NetworkTypeUtils;
 import com.zividig.ziv.utils.ToastShow;
 import com.zividig.ziv.utils.Urls;
@@ -45,7 +45,7 @@ import java.text.SimpleDateFormat;
  * 实时预览
  * Created by Administrator on 2016-05-30.
  */
-public class RealTimeShow extends Activity {
+public class RealTimeShow extends BaseActivity {
 
 //    private static String URL_VIDEO = "http://120.24.174.213:9501/api/requestrtspstream";
 

@@ -12,6 +12,7 @@ public class TestDecoder{
     private static String TAG = "testDecoder";
     private static String vedioUrl;
     ZivPlayer player;
+    int errorCode;
 
     private volatile boolean stopRequested;
 
@@ -67,8 +68,11 @@ public class TestDecoder{
         }
 
         if(player != null){
-            player.startStream(vedioUrl);
+            boolean isStart = player.startStream(vedioUrl);
+            System.out.println("isStart = " + isStart);
         }
+
+
     }
 
     public void stopRequest() {
@@ -83,6 +87,11 @@ public class TestDecoder{
         }
 
         return false;
+    }
+
+    public void getErrorCode(int code){
+        errorCode = code;
+        System.out.println("errorCode = " + errorCode);
     }
 
     class FrameBean {

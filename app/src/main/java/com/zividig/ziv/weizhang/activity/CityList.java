@@ -1,6 +1,5 @@
 package com.zividig.ziv.weizhang.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -14,15 +13,15 @@ import android.widget.TextView;
 
 import com.cheshouye.api.client.WeizhangClient;
 import com.cheshouye.api.client.json.CityInfoJson;
-
 import com.zividig.ziv.R;
+import com.zividig.ziv.main.BaseActivity;
 import com.zividig.ziv.weizhang.adapter.ListAdapter;
 import com.zividig.ziv.weizhang.model.ListModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CityList extends Activity {
+public class CityList extends BaseActivity {
 	private ListView lv_list;
 	private ListAdapter mAdapter;
 	

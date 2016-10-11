@@ -1,12 +1,12 @@
 package com.zividig.ziv.function;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
 import com.zivdigi.helloffmpeg.MyTestActivity;
 import com.zividig.ziv.R;
+import com.zividig.ziv.main.BaseActivity;
 
 import cn.sharesdk.framework.ShareSDK;
 import cn.sharesdk.onekeyshare.OnekeyShare;
@@ -15,7 +15,7 @@ import cn.sharesdk.onekeyshare.OnekeyShare;
  * 测试分享视频
  * Created by Administrator on 2016-06-22.
  */
-public class TestShareVideo extends Activity {
+public class TestShareVideo extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

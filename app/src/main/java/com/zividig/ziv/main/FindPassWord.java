@@ -1,6 +1,5 @@
 package com.zividig.ziv.main;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -24,7 +23,7 @@ import org.xutils.http.HttpMethod;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
 
-public class FindPassWord extends Activity {
+public class FindPassWord extends BaseActivity {
 
 //    private static String RESET_PWD = "http://api.caowei.name/user";
 

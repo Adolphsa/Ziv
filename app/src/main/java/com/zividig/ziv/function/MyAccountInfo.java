@@ -1,6 +1,5 @@
 package com.zividig.ziv.function;
 
-import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
@@ -8,9 +7,10 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.zividig.ziv.R;
+import com.zividig.ziv.main.BaseActivity;
 import com.zividig.ziv.main.Login;
 
-public class MyAccountInfo extends Activity {
+public class MyAccountInfo extends BaseActivity {
 
     private SharedPreferences spf;
 

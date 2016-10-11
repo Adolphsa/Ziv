@@ -1,6 +1,5 @@
 package com.zividig.ziv.weizhang.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,8 +16,8 @@ import com.cheshouye.api.client.json.CarInfo;
 import com.cheshouye.api.client.json.CityInfoJson;
 import com.cheshouye.api.client.json.WeizhangResponseHistoryJson;
 import com.cheshouye.api.client.json.WeizhangResponseJson;
-
 import com.zividig.ziv.R;
+import com.zividig.ziv.main.BaseActivity;
 import com.zividig.ziv.weizhang.adapter.WeizhangResponseAdapter;
 
 import java.util.ArrayList;
@@ -30,7 +29,7 @@ import java.util.List;
  * @author paul
  * 
  */
-public class WeizhangResult extends Activity {
+public class WeizhangResult extends BaseActivity {
 	final Handler cwjHandler = new Handler();
 	WeizhangResponseJson info = null;
 

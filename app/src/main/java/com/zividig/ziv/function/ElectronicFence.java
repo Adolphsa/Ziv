@@ -1,6 +1,5 @@
 package com.zividig.ziv.function;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -41,6 +40,7 @@ import com.baidu.trace.OnGeoFenceListener;
 import com.baidu.trace.TraceLocation;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.LocationBean;
+import com.zividig.ziv.main.BaseActivity;
 import com.zividig.ziv.service.LocationService;
 import com.zividig.ziv.utils.ToastShow;
 
@@ -51,7 +51,7 @@ import org.json.JSONObject;
 /**
  * 电子围栏
  */
-public class ElectronicFence extends Activity {
+public class ElectronicFence extends BaseActivity {
 
     private MapView mMapView;
     private BaiduMap mBaiduMap;

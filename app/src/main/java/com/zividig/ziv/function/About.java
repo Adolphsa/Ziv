@@ -1,14 +1,14 @@
 package com.zividig.ziv.function;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.zividig.ziv.R;
+import com.zividig.ziv.main.BaseActivity;
 
-public class About extends Activity {
+public class About extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

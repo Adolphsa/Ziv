@@ -1,6 +1,5 @@
 package com.zividig.ziv.function;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
@@ -20,13 +19,14 @@ import android.widget.TextView;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.PictureBean;
 import com.zividig.ziv.customView.NoScrollGridView;
+import com.zividig.ziv.main.BaseActivity;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class MyPicture extends Activity{
+public class MyPicture extends BaseActivity {
 
     private static String path = Environment.getExternalStorageDirectory() + "/Ziv";
 

@@ -1,6 +1,5 @@
 package com.zividig.ziv.main;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -39,7 +38,7 @@ import java.net.URL;
  * 闪屏页面
  * Created by Administrator on 2016-05-31.
  */
-public class SplashActivity extends Activity {
+public class SplashActivity extends BaseActivity {
 
     private static String URL_GET_DEVICE_INFO = "http://192.168.1.1/api/getdevinfo";
 

@@ -1,7 +1,6 @@
 package com.zividig.ziv.weizhang.activity;
 
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,9 +16,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zividig.ziv.R;
+import com.zividig.ziv.main.BaseActivity;
 
 
-public class ShortNameList extends Activity {
+public class ShortNameList extends BaseActivity {
 
 	private GridView gv;
 

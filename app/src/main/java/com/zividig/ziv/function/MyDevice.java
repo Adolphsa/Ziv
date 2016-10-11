@@ -1,6 +1,5 @@
 package com.zividig.ziv.function;
 
-import android.app.Activity;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -23,6 +22,7 @@ import com.zividig.ziv.adapter.ListViewDecoration;
 import com.zividig.ziv.adapter.MenuAdapter;
 import com.zividig.ziv.adapter.OnItemClickListener;
 import com.zividig.ziv.bean.DeviceInfoBean;
+import com.zividig.ziv.main.BaseActivity;
 import com.zividig.ziv.main.Login;
 import com.zividig.ziv.utils.ToastShow;
 import com.zividig.ziv.utils.Urls;
@@ -37,7 +37,7 @@ import org.xutils.x;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyDevice extends Activity {
+public class MyDevice extends BaseActivity {
 
     private static List<DeviceInfoBean.DevinfoBean> devinfoList;
     private List<String> mStrings;

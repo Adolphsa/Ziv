@@ -1,6 +1,5 @@
 package com.zividig.ziv.main;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -31,7 +30,7 @@ import java.util.List;
  * 登录界面
  * Created by Administrator on 2016-06-14.
  */
-public class Login extends Activity {
+public class Login extends BaseActivity {
 
 //    private static String LOGIN_URL = "http://api.caowei.name/login";
 //    private static String GET_DEVICE_LIST = "http://api.caowei.name/devicelist";

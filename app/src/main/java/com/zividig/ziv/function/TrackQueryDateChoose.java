@@ -1,6 +1,5 @@
 package com.zividig.ziv.function;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -9,9 +8,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.zividig.ziv.R;
+import com.zividig.ziv.main.BaseActivity;
 import com.zividig.ziv.utils.DateTimePickDialogUtil;
 
-public class TrackQueryDateChoose extends Activity {
+public class TrackQueryDateChoose extends BaseActivity {
 
     private EditText startDateTime;
     private EditText endDateTime;

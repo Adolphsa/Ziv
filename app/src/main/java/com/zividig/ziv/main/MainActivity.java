@@ -18,6 +18,7 @@ import com.zividig.ziv.fragments.MessageFragment;
 import com.zividig.ziv.fragments.MyCarFragment;
 import com.zividig.ziv.fragments.MyFragment;
 import com.zividig.ziv.fragments.SettingFragment;
+import com.zividig.ziv.utils.StatusBarUtils;
 
 public class MainActivity extends FragmentActivity implements ViewPager.OnPageChangeListener{
 
@@ -43,6 +44,8 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        StatusBarUtils.setColor(this, getResources().getColor(R.color.myColorPrimaryDark));
 
         spf = getSharedPreferences("config",MODE_PRIVATE);
 

@@ -1,6 +1,5 @@
 package com.zividig.ziv.function;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -11,6 +10,7 @@ import android.widget.TextView;
 
 import com.dtr.zxing.activity.CaptureActivity;
 import com.zividig.ziv.R;
+import com.zividig.ziv.main.BaseActivity;
 import com.zividig.ziv.main.Login;
 import com.zividig.ziv.utils.NetworkTypeUtils;
 import com.zividig.ziv.utils.ToastShow;
@@ -22,7 +22,7 @@ import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
 
-public class AddDevice extends Activity {
+public class AddDevice extends BaseActivity {
 
     private static String URL_BIND_DEVICE = "http://api.caowei.name/devicebind";
 

@@ -1,6 +1,5 @@
 package com.zividig.ziv.weizhang.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputFilter;
@@ -21,9 +20,10 @@ import com.cheshouye.api.client.json.CarInfo;
 import com.cheshouye.api.client.json.CityInfoJson;
 import com.cheshouye.api.client.json.InputConfigJson;
 import com.zividig.ziv.R;
+import com.zividig.ziv.main.BaseActivity;
 
 
-public class WeiZhangMainActivity extends Activity {
+public class WeiZhangMainActivity extends BaseActivity {
 
 	
 	private String defaultChepai = "粤"; // 粤 = 广东

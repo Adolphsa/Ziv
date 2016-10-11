@@ -1,6 +1,5 @@
 package com.zividig.ziv.main;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -23,7 +22,7 @@ import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
 
-public class Register extends Activity {
+public class Register extends BaseActivity {
 
 //    private static String REGISTER_URL = "http://api.caowei.name/user";  //注册的URL
 //    public static String GET_YZM_URL = "http://api.caowei.name/sms";    //获取验证码的URL
