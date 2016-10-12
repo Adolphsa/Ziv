@@ -10,7 +10,9 @@
         <activity
             android:name=".MyTestActivity"
             android:configChanges="orientation|screenSize|keyboard|keyboardHidden"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            />
 
     </application>
 

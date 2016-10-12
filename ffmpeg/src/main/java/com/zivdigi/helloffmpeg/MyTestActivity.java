@@ -1,5 +1,6 @@
 package com.zivdigi.helloffmpeg;
 
+import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -10,6 +11,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AlertDialog;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -30,6 +32,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
     private static String TAG = "MyTestActivity";
 
     private static final int PLAY = 0;
+    private static final int ERROR_CODE = 7;
     private static final int AUDIO = 1;
     private static final int SHOW_TOOLS = 2;
     private static final int HIDE_TOOLS = 3;
@@ -64,24 +67,31 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what){
-                case PLAY: {
+                case PLAY:
                     mCycleProgressBar.setVisibility(View.GONE);
                     mPlay.setBackgroundResource(R.mipmap.pause);
                     break;
-                }
+
                 case SHOW_TOOLS:
                     Log.i(TAG, "handleMessage: 接收到消息");
                     playToolstop.setVisibility(View.VISIBLE);
                     playToolsBottom.setVisibility(View.VISIBLE);
                     playToolsBottom.getLayoutParams().width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
                     break;
-                case HIDE_TOOLS: {
+
+                case HIDE_TOOLS:
                     if (mOrientation != 1){  //注释的地方为如果是竖屏，则播放控制不隐藏
                         playToolstop.setVisibility(View.INVISIBLE);
                         playToolsBottom.setVisibility(View.INVISIBLE);
                     }
                     break;
-                }
+
+                case ERROR_CODE: //播放错误
+//                    Toast.makeText(MyTestActivity.this,"could not open input stream",Toast.LENGTH_LONG).show();
+                    mCycleProgressBar.setVisibility(View.GONE);
+                    showDialog();
+                    break;
+
             }
         }
     };
@@ -126,6 +136,19 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
         td = new TestDecoder();
         td.startRequest();
         new VideoPlayTask().start();
+
+        td.setErrorCodeInterface(new ErrorCodeInterface() {
+            @Override
+            public void getErrorCode(int error) {
+                System.out.println("td.error------" + error);
+                if (error == 2){
+                    System.out.println("播放异常");
+                    mHandler.sendEmptyMessage(ERROR_CODE);
+
+                }
+            }
+        });
+
 
         glSurfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
@@ -404,4 +427,18 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
             myGLRenderer.setScreenState(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
     }
+
+    public void showDialog(){
+        new AlertDialog.Builder(MyTestActivity.this)
+                .setTitle("警告")
+                .setMessage("could not open input stream")
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                })
+                .create().show();
+    }
+
 }

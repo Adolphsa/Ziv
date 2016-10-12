@@ -27,6 +27,12 @@ public class TestDecoder{
     private  FrameBean mFrameBean;
     private Vector<FrameBean> mVector;
 
+    ErrorCodeInterface mErrorCodeInterface;
+
+    public void setErrorCodeInterface(ErrorCodeInterface errorCodeInterface){
+        mErrorCodeInterface = errorCodeInterface;
+    }
+
     public TestDecoder(){
         player = new ZivPlayer(ZivPlayer.COLOR_FORMAT_YUV420);
         player.setPlayerUser(this);
@@ -91,6 +97,7 @@ public class TestDecoder{
 
     public void getErrorCode(int code){
         errorCode = code;
+        mErrorCodeInterface.getErrorCode(code);
         System.out.println("errorCode = " + errorCode);
     }
 

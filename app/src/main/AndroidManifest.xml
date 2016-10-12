@@ -37,7 +37,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".main.MainActivity"/>
-        <activity android:name=".function.RealTimeShow"/>
+        <activity android:name=".function.RealTimeShow"
+                  android:theme="@style/AppTheme.NoActionBar"
+            />
         <activity android:name=".function.CarInfo"/>
         <activity android:name=".function.MyPicture"/>
         <activity android:name=".function.ShowPicture"/>

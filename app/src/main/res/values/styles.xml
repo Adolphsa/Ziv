@@ -16,7 +16,7 @@
     <style name="CustomTabPageIndicator.Text" parent="android:TextAppearance.Medium">
         <item name="android:typeface">monospace</item>
     </style>
-
+    
     <!--底部导航栏样式-->
     <style name="pagertab_icon_style">
         <item name="android:background">@drawable/tab_bg_normal</item>

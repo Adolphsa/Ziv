@@ -145,19 +145,19 @@ public class RealTimeShow extends BaseActivity {
                         }
                         break;
                     case 400:
-                        showToast("错误请求-请求中有语法问题");
+                        ToastShow.showToast(RealTimeShow.this,"错误请求-请求中有语法问题");
                         break;
                     case 401:
-                        showToast("未授权");
+                        ToastShow.showToast(RealTimeShow.this,"未授权");
                         break;
                     case 501:
-                        showToast("设备不在线");
+                        ToastShow.showToast(RealTimeShow.this,"设备不在线");
                         break;
                     case 502:
-                        showToast("服务器内部出错");
+                        ToastShow.showToast(RealTimeShow.this,"服务器内部出错");
                         break;
                     case 503:
-                        showToast("不支持此操作");
+                        ToastShow.showToast(RealTimeShow.this,"不支持此操作");
                         break;
                 }
 
@@ -270,7 +270,8 @@ public class RealTimeShow extends BaseActivity {
                         fsTo.close();
 
                         updateImage();
-                        Toast.makeText(RealTimeShow.this, "图片已保存", Toast.LENGTH_SHORT).show();
+                        ToastShow.showToast(RealTimeShow.this,"图片已保存");
+//                        Toast.makeText(RealTimeShow.this, "图片已保存", Toast.LENGTH_SHORT).show();
                         return true;
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -290,7 +291,8 @@ public class RealTimeShow extends BaseActivity {
 
                 @Override
                 public void onError(Throwable ex, boolean isOnCallback) {
-                    Toast.makeText(RealTimeShow.this, "网络异常", Toast.LENGTH_SHORT).show();
+                   ToastShow.showToast(RealTimeShow.this,"网络异常");
+//                    Toast.makeText(RealTimeShow.this, "网络异常", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
@@ -306,7 +308,8 @@ public class RealTimeShow extends BaseActivity {
             });
 
         } else {
-            Toast.makeText(RealTimeShow.this, "请先刷新图片", Toast.LENGTH_SHORT).show();
+            ToastShow.showToast(RealTimeShow.this,"请先刷新图片");
+//            Toast.makeText(RealTimeShow.this, "请先刷新图片", Toast.LENGTH_SHORT).show();
         }
 
     }
