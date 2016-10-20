@@ -26,6 +26,7 @@ public class LocationService extends Service {
     private static String URL = "http://dev.caowei.name/mytest/uploadtest/localtionhis_realtime.php";
     private LocationBean locationBean;
     private RequestParams params;
+    private SharedPreferences spf;
 
 
     public LocationService() {
@@ -41,14 +42,8 @@ public class LocationService extends Service {
     public void onCreate() {
         super.onCreate();
         System.out.println("位置信息服务开启");
-        SharedPreferences spf = getSharedPreferences("config",MODE_PRIVATE);
-        String devid = spf.getString("devid","");
-        System.out.println("服务中的devid---" + devid);
+        spf = getSharedPreferences("config",MODE_PRIVATE);
 
-        //请求参数相关
-        params = new RequestParams(URL);
-        params.addBodyParameter("deviceId", devid);
-        locationBean = new LocationBean();
 
         //定时器相关
         mTimer = new Timer();
@@ -58,7 +53,7 @@ public class LocationService extends Service {
                 getLocation();
             }
         };
-        mTimer.schedule(mTimerTask,3000,3000); //每3秒启动一次任务
+        mTimer.schedule(mTimerTask,0,2000); //每2秒启动一次任务
 
     }
 
@@ -73,6 +68,16 @@ public class LocationService extends Service {
      * 获取位置信息
      */
     public void getLocation() {
+
+        String devid = spf.getString("devid","");
+//        System.out.println("服务中的devid---" + devid);
+
+        //请求参数相关
+        params = new RequestParams(URL);
+        params.addBodyParameter("deviceId", devid);
+
+//        System.out.println("gps信息---" + params.toString());
+        locationBean = new LocationBean();
         x.http().get(params, new Callback.CommonCallback<String>() {
 
             @Override

@@ -101,6 +101,9 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_fragment_sssp_play);
 
+        //设置status的颜色
+        FfmpegStatusBarUtils.setColor(this,getResources().getColor(R.color.statusColor));
+
         mTitle = (TextView) findViewById(R.id.mat_tv);
         playToolsBottom = (RelativeLayout) findViewById(R.id.mta_rl);
         playToolstop = (RelativeLayout) findViewById(R.id.mta_rl_top);

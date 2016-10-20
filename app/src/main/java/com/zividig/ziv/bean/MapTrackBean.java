@@ -65,7 +65,7 @@ public class MapTrackBean {
         private int ti;
         private double lat;
         private double lon;
-        private int spd;
+        private float spd;
         private int hd;
         private int alt;
 
@@ -93,11 +93,11 @@ public class MapTrackBean {
             this.lon = lon;
         }
 
-        public int getSpd() {
+        public float getSpd() {
             return spd;
         }
 
-        public void setSpd(int spd) {
+        public void setSpd(float spd) {
             this.spd = spd;
         }
 

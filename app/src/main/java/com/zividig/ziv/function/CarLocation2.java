@@ -38,13 +38,17 @@ public class CarLocation2 extends BaseActivity {
     private boolean once = true;
     BitmapDescriptor carIcon = BitmapDescriptorFactory
             .fromResource(R.mipmap.car_icon);
+    double lat;
+    double lon;
 
     //动态注册的广播
     private BroadcastReceiver locationBroadcast = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             LocationBean locationBean = intent.getParcelableExtra(LocationService.PAR_KEY);
-            initMap(locationBean.getLat(),locationBean.getLon());
+            lat = locationBean.getLat();
+            lon = locationBean.getLon();
+            initMap(lat,lon);
         }
     };
 
@@ -106,7 +110,16 @@ public class CarLocation2 extends BaseActivity {
                 mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
 
             }else {
+                System.out.println("增加点");
                 mBaiduMap.addOverlay(overlay);
+
+//                Point pt= mBaiduMap.getMapStatus().targetScreen;
+//
+//                Point point= mBaiduMap.getProjection().toScreenLocation(desLatLng);
+//                if(point.x < 0 || point.x > pt.x*2 || point.y < 0 || point.y > pt.y*2)
+//                {
+//                    mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newLatLng(desLatLng));
+//                }
             }
         }
     }

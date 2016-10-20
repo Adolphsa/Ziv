@@ -15,7 +15,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.baidu.mapapi.SDKInitializer;
 import com.igexin.sdk.PushManager;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
@@ -33,6 +32,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+
+
 
 /**
  * 闪屏页面
@@ -92,8 +93,7 @@ public class SplashActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //百度地图的初始化
-        SDKInitializer.initialize(getApplicationContext()); //初始化百度地图
+
         setContentView(R.layout.activity_splash);
 
         //调用个推初始化

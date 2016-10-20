@@ -2,6 +2,8 @@ package com.zividig.ziv.main;
 
 import android.app.Application;
 
+import com.baidu.mapapi.SDKInitializer;
+
 import org.xutils.x;
 
 /**
@@ -16,7 +18,9 @@ public class ZivApp extends Application{
     public void onCreate() {
         super.onCreate();
         x.Ext.init(this); //初始化xutils
-
+        //百度地图的初始化
+        SDKInitializer.initialize(this); //初始化百度地图
+        System.out.println("application");
         if (instance == null) {
             instance = this;
         }

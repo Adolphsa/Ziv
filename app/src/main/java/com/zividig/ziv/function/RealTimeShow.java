@@ -1,5 +1,6 @@
 package com.zividig.ziv.function;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -25,6 +26,7 @@ import com.zividig.ziv.R;
 import com.zividig.ziv.bean.RealTimeBean;
 import com.zividig.ziv.bean.VideoInfoBean;
 import com.zividig.ziv.main.BaseActivity;
+import com.zividig.ziv.utils.DialogUtils;
 import com.zividig.ziv.utils.NetworkTypeUtils;
 import com.zividig.ziv.utils.ToastShow;
 import com.zividig.ziv.utils.Urls;
@@ -151,7 +153,14 @@ public class RealTimeShow extends BaseActivity {
                         ToastShow.showToast(RealTimeShow.this,"未授权");
                         break;
                     case 501:
-                        ToastShow.showToast(RealTimeShow.this,"设备不在线");
+//                        ToastShow.showToast(RealTimeShow.this,"设备不在线");
+                        System.out.println("可以执行唤醒主机的工作");
+                        DialogUtils.showPrompt(RealTimeShow.this, "提示", "设备不在线", "确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                finish();
+                            }
+                        });
                         break;
                     case 502:
                         ToastShow.showToast(RealTimeShow.this,"服务器内部出错");

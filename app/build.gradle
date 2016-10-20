@@ -60,6 +60,8 @@ dependencies {
     compile project(':ffmpeg')
     compile 'com.getui:sdk:2.9.0.0'
     compile 'com.yanzhenjie:recyclerview-swipe:1.0.2'
+    //时间日期选择器
+    compile 'com.bigkoo:pickerview:2.1.1'
     compile 'com.android.support:design:23.4.0'
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha8'
