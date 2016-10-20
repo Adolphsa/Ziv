@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
 /**
  * 轨迹查询
  */
@@ -130,7 +129,7 @@ public class TrackQuery extends BaseActivity {
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
                 System.out.println("访问出错" + ex);
-                DialogUtils.showPrompt(TrackQuery.this, "提示", "数据出错", "确定", new DialogInterface.OnClickListener() {
+                DialogUtils.showPrompt(TrackQuery.this, "提示", "无数据", "确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         finish();
@@ -175,8 +174,8 @@ public class TrackQuery extends BaseActivity {
         //构建用户绘制折线的Option对象
         polylineOption = new PolylineOptions()
                 .points(overLatLng)
-                .color(Color.BLACK)
-                .width(10)
+                .color(Color.BLUE)
+                .width(5)
                 .visible(true);
         //在地图上添加折线Option，用于显示
         mBaiduMap.addOverlay(polylineOption);

@@ -18,11 +18,11 @@ import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
-import com.baidu.mapapi.utils.CoordinateConverter;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.LocationBean;
 import com.zividig.ziv.main.BaseActivity;
 import com.zividig.ziv.service.LocationService;
+import com.zividig.ziv.utils.GPSConverterUtils;
 import com.zividig.ziv.utils.ToastShow;
 
 /**
@@ -51,6 +51,7 @@ public class CarLocation2 extends BaseActivity {
             initMap(lat,lon);
         }
     };
+    private MapStatus.Builder mBuilder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +63,7 @@ public class CarLocation2 extends BaseActivity {
         filter.setPriority(Integer.MAX_VALUE);
         registerReceiver(locationBroadcast, filter);
 
+        LocationService ls = new LocationService();
         // 标题
         TextView txtTitle = (TextView) findViewById(R.id.tv_title);
         txtTitle.setText("车辆定位");
@@ -80,6 +82,13 @@ public class CarLocation2 extends BaseActivity {
 
         mMapView = (MapView) findViewById(R.id.carlocation2_map);
         mBaiduMap = mMapView.getMap();
+
+        //设定地图的初始中心
+        mBuilder = new MapStatus.Builder();
+        mBuilder.target(GPSConverterUtils.gpsToBaidu(new LatLng(22.549467,113.920565)))
+                .zoom(16.0f);
+        mBaiduMap.setMapStatus(MapStatusUpdateFactory.newMapStatus(mBuilder.build()));
+
     }
 
     public void initMap(Double lat,Double lon){
@@ -94,23 +103,20 @@ public class CarLocation2 extends BaseActivity {
             mBaiduMap.clear();
             LatLng sourceLatLng = new LatLng(lat,lon);
             //坐标转换
-            CoordinateConverter converter = new CoordinateConverter();
-            converter.from(CoordinateConverter.CoordType.GPS);
-            converter.coord(sourceLatLng);
-            LatLng desLatLng = converter.convert();
+            LatLng desLatLng = GPSConverterUtils.gpsToBaidu(sourceLatLng);
 
             //标注
             overlay = new MarkerOptions().position(desLatLng).icon(carIcon).zIndex(9).draggable(true);
 
             if (isFirst){
                 isFirst = false;
-                MapStatus.Builder builder = new MapStatus.Builder();
-                builder.target(desLatLng).zoom(18.0f);
+                mBuilder = new MapStatus.Builder();
+                mBuilder.target(desLatLng).zoom(18.0f);
                 mBaiduMap.addOverlay(overlay);
-                mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
+                mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(mBuilder.build()));
 
             }else {
-                System.out.println("增加点");
+//                System.out.println("增加点");
                 mBaiduMap.addOverlay(overlay);
 
 //                Point pt= mBaiduMap.getMapStatus().targetScreen;

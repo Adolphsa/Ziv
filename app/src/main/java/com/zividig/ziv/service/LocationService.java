@@ -12,22 +12,15 @@ import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 public class LocationService extends Service {
 
     public static final String LOCATION_ACTION = "com.zividig.ziv.service.location";
     public static final String PAR_KEY = "location_parcelable";
 
-    private Timer mTimer;
-    private TimerTask mTimerTask;
-
     private static String URL = "http://dev.caowei.name/mytest/uploadtest/localtionhis_realtime.php";
     private LocationBean locationBean;
     private RequestParams params;
     private SharedPreferences spf;
-
 
     public LocationService() {
     }
@@ -43,24 +36,17 @@ public class LocationService extends Service {
         super.onCreate();
         System.out.println("位置信息服务开启");
         spf = getSharedPreferences("config",MODE_PRIVATE);
-
-
-        //定时器相关
-        mTimer = new Timer();
-        mTimerTask = new TimerTask() {
-            @Override
-            public void run() {
-                getLocation();
-            }
-        };
-        mTimer.schedule(mTimerTask,0,2000); //每2秒启动一次任务
-
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                getLocation();
+            }
+        }).start();
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -85,8 +71,8 @@ public class LocationService extends Service {
 //                System.out.println("位置信息返回成功" + result);
                 Gson gson = new Gson();
                 locationBean = gson.fromJson(result, LocationBean.class);
-//                System.out.println("纬度：" + locationBean.getLon() + "经度：" + locationBean.getLat());
 
+//                System.out.println("纬度：" + locationBean.getLon() + "经度：" + locationBean.getLat());
                 //发送广播
                 Intent broadcast = new Intent();
                 broadcast.setAction(LOCATION_ACTION);
@@ -96,6 +82,7 @@ public class LocationService extends Service {
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
+                System.out.println("获取位置信息错误" + ex);
 //                Toast.makeText(LocationService.this, "获取位置信息失败", Toast.LENGTH_SHORT).show();
             }
 
@@ -116,8 +103,5 @@ public class LocationService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mTimer!=null){
-            mTimer.cancel();
-        }
     }
 }

@@ -124,7 +124,7 @@
 //                });
 //    }
 //
-//    class MyLocationListener implements BDLocationListener{
+//    class MyLocationListener implements BDLocationListener {
 //
 //        @Override
 //        public void onReceiveLocation(BDLocation bdLocation) {
