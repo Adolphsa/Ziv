@@ -3,11 +3,11 @@ package com.zividig.ziv.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-public class PreferencesUtils {
+public class SharedPreferencesUtils {
 
     public static String PREFERENCE_NAME = "config";
 
-    private PreferencesUtils() {
+    private SharedPreferencesUtils() {
         throw new AssertionError();
     }
 

@@ -24,6 +24,7 @@ import com.zividig.ziv.main.BaseActivity;
 import com.zividig.ziv.service.LocationService;
 import com.zividig.ziv.utils.GPSConverterUtils;
 import com.zividig.ziv.utils.MyAlarmManager;
+import com.zividig.ziv.utils.SharedPreferencesUtils;
 import com.zividig.ziv.utils.ToastShow;
 
 /**
@@ -59,12 +60,6 @@ public class CarLocation2 extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_carlocation2);
 
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(LocationService.LOCATION_ACTION);
-        filter.setPriority(Integer.MAX_VALUE);
-        registerReceiver(locationBroadcast, filter);
-
-        LocationService ls = new LocationService();
         // 标题
         TextView txtTitle = (TextView) findViewById(R.id.tv_title);
         txtTitle.setText("车辆定位");
@@ -79,16 +74,32 @@ public class CarLocation2 extends BaseActivity {
             }
         });
 
-
-
         mMapView = (MapView) findViewById(R.id.carlocation2_map);
         mBaiduMap = mMapView.getMap();
+        mBuilder = new MapStatus.Builder();
 
         //设定地图的初始中心
-        mBuilder = new MapStatus.Builder();
-        mBuilder.target(GPSConverterUtils.gpsToBaidu(new LatLng(22.549467,113.920565)))
-                .zoom(16.0f);
+        String stringLat = SharedPreferencesUtils.getString(CarLocation2.this, "ziv_lat", "0.0");
+        String stringLon = SharedPreferencesUtils.getString(CarLocation2.this, "ziv_lon", "0.0");
+        if (!stringLat.equals("0.0") && !stringLon.equals("0.0")){
+            System.out.println("lat---" + Double.valueOf(stringLat));
+            System.out.println("lon---" + Double.valueOf(stringLon));
+            double initLat = Double.valueOf(stringLat);
+            double initLon = Double.valueOf(stringLon);
+            mBuilder.target(GPSConverterUtils.gpsToBaidu(new LatLng(initLat,initLon)))
+                    .zoom(16.0f);
+
+        }else {
+            mBuilder.target(GPSConverterUtils.gpsToBaidu(new LatLng(22.549467,113.920565)))
+                    .zoom(16.0f);
+        }
         mBaiduMap.setMapStatus(MapStatusUpdateFactory.newMapStatus(mBuilder.build()));
+
+        //注册广播
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(LocationService.LOCATION_ACTION);
+        filter.setPriority(Integer.MAX_VALUE);
+        registerReceiver(locationBroadcast, filter);
 
     }
 
@@ -136,5 +147,9 @@ public class CarLocation2 extends BaseActivity {
         super.onDestroy();
         MyAlarmManager.stopPollingService(CarLocation2.this, LocationService.class);
         unregisterReceiver(locationBroadcast);
+
+        //保存退出时的经纬度
+        SharedPreferencesUtils.putString(CarLocation2.this,"ziv_lat",String.valueOf(lat));
+        SharedPreferencesUtils.putString(CarLocation2.this,"ziv_lon",String.valueOf(lon));
     }
 }

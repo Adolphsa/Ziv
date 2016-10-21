@@ -92,11 +92,11 @@
         <Button
             android:id="@+id/findPwd_item_bt"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="35dp"
             android:text="获取验证码"
             android:textColor="#00c8ff"
             android:background="@drawable/selector_surface_yzm"
-            android:padding="5dp"
+            android:padding="3dp"
             android:layout_marginLeft="15dp"
             android:onClick="getFindPwdYzm"
             />

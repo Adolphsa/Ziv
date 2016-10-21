@@ -119,7 +119,7 @@ public class TrackQuery extends BaseActivity {
         x.http().get(params, new Callback.CommonCallback<String>() {
             @Override
             public void onSuccess(String result) {
-                System.out.println("轨迹结果：" + result);
+//                System.out.println("轨迹结果：" + result);
                 Gson gson = new Gson();
                 mapTrackBean = gson.fromJson(result,MapTrackBean.class);
                 if (mapTrackBean != null){

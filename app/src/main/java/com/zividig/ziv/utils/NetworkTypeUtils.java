@@ -3,6 +3,11 @@ package com.zividig.ziv.utils;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
+import android.util.Log;
+
+import static android.content.Context.WIFI_SERVICE;
 
 /**
  * 判断手机的网络类型
@@ -40,4 +45,12 @@ public class NetworkTypeUtils {
         return strNetworkType;
     }
 
+    //获取wifi名称
+    public static String getConnectWifiSsid(Context context){
+        WifiManager wifiManager = (WifiManager) context.getSystemService(WIFI_SERVICE);
+        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+        System.out.println("wifi名称---" + wifiInfo.getSSID());
+        Log.d("wifiInfo", wifiInfo.toString());
+        return wifiInfo.getSSID();
+    }
 }

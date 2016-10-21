@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.Display;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -27,7 +26,6 @@ import com.zividig.ziv.bean.RealTimeBean;
 import com.zividig.ziv.bean.VideoInfoBean;
 import com.zividig.ziv.main.BaseActivity;
 import com.zividig.ziv.utils.DialogUtils;
-import com.zividig.ziv.utils.NetworkTypeUtils;
 import com.zividig.ziv.utils.ToastShow;
 import com.zividig.ziv.utils.Urls;
 
@@ -153,7 +151,6 @@ public class RealTimeShow extends BaseActivity {
                         ToastShow.showToast(RealTimeShow.this,"未授权");
                         break;
                     case 501:
-//                        ToastShow.showToast(RealTimeShow.this,"设备不在线");
                         System.out.println("可以执行唤醒主机的工作");
                         DialogUtils.showPrompt(RealTimeShow.this, "提示", "设备不在线", "确定", new DialogInterface.OnClickListener() {
                             @Override
@@ -242,7 +239,6 @@ public class RealTimeShow extends BaseActivity {
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             long freeSpace = Environment.getExternalStorageDirectory().getFreeSpace();
             System.out.println("可用空间:" + freeSpace / 1000000 + "MB");
-//            freeSpace = (long) 0.5;
             if ((freeSpace / 1000000.0) < 1) {
                 Toast.makeText(RealTimeShow.this, "存储空间不足", Toast.LENGTH_SHORT).show();
                 return;
@@ -280,7 +276,6 @@ public class RealTimeShow extends BaseActivity {
 
                         updateImage();
                         ToastShow.showToast(RealTimeShow.this,"图片已保存");
-//                        Toast.makeText(RealTimeShow.this, "图片已保存", Toast.LENGTH_SHORT).show();
                         return true;
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -301,7 +296,6 @@ public class RealTimeShow extends BaseActivity {
                 @Override
                 public void onError(Throwable ex, boolean isOnCallback) {
                    ToastShow.showToast(RealTimeShow.this,"网络异常");
-//                    Toast.makeText(RealTimeShow.this, "网络异常", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
@@ -312,13 +306,11 @@ public class RealTimeShow extends BaseActivity {
                 @Override
                 public void onFinished() {
                     updateImage();
-//                    Toast.makeText(RealTimeShow.this, "图片已保存", Toast.LENGTH_SHORT).show();
                 }
             });
 
         } else {
             ToastShow.showToast(RealTimeShow.this,"请先刷新图片");
-//            Toast.makeText(RealTimeShow.this, "请先刷新图片", Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -334,18 +326,6 @@ public class RealTimeShow extends BaseActivity {
         this.sendBroadcast(intent);
     }
 
-    /**
-     * 显示提示信息
-     *
-     * @param str 字符
-     */
-    private void showToast(String str) {
-        progressBar.setVisibility(View.INVISIBLE);
-        btRefresh.setClickable(true);
-        Toast toast = Toast.makeText(RealTimeShow.this, str, Toast.LENGTH_LONG);
-        toast.setGravity(Gravity.CENTER, 0, 0);
-        toast.show();
-    }
 
     /***
      * 获取时间和日期
@@ -384,8 +364,6 @@ public class RealTimeShow extends BaseActivity {
      * @param
      */
     public void startVideo() {
-//        TestDecoder.setUrl("rtsp://192.168.199.30:554/stream1");
-//        startActivity(new Intent(RealTimeShow.this, MyTestActivity.class));
         System.out.println("点击了开启实时视频1");
         RequestParams params = new RequestParams(Urls.REQUEST_VIDEO);
         params.addQueryStringParameter("devid",devid);
@@ -467,37 +445,5 @@ public class RealTimeShow extends BaseActivity {
         });
     }
 
-    /**
-     * 在设备wifi情况下看视频
-     */
-    private void showVideoInDeviceWifi(){
-        if (NetworkTypeUtils.getNetworkType(RealTimeShow.this) == NetworkTypeUtils.WIFI){
-            RequestParams params = new RequestParams(Urls.GET_DEVICE_INFO);
-            x.http().get(params, new Callback.CommonCallback<String>() {
-                @Override
-                public void onSuccess(String result) {
-                    if (!result.isEmpty()){
-//                        TestDecoder.setUrl("rtsp://192.168.1.1/stream1");
-//                        startActivity(new Intent(RealTimeShow.this, SurfaceActivity.class));
 
-                    }
-                }
-
-                @Override
-                public void onError(Throwable ex, boolean isOnCallback) {
-                    System.out.println("设备WIFI网络下播放错误" + ex);
-                }
-
-                @Override
-                public void onCancelled(CancelledException cex) {
-
-                }
-
-                @Override
-                public void onFinished() {
-
-                }
-            });
-        }
-    }
 }

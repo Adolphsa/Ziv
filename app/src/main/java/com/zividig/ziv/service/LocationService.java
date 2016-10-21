@@ -22,8 +22,7 @@ public class LocationService extends Service {
     private RequestParams params;
     private SharedPreferences spf;
 
-    public LocationService() {
-    }
+    public LocationService() {}
 
     @Override
     public IBinder onBind(Intent intent) {

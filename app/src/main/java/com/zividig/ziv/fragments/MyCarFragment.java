@@ -19,6 +19,8 @@ import android.widget.TextView;
 import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.bigkoo.convenientbanner.holder.Holder;
+import com.zivdigi.helloffmpeg.MyTestActivity;
+import com.zivdigi.helloffmpeg.TestDecoder;
 import com.zividig.ziv.R;
 import com.zividig.ziv.function.AddDevice;
 import com.zividig.ziv.function.CarInfo;
@@ -28,6 +30,7 @@ import com.zividig.ziv.function.RealTimeShow;
 import com.zividig.ziv.function.TrackQueryDateChoose;
 import com.zividig.ziv.service.LocationService;
 import com.zividig.ziv.utils.MyAlarmManager;
+import com.zividig.ziv.utils.NetworkTypeUtils;
 import com.zividig.ziv.utils.ToastShow;
 import com.zividig.ziv.weizhang.activity.WeiZhangMainActivity;
 
@@ -169,7 +172,12 @@ public class MyCarFragment extends Fragment {
                     case 0:
                         System.out.println("实时预览" + position);
                         if (!devId.equals("")) {
-                            startActivity(new Intent(getContext(), RealTimeShow.class));
+                            if (NetworkTypeUtils.getConnectWifiSsid(getContext()).contains("car_")){
+                                showVideoInDeviceWifi();
+                            }else {
+                                startActivity(new Intent(getContext(), RealTimeShow.class));
+                            }
+
                         } else {
                             ToastShow.showToast(getContext(), "请先添加设备");
                         }
@@ -276,5 +284,15 @@ public class MyCarFragment extends Fragment {
         SharedPreferences spf = getActivity().getSharedPreferences("config",Context.MODE_PRIVATE);
         devId = spf.getString("devid","");
         System.out.println("fragment---deviceId:" + devId);
+    }
+
+    /**
+     * 在设备wifi情况下看视频
+     */
+    private void showVideoInDeviceWifi(){
+
+        TestDecoder.setUrl("rtsp://192.168.1.1/stream1");
+        startActivity(new Intent(getContext(), MyTestActivity.class));
+
     }
 }
