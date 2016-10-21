@@ -18,8 +18,6 @@ import com.zividig.ziv.fragments.MessageFragment;
 import com.zividig.ziv.fragments.MyCarFragment;
 import com.zividig.ziv.fragments.MyFragment;
 import com.zividig.ziv.fragments.SettingFragment;
-import com.zividig.ziv.service.LocationService;
-import com.zividig.ziv.utils.MyAlarmManager;
 import com.zividig.ziv.utils.StatusBarUtils;
 
 public class MainActivity extends FragmentActivity implements ViewPager.OnPageChangeListener{
@@ -202,10 +200,9 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
                 Toast.makeText(getApplicationContext(), "再按一次退出程序", Toast.LENGTH_SHORT).show();
                 exitTime = System.currentTimeMillis();
             } else {
-                spf.edit().remove("devid").apply();
-                spf.edit().remove("device_info").apply();
+//                spf.edit().remove("devid").apply();
+//                spf.edit().remove("device_info").apply();
                 System.out.println("清除一些数据");
-                MyAlarmManager.stopPollingService(MainActivity.this, LocationService.class,LocationService.LOCATION_ACTION);
                 finish();
                 System.exit(0);
             }

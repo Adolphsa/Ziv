@@ -72,7 +72,7 @@ public class LocationService extends Service {
                 Gson gson = new Gson();
                 locationBean = gson.fromJson(result, LocationBean.class);
 
-//                System.out.println("纬度：" + locationBean.getLon() + "经度：" + locationBean.getLat());
+                System.out.println("纬度：" + locationBean.getLon() + "经度：" + locationBean.getLat());
                 //发送广播
                 Intent broadcast = new Intent();
                 broadcast.setAction(LOCATION_ACTION);

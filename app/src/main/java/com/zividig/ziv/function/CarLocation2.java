@@ -23,6 +23,7 @@ import com.zividig.ziv.bean.LocationBean;
 import com.zividig.ziv.main.BaseActivity;
 import com.zividig.ziv.service.LocationService;
 import com.zividig.ziv.utils.GPSConverterUtils;
+import com.zividig.ziv.utils.MyAlarmManager;
 import com.zividig.ziv.utils.ToastShow;
 
 /**
@@ -116,7 +117,7 @@ public class CarLocation2 extends BaseActivity {
                 mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(mBuilder.build()));
 
             }else {
-//                System.out.println("增加点");
+                System.out.println("增加点");
                 mBaiduMap.addOverlay(overlay);
 
 //                Point pt= mBaiduMap.getMapStatus().targetScreen;
@@ -133,6 +134,7 @@ public class CarLocation2 extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        MyAlarmManager.stopPollingService(CarLocation2.this, LocationService.class);
         unregisterReceiver(locationBroadcast);
     }
 }

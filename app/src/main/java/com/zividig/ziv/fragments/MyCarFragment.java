@@ -26,6 +26,8 @@ import com.zividig.ziv.function.CarLocation2;
 import com.zividig.ziv.function.ElectronicFence;
 import com.zividig.ziv.function.RealTimeShow;
 import com.zividig.ziv.function.TrackQueryDateChoose;
+import com.zividig.ziv.service.LocationService;
+import com.zividig.ziv.utils.MyAlarmManager;
 import com.zividig.ziv.utils.ToastShow;
 import com.zividig.ziv.weizhang.activity.WeiZhangMainActivity;
 
@@ -179,6 +181,8 @@ public class MyCarFragment extends Fragment {
                     case 2:
                         System.out.println("车辆定位" + position);
                         if (!devId.equals("")) {
+                            //开启轮询服务获取GPS信息
+                            MyAlarmManager.startPollingService(getContext(),1,LocationService.class,devId);
                             startActivity(new Intent(getContext(), CarLocation2.class));
                         } else {
                             ToastShow.showToast(getContext(), "请先添加设备");
@@ -187,6 +191,8 @@ public class MyCarFragment extends Fragment {
                     case 3:
                         System.out.println("电子围栏" + position);
                         if (!devId.equals("")) {
+                            //开启轮询服务获取GPS信息
+                            MyAlarmManager.startPollingService(getContext(),1,LocationService.class,devId);
                             startActivity(new Intent(getContext(), ElectronicFence.class));
                         } else {
                             ToastShow.showToast(getContext(), "请先添加设备");

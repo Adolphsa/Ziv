@@ -33,7 +33,6 @@ import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.Stroke;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.model.LatLngBounds;
-import com.baidu.mapapi.utils.CoordinateConverter;
 import com.baidu.trace.LBSTraceClient;
 import com.baidu.trace.OnEntityListener;
 import com.baidu.trace.OnGeoFenceListener;
@@ -42,6 +41,8 @@ import com.zividig.ziv.R;
 import com.zividig.ziv.bean.LocationBean;
 import com.zividig.ziv.main.BaseActivity;
 import com.zividig.ziv.service.LocationService;
+import com.zividig.ziv.utils.GPSConverterUtils;
+import com.zividig.ziv.utils.MyAlarmManager;
 import com.zividig.ziv.utils.ToastShow;
 
 import org.json.JSONArray;
@@ -132,6 +133,7 @@ public class ElectronicFence extends BaseActivity {
             initMap(locationBean.getLat(),locationBean.getLon());
         }
     };
+    private MapStatus.Builder mBuilder;
 
 
     @Override
@@ -156,6 +158,12 @@ public class ElectronicFence extends BaseActivity {
         setFence = (Button) findViewById(R.id.bt_electric_fence);
         mMapView = (MapView) findViewById(R.id.electronic_map);
         mBaiduMap = mMapView.getMap();
+
+        //设定地图的初始中心
+        mBuilder = new MapStatus.Builder();
+        mBuilder.target(GPSConverterUtils.gpsToBaidu(new LatLng(22.549467,113.920565)))
+                .zoom(16.0f);
+        mBaiduMap.setMapStatus(MapStatusUpdateFactory.newMapStatus(mBuilder.build()));
 
         client = new LBSTraceClient(getApplicationContext());
         entityName = "myTrace";
@@ -188,11 +196,8 @@ public class ElectronicFence extends BaseActivity {
         }else {
             LatLng sourceLatLng = new LatLng(lat,lon);
             //坐标转换
-            CoordinateConverter converter = new CoordinateConverter();
-            converter.from(CoordinateConverter.CoordType.GPS);
-            converter.coord(sourceLatLng);
-            LatLng desLatLng = converter.convert();
-
+            LatLng desLatLng = GPSConverterUtils.gpsToBaidu(sourceLatLng);
+            System.out.println("得到点");
             if (isFirst){
                 isFirst = false;
 //            overlay = new MarkerOptions().position(ll)
@@ -200,11 +205,11 @@ public class ElectronicFence extends BaseActivity {
                 MarkerOptions markerOptions = new MarkerOptions().icon(realtimeBitmap).position(desLatLng);
                 Overlay overlay = mBaiduMap.addOverlay(markerOptions);
                 marker = (Marker) overlay;
-                MapStatus.Builder builder = new MapStatus.Builder();
+                mBuilder = new MapStatus.Builder();
 
-                builder.target(desLatLng).zoom(18.0f);
+                mBuilder.target(desLatLng).zoom(18.0f);
 //            mBaiduMap.addOverlay(overlay);
-                mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
+                mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(mBuilder.build()));
             }else {
 
                 marker.remove();
@@ -693,6 +698,7 @@ public class ElectronicFence extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         mMapView.onDestroy();
+        MyAlarmManager.stopPollingService(ElectronicFence.this, LocationService.class);
         unregisterReceiver(locationBroadcast);
     }
 }

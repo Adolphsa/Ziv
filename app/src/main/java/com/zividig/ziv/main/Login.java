@@ -13,9 +13,7 @@ import com.google.gson.Gson;
 import com.igexin.sdk.PushManager;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.DeviceInfoBean;
-import com.zividig.ziv.service.LocationService;
 import com.zividig.ziv.utils.MD5;
-import com.zividig.ziv.utils.MyAlarmManager;
 import com.zividig.ziv.utils.ToastShow;
 import com.zividig.ziv.utils.Urls;
 
@@ -235,11 +233,7 @@ public class Login extends BaseActivity {
 
                 System.out.println("设备的ID---" + devid);
                 if (!devid.isEmpty()){
-
                     System.out.println("获取设备信息成功" + devid);
-                    //开启轮询服务获取获取GPS信息
-                    MyAlarmManager.startPollingService(Login.this,3,LocationService.class,devid);
-
                 }
 
             }

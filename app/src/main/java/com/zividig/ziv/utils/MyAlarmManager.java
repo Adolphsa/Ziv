@@ -27,12 +27,12 @@ public class MyAlarmManager {
     }
 
     //停止轮询服务
-    public static void stopPollingService(Context context, Class cls,String action) {
+    public static void stopPollingService(Context context, Class cls) {
         System.out.println("停止轮询服务");
         AlarmManager manager = (AlarmManager) context
                 .getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, cls.getClass());
-        intent.setAction(action);
+        Intent intent = new Intent(context, cls);
+//        intent.setAction(action);
         PendingIntent pendingIntent = PendingIntent.getService(context, 0,
                 intent, PendingIntent.FLAG_UPDATE_CURRENT);
         //取消正在执行的服务

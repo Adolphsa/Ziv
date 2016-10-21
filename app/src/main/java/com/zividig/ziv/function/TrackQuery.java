@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
+import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
@@ -92,6 +93,12 @@ public class TrackQuery extends BaseActivity {
 
         mMapView = (MapView) findViewById(R.id.track_map);
         mBaiduMap = mMapView.getMap();
+
+        //设定地图的初始中心
+        MapStatus.Builder builder = new MapStatus.Builder();
+        builder.target(GPSConverterUtils.gpsToBaidu(new LatLng(22.549467,113.920565)))
+                .zoom(16.0f);
+        mBaiduMap.setMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
     }
 
     private void initData(){
@@ -175,7 +182,7 @@ public class TrackQuery extends BaseActivity {
         polylineOption = new PolylineOptions()
                 .points(overLatLng)
                 .color(Color.BLUE)
-                .width(5)
+                .width(6)
                 .visible(true);
         //在地图上添加折线Option，用于显示
         mBaiduMap.addOverlay(polylineOption);
