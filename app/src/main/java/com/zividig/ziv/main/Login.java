@@ -14,8 +14,10 @@ import com.igexin.sdk.PushManager;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.DeviceInfoBean;
 import com.zividig.ziv.utils.MD5;
+import com.zividig.ziv.utils.NetworkTypeUtils;
 import com.zividig.ziv.utils.ToastShow;
 import com.zividig.ziv.utils.Urls;
+import com.zividig.ziv.utils.WifiDirectUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -127,7 +129,11 @@ public class Login extends BaseActivity {
         btLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                login();
+                if (NetworkTypeUtils.getConnectWifiSsid(Login.this).contains("car_")){
+                    WifiDirectUtils.WifiDirect(Login.this);
+                }else {
+                    login();
+                }
             }
         });
     }

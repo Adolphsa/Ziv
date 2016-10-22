@@ -172,6 +172,7 @@ public class MyCarFragment extends Fragment {
                     case 0:
                         System.out.println("实时预览" + position);
                         if (!devId.equals("")) {
+                            //判断是否是设备WIFI
                             if (NetworkTypeUtils.getConnectWifiSsid(getContext()).contains("car_")){
                                 showVideoInDeviceWifi();
                             }else {
@@ -290,9 +291,7 @@ public class MyCarFragment extends Fragment {
      * 在设备wifi情况下看视频
      */
     private void showVideoInDeviceWifi(){
-
         TestDecoder.setUrl("rtsp://192.168.1.1/stream1");
         startActivity(new Intent(getContext(), MyTestActivity.class));
-
     }
 }

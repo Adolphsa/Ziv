@@ -3,7 +3,7 @@ package com.zividig.ziv.utils;
 import android.content.Context;
 import android.content.Intent;
 
-import com.dtr.zxing.activity.CaptureActivity;
+import com.zividig.ziv.main.MainActivity;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
@@ -16,7 +16,7 @@ import org.xutils.x;
 
 public class WifiDirectUtils {
 
-    public static void isWifiDirect(final Context context){
+    public static void WifiDirect(final Context context){
         if (NetworkTypeUtils.getNetworkType(context).equals(NetworkTypeUtils.WIFI)){
             System.out.println("连接设备");
             RequestParams params = new RequestParams("http://192.168.1.1/api/getdevinfo");
@@ -25,7 +25,8 @@ public class WifiDirectUtils {
                 public void onSuccess(String result) {
                     System.out.println("wifi直连" + result);
                     if (!result.isEmpty()){
-                        context.startActivity(new Intent(context, CaptureActivity.class));
+                        context.startActivity(new Intent(context, MainActivity.class));
+                        ToastShow.showToast(context,"设备WIFI直连");
                     }
 
                 }

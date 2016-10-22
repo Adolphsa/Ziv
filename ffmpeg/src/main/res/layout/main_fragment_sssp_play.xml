@@ -93,6 +93,13 @@
             android:layout_marginRight="10dp"
             />
 
-
+        <Button
+            android:id="@+id/mta_screenshot"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerHorizontal="true"
+            android:background="@android:color/transparent"
+            android:drawableLeft="@mipmap/screenshot"
+            />
     </RelativeLayout>
 </RelativeLayout>

@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.PointF;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
@@ -61,6 +62,8 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
     private ProgressBar mCycleProgressBar;  //圆形进度条
     private Button mPlay;                   //播放按钮
 
+    private boolean isScreenshot = false;
+    private VideoPlayTask mVideoPlayTask;
 
     private Handler mHandler = new Handler(){
         @Override
@@ -114,8 +117,10 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
         mPlay.setOnClickListener(this);
         Button fullScreen = (Button) findViewById(mta_fullScreen); //全屏
         fullScreen.setOnClickListener(this);
-        Button back = (Button) findViewById(R.id.mta_btn_back);
+        Button back = (Button) findViewById(R.id.mta_btn_back);  //返回
         back.setOnClickListener(this);
+        Button screenshot = (Button) findViewById(R.id.mta_screenshot);  //截图
+        screenshot.setOnClickListener(this);
 
         glSurfaceView = (GLSurfaceView) findViewById(R.id.play_view);
 
@@ -138,7 +143,8 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
         isPlaying = true;
         td = new TestDecoder();
         td.startRequest();
-        new VideoPlayTask().start();
+        mVideoPlayTask =new VideoPlayTask();
+        mVideoPlayTask.start();
 
         td.setErrorCodeInterface(new ErrorCodeInterface() {
             @Override
@@ -192,8 +198,13 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
 
     @Override
     public void onDestroy() {
+
         isPlaying = false;
+        td.stopRequest();
         MyGLRenderer.Refreshvar();//重置变量
+        if (mVideoPlayTask != null){
+            mVideoPlayTask = null;
+        }
         super.onDestroy();
     }
 
@@ -227,12 +238,15 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
                 mPlay.setBackgroundResource(R.mipmap.pause);
                 td.startRequest();
                 isPlaying = true;
-                new VideoPlayTask().start();
+                mVideoPlayTask.start();
             }
         }else if (id == R.id.mta_fullScreen){ //全屏
             Log.i(TAG, "onClick: 全屏按钮被点击了");
             click_full();
-        }else if (id == R.id.mta_btn_back){ //返回
+        }else if (id == R.id.mta_screenshot){ //截图
+            isScreenshot = true;
+            System.out.println("截图设置为真");
+        } else if (id == R.id.mta_btn_back){ //返回
             finish();
         }
     }
@@ -283,6 +297,16 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
 //                        mShowBitmap.copyPixelsFromBuffer(buffer);
                         Log.i(TAG, "run: 第一次启动或者长宽发生....变化");
                         myGLRenderer.update(fb.width, fb.height);//设置视频宽高
+                    }
+                    //是否截图
+                    if (isScreenshot){
+                        String path = Environment.getExternalStorageDirectory().getPath() + "/test";
+                        System.out.println("path:---" + path);
+//                        byte[] yuv420sp = new byte[fb.width * fb.height*2];
+//                        YUV420pToRGB.yuv420p_to_yuv420sp(fb.pix,yuv420sp,fb.width,fb.height);
+                        YUV420pToRGB.save(fb.pix,path,fb.width,fb.height,10);
+                        isScreenshot = false;
+                        System.out.println("线程中运行了");
                     }
 //                    Log.i(TAG, "run: 传递YUV数据");
                     surfaceChanged = false;
@@ -432,16 +456,19 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
     }
 
     public void showDialog(){
-        new AlertDialog.Builder(MyTestActivity.this)
-                .setTitle("警告")
-                .setMessage("could not open input stream")
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                    }
-                })
-                .create().show();
+        if (!MyTestActivity.this.isFinishing()){
+            new AlertDialog.Builder(MyTestActivity.this)
+                    .setTitle("警告")
+                    .setMessage("could not open input stream")
+                    .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    })
+                    .create().show();
+        }
+
     }
 
 }
