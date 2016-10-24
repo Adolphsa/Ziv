@@ -101,6 +101,10 @@ public class TestDecoder{
         System.out.println("errorCode = " + errorCode);
     }
 
+    public  void yuv420p_to_yuv420sp(byte[] yuv420p,byte[] yuv420sp,int width,int height){
+        player.yuv420p_to_yuv420sp(yuv420p,yuv420sp,width,height);
+    }
+
     class FrameBean {
         int width;
         int height;

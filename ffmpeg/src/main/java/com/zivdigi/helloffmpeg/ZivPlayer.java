@@ -67,6 +67,8 @@ public class ZivPlayer  {
     public native int getVideoHeight();
     public native int getOutputByteSize();
 
+    public native void yuv420p_to_yuv420sp(byte[] yuv420p,byte[] yuv420sp,int width,int height);
+
     static {
         System.loadLibrary("ZivPlayer");
     }

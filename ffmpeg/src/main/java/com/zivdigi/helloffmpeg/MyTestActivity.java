@@ -1,10 +1,15 @@
 package com.zivdigi.helloffmpeg;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.ImageFormat;
 import android.graphics.PointF;
+import android.graphics.Rect;
+import android.graphics.YuvImage;
+import android.net.Uri;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Environment;
@@ -22,8 +27,12 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.nio.Buffer;
+import java.text.SimpleDateFormat;
 import java.util.Vector;
 
 import static com.zivdigi.helloffmpeg.R.id.mta_fullScreen;
@@ -300,11 +309,33 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
                     }
                     //是否截图
                     if (isScreenshot){
-                        String path = Environment.getExternalStorageDirectory().getPath() + "/test";
-                        System.out.println("path:---" + path);
-//                        byte[] yuv420sp = new byte[fb.width * fb.height*2];
-//                        YUV420pToRGB.yuv420p_to_yuv420sp(fb.pix,yuv420sp,fb.width,fb.height);
-                        YUV420pToRGB.save(fb.pix,path,fb.width,fb.height,10);
+                        File zivFile = new File(Environment.getExternalStorageDirectory(), "Ziv"); //创建Ziv文件夹
+                        File imageFile = new File(zivFile ,"images");
+                        String target = imageFile + "/" + getDateAndTime() + ".jpeg";
+                        System.out.println("路径为---" + target);
+                        try {
+                            FileOutputStream out = new FileOutputStream(new File(target));
+                            dates = new byte[fb.width * fb.height * 2];
+                            td.yuv420p_to_yuv420sp(fb.pix,dates,fb.width,fb.height);
+                            YuvImage yuvImage = new YuvImage(dates, ImageFormat.NV21,fb.width,fb.height,null);
+                            Rect rect = new Rect(0,0,fb.width,fb.height);
+
+                            //转换图片格式为jpeg
+                            if (yuvImage.compressToJpeg(rect,70,out)) {
+                                System.out.println("截图在file2");
+                                out.flush();
+                                out.close();
+                                updateImage();
+
+                            }
+                            //判断图片是否已保存
+                            if (new File(target).exists()){
+                                Toast.makeText(MyTestActivity.this,"截图已保存",Toast.LENGTH_SHORT).show();
+                            }
+
+                        } catch (Exception e) {
+                            System.out.println(e);
+                        }
                         isScreenshot = false;
                         System.out.println("线程中运行了");
                     }
@@ -469,6 +500,29 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
                     .create().show();
         }
 
+    }
+
+    /***
+     * 获取时间和日期
+     *
+     * @return string
+     */
+    public static String getDateAndTime() {
+        SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+        String date = sDateFormat.format(new java.util.Date());
+        System.out.println(date);
+        return date;
+    }
+
+    /**
+     * 更新图片
+     */
+    private void updateImage() {
+        Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        String path = Environment.getExternalStorageDirectory() + "/Ziv/images";
+        Uri uri = Uri.fromFile(new File(path));
+        intent.setData(uri);
+        this.sendBroadcast(intent);
     }
 
 }

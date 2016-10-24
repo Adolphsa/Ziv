@@ -28,7 +28,7 @@ import java.util.List;
 
 public class MyPicture extends BaseActivity {
 
-    private static String path = Environment.getExternalStorageDirectory() + "/Ziv";
+    private static String path = Environment.getExternalStorageDirectory() + "/Ziv/images";
 
     private ListView lvPivture;
     private PictureBean bean;
@@ -88,14 +88,19 @@ public class MyPicture extends BaseActivity {
         List<PictureBean> beans =  new ArrayList<PictureBean>();
         //定义selectionArgs：
         String[] selectionArgs = {path+"%"};
+        String where = MediaStore.Images.Media.MIME_TYPE + "=? or "
+                + MediaStore.Images.Media.MIME_TYPE + "=?";
+        String[] whereArgs = {"image/jpeg", "image/png"};
         Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                                                    null, MediaStore.Images.Media.MIME_TYPE + "=?",
-                                                new String[] { "image/png"},MediaStore.Images.Media.DATE_TAKEN);
+                                                    null,
+                                                    where,
+                                                    whereArgs,
+                                                    MediaStore.Images.Media.DATE_TAKEN);
         while (cursor.moveToNext()){
 
             //获取图片的路径
             String imagePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-            if (imagePath.contains("/Ziv")){
+            if (imagePath.contains("/Ziv/images")){
 
                 //获取图片名称
                 String name = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME));
@@ -180,7 +185,7 @@ public class MyPicture extends BaseActivity {
      */
     private void updateImage() {
         Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        String path = Environment.getExternalStorageDirectory() + "/Ziv";
+        String path = Environment.getExternalStorageDirectory() + "/Ziv/images";
         Uri uri = Uri.fromFile(new File(path));
         intent.setData(uri);
         this.sendBroadcast(intent);

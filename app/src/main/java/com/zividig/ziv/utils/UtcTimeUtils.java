@@ -51,4 +51,16 @@ public class UtcTimeUtils {
 
 
     }
+
+    /***
+     * 获取时间和日期
+     *
+     * @return string
+     */
+    public static String getDateAndTime() {
+        SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+        String date = sDateFormat.format(new java.util.Date());
+        System.out.println(date);
+        return date;
+    }
 }

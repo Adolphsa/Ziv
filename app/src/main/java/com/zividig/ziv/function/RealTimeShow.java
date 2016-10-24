@@ -28,6 +28,7 @@ import com.zividig.ziv.main.BaseActivity;
 import com.zividig.ziv.utils.DialogUtils;
 import com.zividig.ziv.utils.ToastShow;
 import com.zividig.ziv.utils.Urls;
+import com.zividig.ziv.utils.UtcTimeUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,7 +40,6 @@ import org.xutils.x;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.text.SimpleDateFormat;
 
 /**
  * 实时预览
@@ -244,14 +244,15 @@ public class RealTimeShow extends BaseActivity {
                 return;
             }
 
-            File file = new File(Environment.getExternalStorageDirectory(), "Ziv"); //创建Ziv文件夹
-            if (!file.exists()) {
+            File zivFile = new File(Environment.getExternalStorageDirectory(), "Ziv"); //创建Ziv文件夹
+            File imageFile = new File(zivFile ,"images");
+            if (!imageFile.exists()) {
                 System.out.println("创建");
-                boolean mkdirs = file.mkdirs();
+                boolean mkdirs = imageFile.mkdirs();
             }
 
-            System.out.println(file);
-            final String target = file + "/" + getDateAndTime() + ".png";
+            System.out.println(imageFile);
+            final String target = imageFile + "/" + UtcTimeUtils.getDateAndTime() + ".png";
 
             System.out.println(target);
 
@@ -320,24 +321,14 @@ public class RealTimeShow extends BaseActivity {
      */
     private void updateImage() {
         Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        String path = Environment.getExternalStorageDirectory() + "/Ziv";
+        String path = Environment.getExternalStorageDirectory() + "/Ziv/images";
         Uri uri = Uri.fromFile(new File(path));
         intent.setData(uri);
         this.sendBroadcast(intent);
     }
 
 
-    /***
-     * 获取时间和日期
-     *
-     * @return string
-     */
-    public String getDateAndTime() {
-        SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-        String date = sDateFormat.format(new java.util.Date());
-        System.out.println(date);
-        return date;
-    }
+
 
     class BtnListener implements View.OnClickListener {
 
