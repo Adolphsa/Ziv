@@ -60,7 +60,8 @@
         android:layout_alignParentBottom="true"
         android:background="#a0000000"
         android:visibility="visible"
-        android:padding="10dp"
+        android:padding="8dp"
+        android:layout_marginTop="8dp"
         >
 
         <Button
@@ -78,10 +79,18 @@
             android:layout_height="8dp"
             style="@android:style/Widget.ProgressBar.Horizontal"
             android:layout_toRightOf="@id/mta_play"
-            android:layout_toLeftOf="@+id/mta_fullScreen"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@+id/mta_screenshot"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
             android:layout_centerVertical="true"
+            />
+        <Button
+            android:id="@+id/mta_screenshot"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@android:color/transparent"
+            android:drawableLeft="@drawable/ffmpeg_selector_screenshot"
+            android:layout_toLeftOf="@+id/mta_fullScreen"
             />
         <Button
             android:id="@+id/mta_fullScreen"
@@ -90,16 +99,10 @@
             android:background="@android:color/transparent"
             android:drawableLeft="@mipmap/fullscreen"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="10dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginLeft="4dp"
             />
 
-        <Button
-            android:id="@+id/mta_screenshot"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_centerHorizontal="true"
-            android:background="@android:color/transparent"
-            android:drawableLeft="@mipmap/screenshot"
-            />
+
     </RelativeLayout>
 </RelativeLayout>

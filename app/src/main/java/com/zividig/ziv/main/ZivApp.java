@@ -17,9 +17,10 @@ public class ZivApp extends Application{
     @Override
     public void onCreate() {
         super.onCreate();
+        SDKInitializer.initialize(this); //初始化百度地图
         x.Ext.init(this); //初始化xutils
         //百度地图的初始化
-        SDKInitializer.initialize(this); //初始化百度地图
+
         System.out.println("application");
         if (instance == null) {
             instance = this;

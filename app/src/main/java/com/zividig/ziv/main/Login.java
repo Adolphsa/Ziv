@@ -130,7 +130,7 @@ public class Login extends BaseActivity {
             @Override
             public void onClick(View v) {
                 if (NetworkTypeUtils.getConnectWifiSsid(Login.this).contains("car_")){
-                    WifiDirectUtils.WifiDirect(Login.this);
+                    WifiDirectUtils.WifiDirect(Login.this,MainActivity.class);
                 }else {
                     login();
                 }

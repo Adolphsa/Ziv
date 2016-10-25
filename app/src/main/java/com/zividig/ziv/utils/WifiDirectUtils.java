@@ -3,6 +3,8 @@ package com.zividig.ziv.utils;
 import android.content.Context;
 import android.content.Intent;
 
+import com.zivdigi.helloffmpeg.MyTestActivity;
+import com.zivdigi.helloffmpeg.TestDecoder;
 import com.zividig.ziv.main.MainActivity;
 
 import org.xutils.common.Callback;
@@ -16,7 +18,7 @@ import org.xutils.x;
 
 public class WifiDirectUtils {
 
-    public static void WifiDirect(final Context context){
+    public static void WifiDirect(final Context context,final Class cls){
         if (NetworkTypeUtils.getNetworkType(context).equals(NetworkTypeUtils.WIFI)){
             System.out.println("连接设备");
             RequestParams params = new RequestParams("http://192.168.1.1/api/getdevinfo");
@@ -25,8 +27,16 @@ public class WifiDirectUtils {
                 public void onSuccess(String result) {
                     System.out.println("wifi直连" + result);
                     if (!result.isEmpty()){
-                        context.startActivity(new Intent(context, MainActivity.class));
-                        ToastShow.showToast(context,"设备WIFI直连");
+                        if (cls.getName().equals(MainActivity.class.getName())){ //进入主界面
+                            context.startActivity(new Intent(context, cls));
+                            ToastShow.showToast(context,"设备WIFI直连");
+                        }else if(cls.getName().equals(MyTestActivity.class.getName())){ //进入wifi视频预览
+                            TestDecoder.setUrl("rtsp://192.168.1.1/stream1");
+                            context.startActivity(new Intent(context, cls));
+                            ToastShow.showToast(context,"设备WIFI预览");
+                        }
+
+
                     }
 
                 }

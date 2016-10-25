@@ -43,6 +43,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
 
     private static final int PLAY = 0;
     private static final int ERROR_CODE = 7;
+    private static final int FILE_EXIST = 8;
     private static final int AUDIO = 1;
     private static final int SHOW_TOOLS = 2;
     private static final int HIDE_TOOLS = 3;
@@ -72,7 +73,6 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
     private Button mPlay;                   //播放按钮
 
     private boolean isScreenshot = false;
-    private VideoPlayTask mVideoPlayTask;
 
     private Handler mHandler = new Handler(){
         @Override
@@ -98,10 +98,13 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
                     }
                     break;
 
-                case ERROR_CODE: //播放错误
+                case ERROR_CODE:    //播放错误
 //                    Toast.makeText(MyTestActivity.this,"could not open input stream",Toast.LENGTH_LONG).show();
                     mCycleProgressBar.setVisibility(View.GONE);
                     showDialog();
+                    break;
+                case FILE_EXIST:    //文件存在
+                    Toast.makeText(MyTestActivity.this,"截图已保存",Toast.LENGTH_SHORT).show();
                     break;
 
             }
@@ -152,8 +155,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
         isPlaying = true;
         td = new TestDecoder();
         td.startRequest();
-        mVideoPlayTask =new VideoPlayTask();
-        mVideoPlayTask.start();
+        new VideoPlayTask().start();
 
         td.setErrorCodeInterface(new ErrorCodeInterface() {
             @Override
@@ -211,9 +213,6 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
         isPlaying = false;
         td.stopRequest();
         MyGLRenderer.Refreshvar();//重置变量
-        if (mVideoPlayTask != null){
-            mVideoPlayTask = null;
-        }
         super.onDestroy();
     }
 
@@ -243,11 +242,14 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
                 mPlay.setBackgroundResource(R.mipmap.play);
                 td.stopRequest();
                 isPlaying = false;
+
             }else {
                 mPlay.setBackgroundResource(R.mipmap.pause);
                 td.startRequest();
                 isPlaying = true;
-                mVideoPlayTask.start();
+                new VideoPlayTask().start();
+
+
             }
         }else if (id == R.id.mta_fullScreen){ //全屏
             Log.i(TAG, "onClick: 全屏按钮被点击了");
@@ -330,7 +332,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
                             }
                             //判断图片是否已保存
                             if (new File(target).exists()){
-                                Toast.makeText(MyTestActivity.this,"截图已保存",Toast.LENGTH_SHORT).show();
+                                mHandler.sendEmptyMessage(FILE_EXIST);
                             }
 
                         } catch (Exception e) {

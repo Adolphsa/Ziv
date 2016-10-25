@@ -58,6 +58,7 @@ public class CarLocation2 extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        SDKInitializer.initialize(this);
         setContentView(R.layout.activity_carlocation2);
 
         // 标题

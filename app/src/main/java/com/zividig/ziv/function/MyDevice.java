@@ -189,7 +189,7 @@ public class MyDevice extends BaseActivity {
         mStrings = new ArrayList<>();
         String deviceInfo = spf.getString("device_info","");
         System.out.println("我的设备中的" + deviceInfo);
-        if (deviceInfo != ""){
+        if (!deviceInfo.equals("")){
             Gson gson = new Gson();
             DeviceInfoBean deviceInfoBean =  gson.fromJson(deviceInfo, DeviceInfoBean.class);
             devinfoList = deviceInfoBean.getDevinfo();

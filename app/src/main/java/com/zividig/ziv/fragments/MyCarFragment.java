@@ -32,6 +32,7 @@ import com.zividig.ziv.service.LocationService;
 import com.zividig.ziv.utils.MyAlarmManager;
 import com.zividig.ziv.utils.NetworkTypeUtils;
 import com.zividig.ziv.utils.ToastShow;
+import com.zividig.ziv.utils.WifiDirectUtils;
 import com.zividig.ziv.weizhang.activity.WeiZhangMainActivity;
 
 import java.util.ArrayList;
@@ -174,7 +175,7 @@ public class MyCarFragment extends Fragment {
                         if (!devId.equals("")) {
                             //判断是否是设备WIFI
                             if (NetworkTypeUtils.getConnectWifiSsid(getContext()).contains("car_")){
-                                showVideoInDeviceWifi();
+                                WifiDirectUtils.WifiDirect(getContext(),MyTestActivity.class);
                             }else {
                                 startActivity(new Intent(getContext(), RealTimeShow.class));
                             }
@@ -191,8 +192,13 @@ public class MyCarFragment extends Fragment {
                         System.out.println("车辆定位" + position);
                         if (!devId.equals("")) {
                             //开启轮询服务获取GPS信息
-                            MyAlarmManager.startPollingService(getContext(),1,LocationService.class,devId);
-                            startActivity(new Intent(getContext(), CarLocation2.class));
+                            if (NetworkTypeUtils.getConnectWifiSsid(getContext()).contains("car_")){
+                                startActivity(new Intent(getContext(), CarLocation2.class));
+                            }else {
+                                MyAlarmManager.startPollingService(getContext(),1,LocationService.class,devId);
+                                startActivity(new Intent(getContext(), CarLocation2.class));
+                            }
+
                         } else {
                             ToastShow.showToast(getContext(), "请先添加设备");
                         }
@@ -201,8 +207,12 @@ public class MyCarFragment extends Fragment {
                         System.out.println("电子围栏" + position);
                         if (!devId.equals("")) {
                             //开启轮询服务获取GPS信息
-                            MyAlarmManager.startPollingService(getContext(),1,LocationService.class,devId);
-                            startActivity(new Intent(getContext(), ElectronicFence.class));
+                            if (NetworkTypeUtils.getConnectWifiSsid(getContext()).contains("car_")){
+                                startActivity(new Intent(getContext(), ElectronicFence.class));
+                            }else {
+                                MyAlarmManager.startPollingService(getContext(),1,LocationService.class,devId);
+                                startActivity(new Intent(getContext(), ElectronicFence.class));
+                            }
                         } else {
                             ToastShow.showToast(getContext(), "请先添加设备");
                         }

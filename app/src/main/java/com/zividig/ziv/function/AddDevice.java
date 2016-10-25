@@ -102,7 +102,7 @@ public class AddDevice extends BaseActivity {
         deviceId = (TextView) findViewById(R.id.tv_device_id);
 
         String devid = spf.getString("devid","");
-        if (devid != null){
+        if (!devid.equals("")){
             deviceId.setText(devid);
         }
 
