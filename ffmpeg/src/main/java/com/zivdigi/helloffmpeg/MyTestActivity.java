@@ -71,6 +71,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
     private RelativeLayout playToolstop;
     private ProgressBar mCycleProgressBar;  //圆形进度条
     private Button mPlay;                   //播放按钮
+    private VideoPlayTask mVideoPlayTask;
 
     private boolean isScreenshot = false;
 
@@ -155,7 +156,9 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
         isPlaying = true;
         td = new TestDecoder();
         td.startRequest();
-        new VideoPlayTask().start();
+        mVideoPlayTask = new VideoPlayTask();
+        mVideoPlayTask.start();
+
 
         td.setErrorCodeInterface(new ErrorCodeInterface() {
             @Override
@@ -210,7 +213,6 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
     @Override
     public void onDestroy() {
 
-        isPlaying = false;
         td.stopRequest();
         MyGLRenderer.Refreshvar();//重置变量
         super.onDestroy();
@@ -235,20 +237,18 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
      */
     @Override
     public void onClick(View v) {
+
         int id = v.getId();
         if (id == R.id.mta_play){ //播放
             Log.i(TAG, "onClick: play按钮被点击了");
             if (isPlaying){
                 mPlay.setBackgroundResource(R.mipmap.play);
-                td.stopRequest();
                 isPlaying = false;
-
+                mVideoPlayTask.setSuspend(true);    //线程暂停
             }else {
                 mPlay.setBackgroundResource(R.mipmap.pause);
-                td.startRequest();
                 isPlaying = true;
-                new VideoPlayTask().start();
-
+                mVideoPlayTask.setSuspend(false);   //线程恢复
 
             }
         }else if (id == R.id.mta_fullScreen){ //全屏
@@ -269,9 +269,21 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
     class VideoPlayTask extends Thread {
 
         SurfaceHolder holder;
-
         VideoPlayTask() {
             holder = glSurfaceView.getHolder();
+        }
+
+        boolean suspend = false;
+        final String control = "";
+
+        public void setSuspend(boolean suspend) {
+            if (!suspend) {
+                synchronized (control) {
+                    control.notifyAll();
+                    System.out.println("唤醒");
+                }
+            }
+            this.suspend = suspend;
         }
 
         @Override
@@ -281,7 +293,20 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
             int size;
             TestDecoder.FrameBean fb;
             Vector<TestDecoder.FrameBean> videoFrameBuf;
-            while (isPlaying) {
+
+            while (true) {
+
+                synchronized (control){
+                    if (suspend){
+                        try {
+                            control.wait();
+                            System.out.println("暂停");
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
                 videoFrameBuf = td.getVector();//获取视频数据
                 size = videoFrameBuf.size();
 //                Log.i(TAG, "run: Vector的长度是：" + size);
@@ -343,7 +368,6 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
                     }
 //                    Log.i(TAG, "run: 传递YUV数据");
                     surfaceChanged = false;
-                    isPlaying = true;
                     myGLRenderer.update(fb.pix, fb.width, fb.height);//更新视频数据(刷新GLSufaceView)
                 } else {
                     SystemClock.sleep(60);
