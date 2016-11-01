@@ -33,6 +33,7 @@ import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.Stroke;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.model.LatLngBounds;
+import com.baidu.mapapi.utils.CoordinateConverter;
 import com.baidu.trace.LBSTraceClient;
 import com.baidu.trace.OnEntityListener;
 import com.baidu.trace.OnGeoFenceListener;
@@ -196,8 +197,11 @@ public class ElectronicFence extends BaseActivity {
         }else {
             LatLng sourceLatLng = new LatLng(lat,lon);
             //坐标转换
-            LatLng desLatLng = GPSConverterUtils.gpsToBaidu(sourceLatLng);
-            System.out.println("得到点");
+            CoordinateConverter converter = new CoordinateConverter();
+            converter.from(CoordinateConverter.CoordType.GPS);
+            converter.coord(sourceLatLng);
+            LatLng desLatLng = converter.convert();
+
             if (isFirst){
                 isFirst = false;
 //            overlay = new MarkerOptions().position(ll)

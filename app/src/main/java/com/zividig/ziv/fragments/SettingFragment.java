@@ -35,7 +35,6 @@ public class SettingFragment extends Fragment {
     private ListView lvSetting;
     ViewHolder holder;
     private SettingAdapter adapter;
-    Boolean autoUpdate;
     private SharedPreferences sp;
     private String devID;
 
@@ -54,9 +53,6 @@ public class SettingFragment extends Fragment {
         TextView title = (TextView)view.findViewById(R.id.tv_title);
         title.setText("设置");
 
-        autoUpdate = sp.getBoolean("auto_update",false);
-
-
         lvSetting = (ListView) view.findViewById(R.id.lv_setting);
         adapter = new SettingAdapter();
         lvSetting.setAdapter(adapter);
@@ -68,6 +64,7 @@ public class SettingFragment extends Fragment {
                 switch (position){
                     case 0:
                         holder = (ViewHolder) view.getTag();
+                        boolean autoUpdate = sp.getBoolean("auto_update",false);
                         if (autoUpdate){
                             holder.RightIcon.setImageResource(R.mipmap.switch_off); //关闭自动更新
                             sp.edit().putBoolean("auto_update",false).apply();
@@ -78,8 +75,6 @@ public class SettingFragment extends Fragment {
                             sp.edit().putBoolean("auto_update",true).apply();
                             System.out.println("开启自动更新");
                         }
-
-
                         break;
                     case 1:
                         System.out.println("主机唤醒" + position);
@@ -173,7 +168,6 @@ public class SettingFragment extends Fragment {
                    }else {
                        holder.RightIcon.setImageResource(R.mipmap.switch_off);
                    }
-
                    break;
                case 1:
                    holder.leftIcon.setImageResource(R.mipmap.recover);
@@ -190,9 +184,7 @@ public class SettingFragment extends Fragment {
                    holder.itemText.setText("关于");
                    holder.RightIcon.setImageResource(R.mipmap.rights);
                    break;
-
            }
-
             return convertView;
         }
     }

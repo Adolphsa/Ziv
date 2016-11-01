@@ -55,7 +55,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
     private byte[] dates;                  //byte数据返回值
     private Buffer buffer = null;           //图像buffer信息
     private boolean audioFlag = false;
-    private boolean isPlaying = false;      //是否继续播放
+    private boolean isPlaying = true;      //是否继续播放
     private boolean isKeepPlay = true;      //是否保持播放
     private boolean surfaceChanged = false; //GLsuface数据切换标识
     private boolean isChange = false;       //是否在切换码流
@@ -153,7 +153,6 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
 //        glSurfaceView.setZOrderMediaOverlay(true);
 
         //开始播放视频
-        isPlaying = true;
         td = new TestDecoder();
         td.startRequest();
         mVideoPlayTask = new VideoPlayTask();
