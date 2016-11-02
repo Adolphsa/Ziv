@@ -30,7 +30,9 @@
 
         <activity
             android:name=".main.SplashActivity"
-            android:theme="@style/MyAppTheme">
+            android:theme="@style/MyAppTheme"
+            android:alwaysRetainTaskState="true"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

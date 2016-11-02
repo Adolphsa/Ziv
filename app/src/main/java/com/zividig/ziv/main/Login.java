@@ -1,5 +1,6 @@
 package com.zividig.ziv.main;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import com.google.gson.Gson;
 import com.igexin.sdk.PushManager;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.DeviceInfoBean;
+import com.zividig.ziv.customView.LoadingProgressDialog;
 import com.zividig.ziv.utils.MD5;
 import com.zividig.ziv.utils.NetworkTypeUtils;
 import com.zividig.ziv.utils.ToastShow;
@@ -52,6 +54,8 @@ public class Login extends BaseActivity {
     private static String devid;
     private static List<DeviceInfoBean.DevinfoBean> devinfoList;
     private PushManager pushManager;
+
+    private Dialog mDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,7 +160,8 @@ public class Login extends BaseActivity {
                 e.printStackTrace();
             }
 
-            ToastShow.setToatBytTime(Login.this,"登录中...",500);
+//            ToastShow.setToatBytTime(Login.this,"登录中...",500);
+            showProgressDialog();
 
             //发起请求
             RequestParams params = new RequestParams(Urls.LOGIN_URL);
@@ -176,13 +181,15 @@ public class Login extends BaseActivity {
                             config.edit().putString(ET_USER,user).apply();
                             config.edit().putString(ET_PWD,password).apply();
 
-                            ToastShow.showToast(Login.this,"登录成功");
-                            //进入主菜单
+//                            ToastShow.showToast(Login.this,"登录成功");
+                          //进入主菜单
+//                            closeDialog();
                             enterMainActivity();
                             System.out.println("clientId: " + getuiId);
                         }else {
-                            ToastShow.showToast(Login.this,"账号或密码错误");
                             System.out.println("登录失败");
+                            closeDialog();
+                            ToastShow.showToast(Login.this,"账号或密码错误");
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -193,7 +200,9 @@ public class Login extends BaseActivity {
                 @Override
                 public void onError(Throwable ex, boolean isOnCallback) {
                     System.out.println("登录请求错误" + ex);
+                    closeDialog();
                     ToastShow.showToast(Login.this,"登录请求失败");
+
                 }
 
                 @Override
@@ -205,7 +214,6 @@ public class Login extends BaseActivity {
                 public void onFinished() {
                     //获取设备信息
                     getDeviceInfo(user);
-
                 }
             });
         }else {
@@ -303,5 +311,25 @@ public class Login extends BaseActivity {
         Intent intent = new Intent(Login.this, MainActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    private void showProgressDialog(){
+        if (mDialog == null){
+            mDialog = LoadingProgressDialog.createLoadingDialog(Login.this,"正在登陆中...");
+            mDialog.show();
+        }
+    }
+
+    private void closeDialog() {
+        if (mDialog != null) {
+            mDialog.dismiss();
+            mDialog = null;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        closeDialog();
     }
 }
