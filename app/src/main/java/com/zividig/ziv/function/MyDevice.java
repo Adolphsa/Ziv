@@ -41,7 +41,7 @@ public class MyDevice extends BaseActivity {
 
     private static List<DeviceInfoBean.DevinfoBean> devinfoList;
     private List<String> mStrings;
-    private static MenuAdapter mMenuAdapter;
+    private MenuAdapter mMenuAdapter;
     private SwipeMenuRecyclerView swipeMenuRecyclerView;
     private SharedPreferences spf;
     private String devid;
@@ -114,7 +114,6 @@ public class MyDevice extends BaseActivity {
 //            Login.setDevid(mStrings.get(position));
             spf.edit().putString("devid",mStrings.get(position)).apply();
             devid = spf.getString("devid","");
-//            mMenuAdapter = new MenuAdapter(mStrings,devid);
             ToastShow.showToast(MyDevice.this,"已切换");
             swipeMenuRecyclerView.setAdapter(mMenuAdapter);
         }
@@ -145,8 +144,6 @@ public class MyDevice extends BaseActivity {
                             String status = json.getString("status");
                             if (status.equals("ok")){
                                 ToastShow.showToast(MyDevice.this,"解绑成功");
-//                                mMenuAdapter.notifyItemRemoved(adapterPosition);
-//                                swipeMenuRecyclerView.setAdapter(mMenuAdapter);
                                 mStrings.remove(adapterPosition);
                                 mMenuAdapter.notifyItemRemoved(adapterPosition);
 

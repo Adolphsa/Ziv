@@ -24,10 +24,11 @@ import com.zivdigi.helloffmpeg.TestDecoder;
 import com.zividig.ziv.R;
 import com.zividig.ziv.function.AddDevice;
 import com.zividig.ziv.function.CarInfo;
-import com.zividig.ziv.function.CarLocation2;
+import com.zividig.ziv.function.CarLocation;
 import com.zividig.ziv.function.ElectronicFence;
 import com.zividig.ziv.function.RealTimeShow;
 import com.zividig.ziv.function.TrackQueryDateChoose;
+import com.zividig.ziv.main.ZivApp;
 import com.zividig.ziv.service.LocationService;
 import com.zividig.ziv.utils.MyAlarmManager;
 import com.zividig.ziv.utils.NetworkTypeUtils;
@@ -174,7 +175,7 @@ public class MyCarFragment extends Fragment {
                         System.out.println("实时预览" + position);
                         if (!devId.equals("")) {
                             //判断是否是设备WIFI
-                            if (NetworkTypeUtils.getConnectWifiSsid(getContext()).contains("car_")){
+                            if (NetworkTypeUtils.getConnectWifiSsid(ZivApp.getInstance()).contains("car_")){
                                 WifiDirectUtils.WifiDirect(getContext(),MyTestActivity.class);
                             }else {
                                 startActivity(new Intent(getContext(), RealTimeShow.class));
@@ -192,11 +193,11 @@ public class MyCarFragment extends Fragment {
                         System.out.println("车辆定位" + position);
                         if (!devId.equals("")) {
                             //开启轮询服务获取GPS信息
-                            if (NetworkTypeUtils.getConnectWifiSsid(getContext()).contains("car_")){
-                                startActivity(new Intent(getContext(), CarLocation2.class));
+                            if (NetworkTypeUtils.getConnectWifiSsid(ZivApp.getInstance()).contains("car_")){
+                                startActivity(new Intent(getContext(), CarLocation.class));
                             }else {
                                 MyAlarmManager.startPollingService(getContext(),1,LocationService.class,devId);
-                                startActivity(new Intent(getContext(), CarLocation2.class));
+                                startActivity(new Intent(getContext(), CarLocation.class));
                             }
 
                         } else {
@@ -207,7 +208,7 @@ public class MyCarFragment extends Fragment {
                         System.out.println("电子围栏" + position);
                         if (!devId.equals("")) {
                             //开启轮询服务获取GPS信息
-                            if (NetworkTypeUtils.getConnectWifiSsid(getContext()).contains("car_")){
+                            if (NetworkTypeUtils.getConnectWifiSsid(ZivApp.getInstance()).contains("car_")){
                                 startActivity(new Intent(getContext(), ElectronicFence.class));
                             }else {
                                 MyAlarmManager.startPollingService(getContext(),1,LocationService.class,devId);

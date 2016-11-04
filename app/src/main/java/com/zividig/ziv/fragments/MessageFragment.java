@@ -1,7 +1,10 @@
 package com.zividig.ziv.fragments;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -10,7 +13,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,8 +27,10 @@ import com.yanzhenjie.recyclerview.swipe.SwipeMenuItem;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView;
 import com.zividig.ziv.R;
 import com.zividig.ziv.adapter.ListViewDecoration;
-import com.zividig.ziv.adapter.MenuAdapter2;
+import com.zividig.ziv.adapter.MessageAdapter;
 import com.zividig.ziv.adapter.OnItemClickListener;
+import com.zividig.ziv.bean.MessageBean;
+import com.zividig.ziv.getui.GetuiReceiver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,15 +45,27 @@ public class MessageFragment extends Fragment {
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
-    private MenuAdapter2 mMenuAdapter;
+    private MessageAdapter mMenuAdapter;
 
-    private List<String> mStrings;
+    private List<MessageBean> mMessageBeanList;
 
     private SwipeMenuRecyclerView mSwipeMenuRecyclerView;
 
     private int size = 5;
     private View view;
     private SharedPreferences spf;
+
+    private BroadcastReceiver getuiReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            MessageBean messageBean = intent.getParcelableExtra(GetuiReceiver.GETUI_MESSAGE_KEY);
+            System.out.println("---MF---"+ messageBean.getAlarmType() + "\n"
+                    + "---MF---" + messageBean.getAlarmContent() + "\n"
+                    + "---MF---" + messageBean.getAlarmTime());
+            mMessageBeanList.add(0,messageBean);
+            mMenuAdapter.notifyItemInserted(0);
+        }
+    };
 
     public static MessageFragment instance() {
         MessageFragment view = new MessageFragment();
@@ -60,8 +76,8 @@ public class MessageFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_message, null);
-
-        spf = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
+        mContext = getActivity();
+        spf = mContext.getSharedPreferences("config", Context.MODE_PRIVATE);
 
         //设置标题
         TextView title = (TextView) view.findViewById(R.id.tv_title);
@@ -71,16 +87,29 @@ public class MessageFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        //注册广播接收器
+        IntentFilter filter= new IntentFilter();
+        filter.addAction(GetuiReceiver.GETUI_MESSAGE_ACTION);
+        mContext.registerReceiver(getuiReceiver,filter);
+    }
+
     private void initSwipeRecycleView(){
-        mContext = getActivity();
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.message_swipe_layout);
         mSwipeRefreshLayout.setOnRefreshListener(mOnRefreshListener);
 
-        mStrings = new ArrayList<>();
+        mMessageBeanList = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            mStrings.add("我是第" + i + "个。");
+            MessageBean messageBean = new MessageBean();
+            messageBean.setAlarmType("震动报警");
+            messageBean.setAlarmContent("我是第" + i + "个");
+            messageBean.setAlarmTime("2016-11-04 16:24");
+            mMessageBeanList.add(messageBean);
         }
+
         mSwipeMenuRecyclerView = (SwipeMenuRecyclerView) view.findViewById(R.id.message_recycler_view);
         mSwipeMenuRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));// 布局管理器。
         mSwipeMenuRecyclerView.setHasFixedSize(true);// 如果Item够简单，高度是确定的，打开FixSize将提高性能。
@@ -95,7 +124,7 @@ public class MessageFragment extends Fragment {
         // 设置菜单Item点击监听。
         mSwipeMenuRecyclerView.setSwipeMenuItemClickListener(menuItemClickListener);
 
-        mMenuAdapter = new MenuAdapter2(mStrings,spf);
+        mMenuAdapter = new MessageAdapter(mMessageBeanList,spf);
         mMenuAdapter.setOnItemClickListener(onItemClickListener);
         mSwipeMenuRecyclerView.setAdapter(mMenuAdapter);
     }
@@ -112,25 +141,6 @@ public class MessageFragment extends Fragment {
                     mSwipeRefreshLayout.setRefreshing(false);
                 }
             }, 2000);
-        }
-    };
-
-    /**
-     * 加载更多
-     */
-    private RecyclerView.OnScrollListener mOnScrollListener = new RecyclerView.OnScrollListener() {
-        @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            if (!recyclerView.canScrollVertically(1)) {// 手指不能向上滑动了
-                // TODO 这里有个注意的地方，如果你刚进来时没有数据，但是设置了适配器，这个时候就会触发加载更多，需要开发者判断下是否有数据，如果有数据才去加载更多。
-
-                Toast.makeText(mContext, "滑到最底部了，去加载更多吧！", Toast.LENGTH_SHORT).show();
-                size += 5;
-                for (int i = size - 5; i < size; i++) {
-                    mStrings.add("我是第" + i + "个。");
-                }
-                mMenuAdapter.notifyDataSetChanged();
-            }
         }
     };
 
@@ -156,21 +166,6 @@ public class MessageFragment extends Fragment {
                         .setWidth(width)
                         .setHeight(height);
                 swipeRightMenu.addMenuItem(deleteItem);// 添加一个按钮到右侧侧菜单。
-
-//                SwipeMenuItem closeItem = new SwipeMenuItem(mContext)
-//                        .setBackgroundDrawable(R.drawable.selector_purple)
-//                        .setImage(R.mipmap.ic_action_close)
-//                        .setWidth(width)
-//                        .setHeight(height);
-//                swipeRightMenu.addMenuItem(closeItem); // 添加一个按钮到右侧菜单。
-//
-//                SwipeMenuItem addItem = new SwipeMenuItem(mContext)
-//                        .setBackgroundDrawable(R.drawable.selector_green)
-//                        .setText("添加")
-//                        .setTextColor(Color.WHITE)
-//                        .setWidth(width)
-//                        .setHeight(height);
-//                swipeRightMenu.addMenuItem(addItem); // 添加一个按钮到右侧菜单。
             }
         }
     };
@@ -180,7 +175,6 @@ public class MessageFragment extends Fragment {
         public void onItemClick(int position) {
             Toast.makeText(mContext, "我是第" + position + "条。", Toast.LENGTH_SHORT).show();
             spf.edit().putBoolean("red_point",false).apply();
-
         }
     };
 
@@ -207,9 +201,15 @@ public class MessageFragment extends Fragment {
 
             // TODO 推荐调用Adapter.notifyItemRemoved(position)，也可以Adapter.notifyDataSetChanged();
             if (menuPosition == 0) {// 删除按钮被点击。
-                mStrings.remove(adapterPosition);
+                mMessageBeanList.remove(adapterPosition);
                 mMenuAdapter.notifyItemRemoved(adapterPosition);
             }
         }
     };
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mContext.unregisterReceiver(getuiReceiver);
+    }
 }

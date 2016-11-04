@@ -70,7 +70,6 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
         mTabs.setOnPageChangeListener(this);
 
         mViewPager.setCurrentItem(VIEW_FIRST); //设置默认选中的选项卡
-//        mTabs.showDot(VIEW_SECOND); //设置消息
     }
 
     @Override
@@ -190,6 +189,15 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
         public Rect getPageIconBounds(int position) {
             return null;
         }
+    }
+
+    public void setDot(boolean isShow){
+        if (isShow){
+            mTabs.showDot(VIEW_SECOND); //设置消息
+        }else {
+            mTabs.hideDot(VIEW_SECOND);
+        }
+
     }
 
     //退出程序前的提示

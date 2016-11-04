@@ -80,6 +80,6 @@ public class ShowPicture extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        ShareSDK.stopSDK();
+        ShareSDK.stopSDK(this);
     }
 }

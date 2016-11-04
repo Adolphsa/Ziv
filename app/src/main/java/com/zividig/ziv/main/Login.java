@@ -133,7 +133,7 @@ public class Login extends BaseActivity {
         btLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (NetworkTypeUtils.getConnectWifiSsid(Login.this).contains("car_")){
+                if (NetworkTypeUtils.getConnectWifiSsid(ZivApp.getInstance()).contains("car_")){
                     WifiDirectUtils.WifiDirect(Login.this,MainActivity.class);
                 }else {
                     login();
@@ -313,6 +313,9 @@ public class Login extends BaseActivity {
         finish();
     }
 
+    /**
+     * 显示登录进度条
+     */
     private void showProgressDialog(){
         if (mDialog == null){
             mDialog = LoadingProgressDialog.createLoadingDialog(Login.this,"正在登陆中...");
@@ -320,6 +323,9 @@ public class Login extends BaseActivity {
         }
     }
 
+    /**
+     * 关闭登录进度条
+     */
     private void closeDialog() {
         if (mDialog != null) {
             mDialog.dismiss();

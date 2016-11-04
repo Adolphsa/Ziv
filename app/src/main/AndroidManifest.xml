@@ -49,7 +49,7 @@
         <activity android:name=".function.ElectronicFence"/>
         <activity android:name=".function.TrackQuery"/>
         <activity android:name=".main.Register"/>
-        <activity android:name=".function.CarLocation2"/>
+        <activity android:name=".function.CarLocation"/>
         <activity android:name=".function.TestShareVideo"/>
         <activity android:name=".main.FindPassWord"/>
         <activity android:name=".function.TrackQueryDateChoose"/>
@@ -100,7 +100,7 @@
         <!-- </receiver> -->
 
 
-        <!-- 配置第三方Receiver -->
+        <!-- 个推Receiver -->
         <receiver
             android:name=".getui.GetuiReceiver"
             android:exported="false">

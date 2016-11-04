@@ -17,6 +17,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baidu.mapapi.SDKInitializer;
 import com.bm.library.PhotoView;
 import com.google.gson.Gson;
 import com.zivdigi.helloffmpeg.MyTestActivity;
@@ -25,6 +26,7 @@ import com.zividig.ziv.R;
 import com.zividig.ziv.bean.RealTimeBean;
 import com.zividig.ziv.bean.VideoInfoBean;
 import com.zividig.ziv.main.BaseActivity;
+import com.zividig.ziv.main.ZivApp;
 import com.zividig.ziv.utils.DialogUtils;
 import com.zividig.ziv.utils.ToastShow;
 import com.zividig.ziv.utils.Urls;
@@ -64,6 +66,7 @@ public class RealTimeShow extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SDKInitializer.initialize(ZivApp.getInstance());
         setContentView(R.layout.acticity_real_time_show);
         // 标题
         TextView txtTitle = (TextView) findViewById(R.id.tv_title);

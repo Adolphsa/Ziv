@@ -25,6 +25,7 @@ import android.widget.TextView;
 
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuAdapter;
 import com.zividig.ziv.R;
+import com.zividig.ziv.bean.MessageBean;
 
 import java.util.List;
 
@@ -32,14 +33,14 @@ import java.util.List;
  * 消息的适配器
  * Created by YOLANDA on 2016/7/22.
  */
-public class MenuAdapter2 extends SwipeMenuAdapter<MenuAdapter2.DefaultViewHolder> {
+public class MessageAdapter extends SwipeMenuAdapter<MessageAdapter.DefaultViewHolder> {
 
     private SharedPreferences spf;
-    private List<String> titles;
+    private List<MessageBean> mMessageBeanList;
     private OnItemClickListener mOnItemClickListener;
 
-    public MenuAdapter2(List<String> titles,SharedPreferences spf) {
-        this.titles = titles;
+    public MessageAdapter(List<MessageBean> list, SharedPreferences spf) {
+        this.mMessageBeanList = list;
         this.spf = spf;
     }
 
@@ -49,7 +50,7 @@ public class MenuAdapter2 extends SwipeMenuAdapter<MenuAdapter2.DefaultViewHolde
 
     @Override
     public int getItemCount() {
-        return titles == null ? 0 : titles.size();
+        return mMessageBeanList == null ? 0 : mMessageBeanList.size();
     }
 
     @Override
@@ -58,13 +59,14 @@ public class MenuAdapter2 extends SwipeMenuAdapter<MenuAdapter2.DefaultViewHolde
     }
 
     @Override
-    public MenuAdapter2.DefaultViewHolder onCompatCreateViewHolder(View realContentView, int viewType) {
+    public MessageAdapter.DefaultViewHolder onCompatCreateViewHolder(View realContentView, int viewType) {
         return new DefaultViewHolder(realContentView);
     }
 
     @Override
-    public void onBindViewHolder(MenuAdapter2.DefaultViewHolder holder, int position) {
-        holder.setData(titles.get(position));
+    public void onBindViewHolder(MessageAdapter.DefaultViewHolder holder, int position) {
+        MessageBean messageBean = mMessageBeanList.get(position);
+        holder.setData(messageBean.getAlarmContent(),messageBean.getAlarmTime());
         holder.setOnItemClickListener(mOnItemClickListener);
         boolean isShow = spf.getBoolean("red_point",true);
         if (isShow)
@@ -92,8 +94,9 @@ public class MenuAdapter2 extends SwipeMenuAdapter<MenuAdapter2.DefaultViewHolde
             this.mOnItemClickListener = onItemClickListener;
         }
 
-        public void setData(String title) {
+        public void setData(String title,String time) {
             this.tvMfTitle.setText(title);
+            this.tvMfTime.setText(time);
         }
 
         public void setRedPoint(boolean isShow){
