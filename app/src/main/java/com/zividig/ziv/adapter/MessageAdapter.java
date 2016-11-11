@@ -68,11 +68,9 @@ public class MessageAdapter extends SwipeMenuAdapter<MessageAdapter.DefaultViewH
         MessageBean messageBean = mMessageBeanList.get(position);
         holder.setData(messageBean.getAlarmContent(),messageBean.getAlarmTime());
         holder.setOnItemClickListener(mOnItemClickListener);
-        boolean isShow = spf.getBoolean("red_point",true);
-        if (isShow)
-            holder.setRedPoint(true);
-        else
-            holder.setRedPoint(false);
+        boolean isShow = spf.getBoolean("red_point" + position,true);
+        holder.setRedPoint(isShow);
+
     }
 
     static class DefaultViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

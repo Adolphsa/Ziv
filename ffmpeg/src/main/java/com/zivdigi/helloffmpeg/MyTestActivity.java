@@ -165,8 +165,8 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
                 System.out.println("td.error------" + error);
                 if (error == 2){
                     System.out.println("播放异常");
-                    mHandler.sendEmptyMessage(ERROR_CODE);
-
+//                    mHandler.sendEmptyMessage(ERROR_CODE);
+                    td.startRequest();
                 }
             }
         });

@@ -174,7 +174,7 @@ public class MessageFragment extends Fragment {
         @Override
         public void onItemClick(int position) {
             Toast.makeText(mContext, "我是第" + position + "条。", Toast.LENGTH_SHORT).show();
-            spf.edit().putBoolean("red_point",false).apply();
+            spf.edit().putBoolean("red_point" + position,false).apply();
         }
     };
 

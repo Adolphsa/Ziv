@@ -176,6 +176,8 @@ public class RealTimeShow extends BaseActivity {
             public void onError(Throwable ex, boolean isOnCallback) {
                 btRefresh.setClickable(true);
                 System.out.println("返回json错误" + ex);
+                progressBar.setVisibility(View.INVISIBLE);
+                ToastShow.showToast(RealTimeShow.this,"图片访问错误");
             }
 
             @Override
@@ -385,6 +387,7 @@ public class RealTimeShow extends BaseActivity {
             public void onError(Throwable ex, boolean isOnCallback) {
                 System.out.println("访问错误" + ex);
 //                showVideoInDeviceWifi();
+                ToastShow.showToast(RealTimeShow.this,"视频访问错误");
             }
 
             @Override

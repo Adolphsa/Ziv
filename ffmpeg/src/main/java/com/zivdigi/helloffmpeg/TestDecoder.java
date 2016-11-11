@@ -10,7 +10,7 @@ import java.util.Vector;
 public class TestDecoder{
 
     private static String TAG = "testDecoder";
-    private static String vedioUrl;
+    private static String videoUrl;
     ZivPlayer player;
     int errorCode;
 
@@ -64,7 +64,7 @@ public class TestDecoder{
     }
 
     public static void setUrl(String url) {
-        vedioUrl = url;
+        videoUrl = url;
     }
 
     public void startRequest(){
@@ -74,7 +74,7 @@ public class TestDecoder{
         }
 
         if(player != null){
-            boolean isStart = player.startStream(vedioUrl);
+            boolean isStart = player.startStream(videoUrl);
             System.out.println("isStart = " + isStart);
         }
 
@@ -83,7 +83,7 @@ public class TestDecoder{
 
     public void stopRequest() {
         if(player != null && isPlaying()) {
-            player.stopStream("test");
+            player.stopStream(videoUrl);
         }
     }
 
