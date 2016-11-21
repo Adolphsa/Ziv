@@ -233,14 +233,18 @@ public class Login extends BaseActivity {
 
             @Override
             public void onSuccess(String result) {
+                System.out.println("设备信息---" + result);
+                Gson gson = new Gson();
+                deviceInfoBean =  gson.fromJson(result, DeviceInfoBean.class);
+                devinfoList = deviceInfoBean.getDevinfo(); //设备列表
+                config.edit().putString("device_info",result).apply();
+                System.out.println("设备列表长度" + devinfoList.size());
+
+
                 //如果devid为空则去获取设备列表的设备，否则读取本地缓存的devid
                 if (config.getString("devid","").equals("")){
-                    Gson gson = new Gson();
-                    deviceInfoBean =  gson.fromJson(result, DeviceInfoBean.class);
-                    devinfoList = deviceInfoBean.getDevinfo(); //设备列表
                     devid =   deviceInfoBean.getDevinfo().get(0).getDevid(); //设备ID
                     config.edit().putString("devid",devid).apply();
-                    config.edit().putString("device_info",result).apply();
                 }else {
                     devid = config.getString("devid","");
                 }

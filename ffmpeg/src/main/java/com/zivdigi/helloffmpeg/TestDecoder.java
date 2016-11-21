@@ -83,6 +83,7 @@ public class TestDecoder{
 
     public void stopRequest() {
         if(player != null && isPlaying()) {
+            System.out.println("调用stopRequest");
             player.stopStream(videoUrl);
         }
     }

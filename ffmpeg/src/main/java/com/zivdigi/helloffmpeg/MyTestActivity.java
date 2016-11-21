@@ -166,7 +166,14 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
                 if (error == 2){
                     System.out.println("播放异常");
 //                    mHandler.sendEmptyMessage(ERROR_CODE);
-                    td.startRequest();
+                    try {
+                        Thread.sleep(1000);
+                        td.startRequest();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+
                 }
             }
         });
@@ -211,10 +218,11 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
 
     @Override
     public void onDestroy() {
-
+        super.onDestroy();
+        System.out.println("视频onDestroy");
         td.stopRequest();
         MyGLRenderer.Refreshvar();//重置变量
-        super.onDestroy();
+
     }
 
     @Override
