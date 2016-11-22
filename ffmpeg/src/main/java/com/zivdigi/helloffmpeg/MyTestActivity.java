@@ -56,7 +56,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
     private Buffer buffer = null;           //图像buffer信息
     private boolean audioFlag = false;
     private boolean isPlaying = true;      //是否继续播放
-    private boolean isKeepPlay = true;      //是否保持播放
+    private boolean isKeepPlay = false;      //是否保持播放
     private boolean surfaceChanged = false; //GLsuface数据切换标识
     private boolean isChange = false;       //是否在切换码流
     private boolean zoomFlag = false;       //是否图像最初标识
@@ -153,6 +153,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
 //        glSurfaceView.setZOrderMediaOverlay(true);
 
         //开始播放视频
+        isKeepPlay = true;
         td = new TestDecoder();
         td.startRequest();
         mVideoPlayTask = new VideoPlayTask();
@@ -221,8 +222,8 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
         super.onDestroy();
         System.out.println("视频onDestroy");
         td.stopRequest();
+        System.out.println("视频onDestroy2");
         MyGLRenderer.Refreshvar();//重置变量
-
     }
 
     @Override
@@ -301,7 +302,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
             TestDecoder.FrameBean fb;
             Vector<TestDecoder.FrameBean> videoFrameBuf;
 
-            while (true) {
+            while (true && isKeepPlay) {
 
                 synchronized (control){
                     if (suspend){

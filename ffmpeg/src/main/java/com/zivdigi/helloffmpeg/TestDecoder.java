@@ -82,7 +82,7 @@ public class TestDecoder{
     }
 
     public void stopRequest() {
-        if(player != null && isPlaying()) {
+        if(player != null) {
             System.out.println("调用stopRequest");
             player.stopStream(videoUrl);
         }
@@ -90,6 +90,7 @@ public class TestDecoder{
 
     public boolean isPlaying(){
         if(player != null) {
+            System.out.println("play.isPlayerPlaying = " + player.isPlayerPlaying());
             return player.isPlayerPlaying();
         }
 
