@@ -177,6 +177,9 @@ public class Login extends BaseActivity {
                         String isSuccess = json.getString("loginstatus");
                         if (isSuccess.equals("success")){
                             System.out.println("登录成功");
+
+                            userNameIsChange(); //判断账号是否改换
+
                             //保存账号密码
                             config.edit().putString(ET_USER,user).apply();
                             config.edit().putString(ET_PWD,password).apply();
@@ -240,7 +243,6 @@ public class Login extends BaseActivity {
                 config.edit().putString("device_info",result).apply();
                 System.out.println("设备列表长度" + devinfoList.size());
 
-
                 //如果devid为空则去获取设备列表的设备，否则读取本地缓存的devid
                 if (config.getString("devid","").equals("")){
                     devid =   deviceInfoBean.getDevinfo().get(0).getDevid(); //设备ID
@@ -268,6 +270,31 @@ public class Login extends BaseActivity {
             public void onFinished() {}
         });
 
+    }
+
+    /**
+     * 获取用户名
+     * @return
+     */
+    public String getUserName(){
+        String userName = etUser.getText().toString().trim();
+        System.out.println(userName);
+        return userName;
+    }
+
+    /**
+     * 检测账号是否更换
+     */
+    public void userNameIsChange(){
+        //换账号之后删除devid
+        String userName = config.getString(ET_USER,"");
+        String currentUserName = getUserName();
+        if (!currentUserName.equals(userName)){
+            System.out.println("换账号了");
+            System.out.println("清除一些数据");
+            config.edit().remove("devid").apply();
+            config.edit().remove("device_info").apply();
+        }
     }
 
     /**

@@ -208,9 +208,6 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
                 Toast.makeText(getApplicationContext(), "再按一次退出程序", Toast.LENGTH_SHORT).show();
                 exitTime = System.currentTimeMillis();
             } else {
-//                spf.edit().remove("devid").apply();
-//                spf.edit().remove("device_info").apply();
-                System.out.println("清除一些数据");
                 finish();
                 System.exit(0);
             }
