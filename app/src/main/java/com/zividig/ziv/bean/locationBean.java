@@ -20,7 +20,7 @@ public class LocationBean implements Parcelable{
     private String ti;
     private double lat;
     private double lon;
-    private int spd;
+    private double spd;
     private String hd;
     private int alt;
 
@@ -48,11 +48,11 @@ public class LocationBean implements Parcelable{
         this.lon = lon;
     }
 
-    public int getSpd() {
+    public double getSpd() {
         return spd;
     }
 
-    public void setSpd(int spd) {
+    public void setSpd(double spd) {
         this.spd = spd;
     }
 
@@ -82,7 +82,7 @@ public class LocationBean implements Parcelable{
         dest.writeString(this.ti);
         dest.writeDouble(this.lat);
         dest.writeDouble(this.lon);
-        dest.writeInt(this.spd);
+        dest.writeDouble(this.spd);
         dest.writeString(this.hd);
         dest.writeInt(this.alt);
     }

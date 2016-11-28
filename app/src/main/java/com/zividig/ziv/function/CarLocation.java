@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -131,13 +132,17 @@ public class CarLocation extends BaseActivity {
                 System.out.println("增加点");
                 mBaiduMap.addOverlay(overlay);
 
-//                Point pt= mBaiduMap.getMapStatus().targetScreen;
-//
-//                Point point= mBaiduMap.getProjection().toScreenLocation(desLatLng);
-//                if(point.x < 0 || point.x > pt.x*2 || point.y < 0 || point.y > pt.y*2)
-//                {
-//                    mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newLatLng(desLatLng));
-//                }
+                Point pt= mBaiduMap.getMapStatus().targetScreen;
+                Point point= mBaiduMap.getProjection().toScreenLocation(desLatLng);
+                System.out.println("point.x = " + point.x);
+                System.out.println("point.y = " + point.y);
+                System.out.println("pt.x = " + pt.x);
+                System.out.println("pt.y = " + pt.y);
+                if(point.x < pt.x*0.4 || point.x > pt.x*1.6 || point.y < pt.y*0.4 || point.y > pt.y*1.6)
+                {
+
+                    mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newLatLng(desLatLng));
+                }
             }
         }
     }

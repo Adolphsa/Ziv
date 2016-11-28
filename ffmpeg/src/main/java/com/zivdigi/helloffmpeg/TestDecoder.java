@@ -76,6 +76,7 @@ public class TestDecoder{
         if(player != null){
             boolean isStart = player.startStream(videoUrl);
             System.out.println("isStart = " + isStart);
+            player.setThreadExit(0);//设置线程监听初始为0
         }
 
 
@@ -85,6 +86,7 @@ public class TestDecoder{
         if(player != null) {
             System.out.println("调用stopRequest");
             player.stopStream(videoUrl);
+            player.setThreadExit(1);//设置线程退出
         }
     }
 

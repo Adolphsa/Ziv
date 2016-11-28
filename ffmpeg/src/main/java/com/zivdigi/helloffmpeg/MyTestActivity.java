@@ -221,6 +221,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
     public void onDestroy() {
         super.onDestroy();
         System.out.println("视频onDestroy");
+        isKeepPlay = false;
         td.stopRequest();
         System.out.println("视频onDestroy2");
         MyGLRenderer.Refreshvar();//重置变量
@@ -302,7 +303,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
             TestDecoder.FrameBean fb;
             Vector<TestDecoder.FrameBean> videoFrameBuf;
 
-            while (true && isKeepPlay) {
+            while (isKeepPlay) {
 
                 synchronized (control){
                     if (suspend){

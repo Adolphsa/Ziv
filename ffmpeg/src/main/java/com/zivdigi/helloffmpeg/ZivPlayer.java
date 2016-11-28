@@ -59,6 +59,7 @@ public class ZivPlayer  {
     private native int nativeDestroy();
     public native boolean startStream(String url);
     public native boolean stopStream(String url);
+    public native boolean setThreadExit(int code1);
     public native boolean setRender(String url);
     public native boolean isPlayerPlaying();//
 
