@@ -14,6 +14,15 @@ public class TestDecoder{
     ZivPlayer player;
     int errorCode;
 
+    private boolean isCancelInterface;
+    public boolean isCancelInterface() {
+        return isCancelInterface;
+    }
+
+    public void setCancelInterface(boolean cancelInterface) {
+        isCancelInterface = cancelInterface;
+    }
+
     private volatile boolean stopRequested;
 
     public Vector<FrameBean> getVector() {
@@ -68,7 +77,7 @@ public class TestDecoder{
     }
 
     public void startRequest(){
-//        final String rtspUrlPi02 = "rtsp://192.168.199.30:554/stream1";
+//        final String rtspUrlPi02 = "rtsp://120.25.80.80:8554/live_ZIV3C00010000ac16b2.sdp";
         if(isPlaying()){
             return;
         }
@@ -100,9 +109,11 @@ public class TestDecoder{
     }
 
     public void getErrorCode(int code){
-        errorCode = code;
-        mErrorCodeInterface.getErrorCode(code);
-        System.out.println("errorCode = " + errorCode);
+        if (isCancelInterface){
+            errorCode = code;
+            mErrorCodeInterface.getErrorCode(code);
+            System.out.println("errorCode = " + errorCode);
+        }
     }
 
     public  void yuv420p_to_yuv420sp(byte[] yuv420p,byte[] yuv420sp,int width,int height){

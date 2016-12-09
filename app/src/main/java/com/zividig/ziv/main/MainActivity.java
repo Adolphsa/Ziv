@@ -79,7 +79,12 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
 
     @Override
     public void onPageSelected(int position) {
-
+        System.out.println("position" + position);
+        if (position != 0){
+            mMyCarFragment.stoptGetDeviceState();
+        }else {
+            mMyCarFragment.startGetDeviceState();
+        }
     }
 
     @Override

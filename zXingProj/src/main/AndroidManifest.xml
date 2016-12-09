@@ -1,10 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.dtr.zxing">
 
-    <uses-sdk
-        android:minSdkVersion="10"
-        android:targetSdkVersion="19" />
-
     <supports-screens
         android:anyDensity="true"
         android:largeScreens="true"
@@ -32,7 +28,7 @@
         <activity
             android:name=".activity.ResultActivity"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Black.NoTitleBar" />
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

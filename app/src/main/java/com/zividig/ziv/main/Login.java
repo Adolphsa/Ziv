@@ -245,8 +245,11 @@ public class Login extends BaseActivity {
 
                 //如果devid为空则去获取设备列表的设备，否则读取本地缓存的devid
                 if (config.getString("devid","").equals("")){
-                    devid =   deviceInfoBean.getDevinfo().get(0).getDevid(); //设备ID
-                    config.edit().putString("devid",devid).apply();
+                    if (devinfoList.size() > 0){
+                        devid =   deviceInfoBean.getDevinfo().get(0).getDevid(); //设备ID
+                        config.edit().putString("devid",devid).apply();
+                    }
+
                 }else {
                     devid = config.getString("devid","");
                 }

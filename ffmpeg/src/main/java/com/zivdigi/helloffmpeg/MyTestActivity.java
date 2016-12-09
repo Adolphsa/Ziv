@@ -42,7 +42,9 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
     private static String TAG = "MyTestActivity";
 
     private static final int PLAY = 0;
-    private static final int ERROR_CODE = 7;
+    private static final int ERROR_CONNECT = 12;
+    private static final int ERROR_READ_FRAME = 13;
+    private static final int ERROR_TIME_OUT = 14;
     private static final int FILE_EXIST = 8;
     private static final int AUDIO = 1;
     private static final int SHOW_TOOLS = 2;
@@ -62,6 +64,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
     private boolean zoomFlag = false;       //是否图像最初标识
     private boolean mIsMoved = false;       //触屏移动标识
     private Bitmap mShowBitmap = null;      //截图Bitmap
+    private boolean isProgressShow = true;  //进度条是否显示
 
     private TestDecoder td;                 //jni数据传递类
     private MyGLRenderer myGLRenderer;      //Opengl ES  Render
@@ -81,7 +84,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
             super.handleMessage(msg);
             switch (msg.what){
                 case PLAY:
-                    mCycleProgressBar.setVisibility(View.GONE);
+                    mCycleProgressBar.setVisibility(View.INVISIBLE);
                     mPlay.setBackgroundResource(R.mipmap.pause);
                     break;
 
@@ -99,10 +102,23 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
                     }
                     break;
 
-                case ERROR_CODE:    //播放错误
+                case ERROR_CONNECT:    //播放错误
 //                    Toast.makeText(MyTestActivity.this,"could not open input stream",Toast.LENGTH_LONG).show();
-                    mCycleProgressBar.setVisibility(View.GONE);
-                    showDialog();
+                    mCycleProgressBar.setVisibility(View.VISIBLE);
+                    isProgressShow = true;
+//                    showDialog("could not open input stream");
+                    break;
+                case ERROR_READ_FRAME:    //av_read_frame error
+
+                    mCycleProgressBar.setVisibility(View.VISIBLE);
+                    isProgressShow = true;
+//                    showDialog("av_read_frame error");
+                    break;
+                case ERROR_TIME_OUT:    //avformat_open_input timeout
+
+                    mCycleProgressBar.setVisibility(View.VISIBLE);
+                    isProgressShow = true;
+                    showDialog("avformat_open_input timeout");
                     break;
                 case FILE_EXIST:    //文件存在
                     Toast.makeText(MyTestActivity.this,"截图已保存",Toast.LENGTH_SHORT).show();
@@ -155,29 +171,40 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
         //开始播放视频
         isKeepPlay = true;
         td = new TestDecoder();
+        td.setCancelInterface(true);
         td.startRequest();
+
         mVideoPlayTask = new VideoPlayTask();
         mVideoPlayTask.start();
 
-
-        td.setErrorCodeInterface(new ErrorCodeInterface() {
-            @Override
-            public void getErrorCode(int error) {
-                System.out.println("td.error------" + error);
-                if (error == 2){
-                    System.out.println("播放异常");
-//                    mHandler.sendEmptyMessage(ERROR_CODE);
-                    try {
-                        Thread.sleep(1000);
-                        td.startRequest();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+        if (!MyTestActivity.this.isFinishing()){
+            td.setErrorCodeInterface(new ErrorCodeInterface() {
+                @Override
+                public void getErrorCode(int error) {
+                    System.out.println("td.error------" + error);
+                    if (error == 2){
+                        System.out.println("播放异常2");
+                         mHandler.sendEmptyMessage(ERROR_CONNECT);
+                        try {
+                            Thread.sleep(2000);
+                            td.startRequest();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }else if(error == 3){ //av_read_frame error
+                        mHandler.sendEmptyMessage(ERROR_READ_FRAME);
+                        try {
+                            Thread.sleep(2000);
+                            td.startRequest();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }else if (error == 4){ //avformat_open_input timeout
+                        mHandler.sendEmptyMessage(ERROR_TIME_OUT);
                     }
-
-
                 }
-            }
-        });
+            });
+        }
 
 
         glSurfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
@@ -201,7 +228,6 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
         glSurfaceView.setOnTouchListener(mTouchListener);
     }
 
-
     @Override
     public void onResume() {
         super.onResume();
@@ -210,11 +236,26 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             myGLRenderer.setScreenState(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
+        System.out.println("onResume");
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        mCycleProgressBar.setVisibility(View.VISIBLE);
+        isKeepPlay = true;
+        td.setCancelInterface(true);
+        td.startRequest();
+        isProgressShow = true;
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        System.out.println("视频onStop");
+        td.setCancelInterface(false);
+        td.stopRequest();
+
     }
 
     @Override
@@ -222,6 +263,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
         super.onDestroy();
         System.out.println("视频onDestroy");
         isKeepPlay = false;
+        td.setCancelInterface(false);
         td.stopRequest();
         System.out.println("视频onDestroy2");
         MyGLRenderer.Refreshvar();//重置变量
@@ -376,6 +418,12 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
                         System.out.println("线程中运行了");
                     }
 //                    Log.i(TAG, "run: 传递YUV数据");
+
+                    if (isProgressShow){
+                        System.out.println("进度条显示");
+                        isProgressShow = false;
+                        mHandler.sendEmptyMessage(PLAY);
+                    }
                     surfaceChanged = false;
                     myGLRenderer.update(fb.pix, fb.width, fb.height);//更新视频数据(刷新GLSufaceView)
                 } else {
@@ -468,9 +516,6 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
                             }
                         }
 
-                        Log.i(TAG, "onTouch: 点击了");
-//                        mTitle.setVisibility(View.VISIBLE);
-
                     }
                     mIsMoved = false;
                     break;
@@ -521,11 +566,11 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
         }
     }
 
-    public void showDialog(){
+    public void showDialog(String msg){
         if (!MyTestActivity.this.isFinishing()){
             new AlertDialog.Builder(MyTestActivity.this)
                     .setTitle("警告")
-                    .setMessage("could not open input stream")
+                    .setMessage(msg)
                     .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {

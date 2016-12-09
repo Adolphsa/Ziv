@@ -118,10 +118,11 @@ public class RealTimeShow extends BaseActivity {
     private void showImage() {
         progressBar.setVisibility(View.VISIBLE);
         btRefresh.setClickable(false);
+        btVideo.setClickable(false);
         System.out.println("获取图片");
         //获取图片链接
         RequestParams params = new RequestParams(Urls.URL_PIC_SNAP);
-
+//        params.setConnectTimeout(120*1000); //超时120s
         params.addBodyParameter("devid", devid);
         System.out.println("实时预览" + devid);
         System.out.println("请求连接" + params);
@@ -155,12 +156,15 @@ public class RealTimeShow extends BaseActivity {
                         break;
                     case 501:
                         System.out.println("可以执行唤醒主机的工作");
-                        DialogUtils.showPrompt(RealTimeShow.this, "提示", "设备不在线", "确定", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                finish();
-                            }
-                        });
+                        if (!RealTimeShow.this.isFinishing()){
+                            DialogUtils.showPrompt(RealTimeShow.this, "提示", "设备不在线", "确定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    finish();
+                                }
+                            });
+                        }
+
                         break;
                     case 502:
                         ToastShow.showToast(RealTimeShow.this,"服务器内部出错");
@@ -175,9 +179,19 @@ public class RealTimeShow extends BaseActivity {
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
                 btRefresh.setClickable(true);
+                btVideo.setClickable(true);
                 System.out.println("返回json错误" + ex);
                 progressBar.setVisibility(View.INVISIBLE);
-                ToastShow.showToast(RealTimeShow.this,"图片访问错误");
+//                ToastShow.showToast(RealTimeShow.this,"图片访问错误");
+                if (!RealTimeShow.this.isFinishing()){
+                    DialogUtils.showPrompt(RealTimeShow.this, "提示", "返回json错误", "确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    });
+                }
+
             }
 
             @Override
@@ -214,6 +228,7 @@ public class RealTimeShow extends BaseActivity {
                 System.out.println("图片的宽度：" + intrinsicWidth + "，图片的高度：" + intrinsicHeight);
 
                 btRefresh.setClickable(true);
+                btVideo.setClickable(true);
             }
 
             @Override
@@ -221,6 +236,7 @@ public class RealTimeShow extends BaseActivity {
 
                 System.out.println("加载错误" + ex);
                 btRefresh.setClickable(true);
+                btVideo.setClickable(true);
             }
 
             @Override
@@ -231,6 +247,7 @@ public class RealTimeShow extends BaseActivity {
             @Override
             public void onFinished() {
                 btRefresh.setClickable(true);
+                btVideo.setClickable(true);
             }
         });
 

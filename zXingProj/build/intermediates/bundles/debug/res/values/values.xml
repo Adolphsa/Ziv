@@ -18,6 +18,9 @@
     <color name="car_model_checked">#b9c778</color>
     <color name="car_model_unchecked">#767676</color>
     <color name="car_store_auction_rect">#aebe65</color>
+    <color name="colorAccent">#00c8ff</color>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
     <color name="csy_blue2">#00ccff</color>
     <color name="csy_green">#00c8ff</color>
     <color name="cyan_86890c">#86890c</color>
@@ -98,15 +101,14 @@
     <item name="restart_preview" type="id"/>
     <item name="return_scan_result" type="id"/>
     <string name="app_name">ZXingProj</string>
-    <style name="AppBaseTheme" parent="@android:style/Theme.Black.NoTitleBar">
-        <!--
-            Theme customizations available in newer API levels can go in
-            res/values-vXX/styles.xml, while customizations related to
-            backward-compatibility can go here.
-
-        -->
+    <style name="AppBaseTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
     <style name="AppTheme" parent="AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
     </style>
 </resources>

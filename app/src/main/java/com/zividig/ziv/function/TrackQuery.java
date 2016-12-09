@@ -136,12 +136,15 @@ public class TrackQuery extends BaseActivity {
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
                 System.out.println("访问出错" + ex);
-                DialogUtils.showPrompt(TrackQuery.this, "提示", "无数据", "确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                    }
-                });
+                if (!TrackQuery.this.isFinishing()){
+                    DialogUtils.showPrompt(TrackQuery.this, "提示", "无数据", "确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    });
+                }
+
             }
 
             @Override

@@ -1,5 +1,6 @@
 package com.zividig.ziv.function;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import com.dtr.zxing.activity.CaptureActivity;
 import com.zividig.ziv.R;
 import com.zividig.ziv.main.BaseActivity;
 import com.zividig.ziv.main.Login;
+import com.zividig.ziv.utils.DialogUtils;
 import com.zividig.ziv.utils.NetworkTypeUtils;
 import com.zividig.ziv.utils.ToastShow;
 import com.zividig.ziv.utils.Urls;
@@ -69,9 +71,29 @@ public class AddDevice extends BaseActivity {
                         @Override
                         public void onSuccess(String result) {
                             System.out.println("wifi直连" + result);
-                            if (!result.isEmpty()){
-                                startActivity(new Intent(AddDevice.this, CaptureActivity.class));
+                            try {
+                                JSONObject json = new JSONObject(result);
+                                String devid = json.getString("devid");
+                                if (!devid.equals("")){
+                                    startActivity(new Intent(AddDevice.this, CaptureActivity.class));
+                                }else {
+                                    DialogUtils.showPrompt(AddDevice.this, "提示", "获取devid失败", "确定", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.dismiss();
+                                        }
+                                    });
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                DialogUtils.showPrompt(AddDevice.this, "提示", "解析数据失败", "确定", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
                             }
+
 
                         }
 
@@ -119,6 +141,7 @@ public class AddDevice extends BaseActivity {
     public void BindDevice(View v){
         String userName = spf.getString(Login.ET_USER,"");
         String code = spf.getString("two_code","");
+        System.out.println("二维码是：" + code);
         if (code.isEmpty()){
             ToastShow.showToast(AddDevice.this,"请先添加二维码");
             return;
@@ -137,17 +160,54 @@ public class AddDevice extends BaseActivity {
             @Override
             public void onSuccess(String result) {
                 System.out.println("绑定设备---" + result);
-                if (!result.isEmpty()){
-                    ToastShow.showToast(AddDevice.this,"绑定设备成功");
-                }else {
-                    ToastShow.showToast(AddDevice.this,"绑定设备失败");
+                try {
+                    JSONObject json = new JSONObject(result);
+                    String status = json.getString("status");
+                    if (!AddDevice.this.isFinishing() && status.equals("ok")){
+                        DialogUtils.showPrompt(AddDevice.this, "提示", "绑定设备成功,请重新登录", "确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //删除已保存的二维码
+                                spf.edit().remove("two_code").apply();
+                                startActivity(new Intent(AddDevice.this, Login.class));
+                            }
+                        });
+                    }else {
+                        if (!AddDevice.this.isFinishing()){
+                            DialogUtils.showPrompt(AddDevice.this, "提示", "绑定设备失败，返回数据异常", "确定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    if (!AddDevice.this.isFinishing()){
+                        DialogUtils.showPrompt(AddDevice.this, "提示", "绑定设备失败，数据解析失败", "确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                    }
+
                 }
             }
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
                 System.out.println("绑定设备--" + ex);
-                ToastShow.showToast(AddDevice.this,"绑定设备失败");
+                if (!AddDevice.this.isFinishing()){
+                    DialogUtils.showPrompt(AddDevice.this, "提示", "绑定设备失败,网络错误,请检查网络", "确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                }
+
             }
 
             @Override
@@ -164,7 +224,6 @@ public class AddDevice extends BaseActivity {
 
     //切换网络
     public void changeNetwork(View view){
-//      startActivity(new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS));
         Intent intent = new Intent();
         intent.setAction("android.net.wifi.PICK_WIFI_NETWORK");
         startActivity(intent);

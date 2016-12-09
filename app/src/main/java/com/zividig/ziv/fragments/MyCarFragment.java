@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -33,8 +35,15 @@ import com.zividig.ziv.service.LocationService;
 import com.zividig.ziv.utils.MyAlarmManager;
 import com.zividig.ziv.utils.NetworkTypeUtils;
 import com.zividig.ziv.utils.ToastShow;
+import com.zividig.ziv.utils.Urls;
 import com.zividig.ziv.utils.WifiDirectUtils;
 import com.zividig.ziv.weizhang.activity.WeiZhangMainActivity;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.xutils.common.Callback;
+import org.xutils.http.RequestParams;
+import org.xutils.x;
 
 import java.util.ArrayList;
 
@@ -62,33 +71,112 @@ public class MyCarFragment extends Fragment {
                                  R.drawable.selector_history_back};
     private String devId;
 
-    private Button deviceRefresh;
-
-//    CountDownTimer countDownTimer = new CountDownTimer(5000,1000) {  //按钮倒计时
-//        @Override
-//        public void onTick(long millisUntilFinished) {
-//            deviceRefresh.setText(millisUntilFinished/1000 + "秒");
-//        }
-//
-//        @Override
-//        public void onFinish() {
-//            deviceRefresh.setEnabled(true);
-//            deviceRefresh.setText("刷新");
-//        }
-//    };
-    private TextView currentDeviceId;  //当前的设备号
-    private TextView isOnline;  //设备是否在线
-
+    private TextView tvDevidState;
+    private TextView deviceState;
+    private SharedPreferences mSpf;
 
     public static MyCarFragment instance() {
         MyCarFragment myCarView = new MyCarFragment();
         return myCarView;
     }
+    Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case 100:
+                    deviceState.setText("在线");
+                    break;
+                case 101:
+                    deviceState.setText("休眠");
+                    break;
+                case 102:
+                    deviceState.setText("离线");
+                    break;
+                case 103:
+                    deviceState.setText("未知");
+                    break;
+                case 104:
+                    deviceState.setText("正在查询");
+            }
+        }
+    };
+
+    Runnable mRunnable = new Runnable() {
+        @Override
+        public void run() {
+            String devid = mSpf.getString("devid","");
+            RequestParams params = new RequestParams(Urls.DEVICE_STATE);
+            params.addBodyParameter("devid",devid);
+            x.http().get(params, new Callback.CommonCallback<String>() {
+                @Override
+                public void onSuccess(String result) {
+                    try {
+                        System.out.println("查询状态结果---" + result);
+                        JSONObject json = new JSONObject(result);
+                        String workMode = json.getString("workmode");
+                        if (workMode.equals("NORMAL")){
+                            mHandler.sendEmptyMessage(100);
+                        }else if (workMode.equals("STDBY")){
+                            mHandler.sendEmptyMessage(101);
+                        }else if (workMode.equals("OFF")){
+                            mHandler.sendEmptyMessage(102);
+                        }else if (workMode.equals("UNKNOWN")){
+                            mHandler.sendEmptyMessage(103);
+                        }
+                        mHandler.postDelayed(mRunnable,2000);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        System.out.println("解析失败");
+                        mHandler.sendEmptyMessage(104);
+                        mHandler.removeCallbacks(mRunnable);
+                    }
+                }
+
+                @Override
+                public void onError(Throwable ex, boolean isOnCallback) {
+                    mHandler.sendEmptyMessage(104);
+                    mHandler.removeCallbacks(mRunnable);
+                }
+
+                @Override
+                public void onCancelled(CancelledException cex) {
+
+                }
+
+                @Override
+                public void onFinished() {
+
+                }
+            });
+
+        }
+    };
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_mycar, null);
+        mSpf = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
+
+        initView();
+        initAd();
+        initFunctionButton();
+        getDevID();
+        if (!devId.equals("")){
+            mHandler.postDelayed(mRunnable,2000);
+        }
+        return view;
+    }
+
+
+    private void initView(){
+
+        tvDevidState = (TextView) view.findViewById(R.id.tv_device_states);
+        deviceState = (TextView) view.findViewById(R.id.tv_device_state);
+
+        tvDevidState.setVisibility(View.VISIBLE);
+        deviceState.setVisibility(View.VISIBLE); //设备状态
 
         //设置标题
         TextView title = (TextView) view.findViewById(R.id.tv_title);
@@ -104,34 +192,6 @@ public class MyCarFragment extends Fragment {
             }
         });
 
-
-//        currentDeviceId = (TextView) view.findViewById(R.id.mycar_tv2);
-//        isOnline = (TextView) view.findViewById(R.id.mycar_tv3);
-//        getDevID();
-//        if (!devId.equals("")){
-//            currentDeviceId.setText(devId);
-//            isOnline.setText("在线");
-//        }
-//        //设备信息刷新
-//        deviceRefresh = (Button) view.findViewById(R.id.mycar_refresh);
-//        deviceRefresh.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                countDownTimer.start();
-//                getDevID();
-//                if (!devId.equals("")){
-//                    currentDeviceId.setText(devId);
-//                    isOnline.setText("在线");
-//                }else {
-//                    ToastShow.showToast(getContext(), "请先添加设备");
-//                }
-//            }
-//        });
-
-        initAd();
-        initFunctionButton();
-
-        return view;
     }
 
     //初始化功能按钮
@@ -277,6 +337,7 @@ public class MyCarFragment extends Fragment {
         super.onResume();
         //开始自动翻页
         convenientBanner.startTurning(3000);
+        mHandler.postDelayed(mRunnable,2000);
     }
 
     @Override
@@ -284,6 +345,20 @@ public class MyCarFragment extends Fragment {
         super.onPause();
         //停止翻页
         convenientBanner.stopTurning();
+        System.out.println("暂停");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        System.out.println("停止");
+        mHandler.removeCallbacks(mRunnable);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        System.out.println("onDestroyView");
     }
 
     @Override
@@ -293,8 +368,7 @@ public class MyCarFragment extends Fragment {
     }
 
     private void getDevID(){
-        SharedPreferences spf = getActivity().getSharedPreferences("config",Context.MODE_PRIVATE);
-        devId = spf.getString("devid","");
+        devId = mSpf.getString("devid","");
         System.out.println("fragment---deviceId:" + devId);
     }
 
@@ -304,5 +378,16 @@ public class MyCarFragment extends Fragment {
     private void showVideoInDeviceWifi(){
         TestDecoder.setUrl("rtsp://192.168.1.1/stream1");
         startActivity(new Intent(getContext(), MyTestActivity.class));
+    }
+
+    public void startGetDeviceState(){
+        mHandler.postDelayed(mRunnable,2000);
+    }
+
+    public void stoptGetDeviceState(){
+        if (mRunnable != null){
+            mHandler.removeCallbacks(mRunnable);
+        }
+
     }
 }

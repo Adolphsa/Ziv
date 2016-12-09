@@ -12,11 +12,32 @@
         android:drawableLeft="@drawable/selector_back_button"
         android:background="@null"
         android:layout_marginLeft="5dp"
-        android:visibility="invisible"
+        android:visibility="gone"
         android:text="返回"
         android:gravity="center_vertical"
         android:textColor="@android:color/white"
         android:textSize="14.0sp"
+        />
+    <TextView
+        android:id="@+id/tv_device_states"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="设备状态:"
+        android:textColor="@android:color/white"
+        android:layout_centerVertical="true"
+        android:textSize="14sp"
+        android:visibility="gone"
+        />
+    <TextView
+        android:id="@+id/tv_device_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/tv_device_states"
+        android:text="正在查询"
+        android:textColor="@android:color/white"
+        android:layout_centerVertical="true"
+        android:textSize="14sp"
+        android:visibility="gone"
         />
     <TextView
         android:id="@+id/tv_title"
@@ -37,6 +58,6 @@
         android:textColor="@android:color/white"
         android:layout_alignParentRight="true"
         android:background="@android:color/transparent"
-        android:visibility="invisible"
+        android:visibility="gone"
         />
 </RelativeLayout>

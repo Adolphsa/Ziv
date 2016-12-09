@@ -89,7 +89,7 @@ public class SettingFragment extends Fragment {
                                 try {
                                     JSONObject json = new JSONObject(result);
                                     int errorCode = json.getInt("error");
-                                    System.out.println("错误码是：" + errorCode);
+                                    System.out.println("返回码是：" + errorCode);
                                     if (errorCode == 200){
                                         ToastShow.showToast(getActivity(),"主机正在唤醒中...");
                                     }
