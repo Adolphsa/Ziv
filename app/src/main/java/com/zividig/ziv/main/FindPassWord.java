@@ -25,8 +25,6 @@ import org.xutils.x;
 
 public class FindPassWord extends BaseActivity {
 
-//    private static String RESET_PWD = "http://api.caowei.name/user";
-
     private EditText etUser;
     private EditText etPwd;
     private EditText etYzm;

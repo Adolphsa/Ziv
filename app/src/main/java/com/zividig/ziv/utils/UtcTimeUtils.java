@@ -63,4 +63,9 @@ public class UtcTimeUtils {
         System.out.println(date);
         return date;
     }
+
+    public static String getTimestamp(){
+
+        return System.currentTimeMillis()/1000 + "";
+    }
 }

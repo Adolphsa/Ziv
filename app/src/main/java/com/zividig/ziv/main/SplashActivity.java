@@ -22,6 +22,7 @@ import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.zividig.ziv.R;
 import com.zividig.ziv.utils.StreamUtils;
+import com.zividig.ziv.utils.Urls;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,8 +41,6 @@ import java.net.URL;
  * Created by Administrator on 2016-05-31.
  */
 public class SplashActivity extends BaseActivity {
-
-    private static String URL_GET_DEVICE_INFO = "http://192.168.1.1/api/getdevinfo";
 
     protected static final int CODE_UPDATE_DIALOG = 0;
     protected static final int CODE_URL_ERROR = 1;
@@ -175,7 +174,7 @@ public class SplashActivity extends BaseActivity {
                 HttpURLConnection conn = null;
                 try {
                     // 本机地址用localhost, 但是如果用模拟器加载本机的地址时,可以用ip(10.0.2.2)来替换
-                    URL url = new URL("http://120.25.80.80/~adolph/zivApp/ziv_update.json");
+                    URL url = new URL(Urls.UPDATE_VERSION);
                     conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("GET");// 设置请求方法
                     conn.setConnectTimeout(5000);// 设置连接超时

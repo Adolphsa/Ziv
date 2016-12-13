@@ -110,12 +110,6 @@
             </intent-filter>
         </receiver>
 
-        <!--获取设备状态服务-->
-        <service
-            android:name=".service.GetDeviceStateService"
-            android:enabled="true"
-            android:exported="true">
-        </service>
     </application>
 
 </manifest>

@@ -20,11 +20,8 @@ import android.widget.Toast;
 import com.baidu.mapapi.SDKInitializer;
 import com.bm.library.PhotoView;
 import com.google.gson.Gson;
-import com.zivdigi.helloffmpeg.MyTestActivity;
-import com.zivdigi.helloffmpeg.TestDecoder;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.RealTimeBean;
-import com.zividig.ziv.bean.VideoInfoBean;
 import com.zividig.ziv.main.BaseActivity;
 import com.zividig.ziv.main.ZivApp;
 import com.zividig.ziv.utils.DialogUtils;
@@ -61,7 +58,7 @@ public class RealTimeShow extends BaseActivity {
     private Button btDownImage;
     private int errorCode; //错误码
     private String devid;
-    private Button btVideo;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +67,7 @@ public class RealTimeShow extends BaseActivity {
         setContentView(R.layout.acticity_real_time_show);
         // 标题
         TextView txtTitle = (TextView) findViewById(R.id.tv_title);
-        txtTitle.setText("实时预览");
+        txtTitle.setText("图片抓拍");
 
         SharedPreferences spf = getSharedPreferences("config",MODE_PRIVATE);
         devid = spf.getString("devid","");
@@ -102,11 +99,9 @@ public class RealTimeShow extends BaseActivity {
 
         btRefresh = (Button) findViewById(R.id.bt_refresh); //图片刷新
         btDownImage = (Button) findViewById(R.id.bt_downImage);  //图片下载
-        btVideo = (Button)findViewById(R.id.bt_video);
 
         btRefresh.setOnClickListener(listener);
         btDownImage.setOnClickListener(listener);
-        btVideo.setOnClickListener(listener);
 
         showImage(); //显示图片
 
@@ -116,9 +111,10 @@ public class RealTimeShow extends BaseActivity {
      * 显示图片
      */
     private void showImage() {
+
         progressBar.setVisibility(View.VISIBLE);
         btRefresh.setClickable(false);
-        btVideo.setClickable(false);
+
         System.out.println("获取图片");
         //获取图片链接
         RequestParams params = new RequestParams(Urls.URL_PIC_SNAP);
@@ -178,8 +174,8 @@ public class RealTimeShow extends BaseActivity {
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
+
                 btRefresh.setClickable(true);
-                btVideo.setClickable(true);
                 System.out.println("返回json错误" + ex);
                 progressBar.setVisibility(View.INVISIBLE);
 //                ToastShow.showToast(RealTimeShow.this,"图片访问错误");
@@ -228,7 +224,6 @@ public class RealTimeShow extends BaseActivity {
                 System.out.println("图片的宽度：" + intrinsicWidth + "，图片的高度：" + intrinsicHeight);
 
                 btRefresh.setClickable(true);
-                btVideo.setClickable(true);
             }
 
             @Override
@@ -236,7 +231,6 @@ public class RealTimeShow extends BaseActivity {
 
                 System.out.println("加载错误" + ex);
                 btRefresh.setClickable(true);
-                btVideo.setClickable(true);
             }
 
             @Override
@@ -247,7 +241,6 @@ public class RealTimeShow extends BaseActivity {
             @Override
             public void onFinished() {
                 btRefresh.setClickable(true);
-                btVideo.setClickable(true);
             }
         });
 
@@ -365,65 +358,17 @@ public class RealTimeShow extends BaseActivity {
                 case R.id.bt_downImage:
                     downImage();
                     break;
-                case R.id.bt_video:
-                    startVideo();
             }
         }
     }
 
-    /**
-     * 开启实时视频
-     *
-     * @param
-     */
-    public void startVideo() {
-        System.out.println("点击了开启实时视频1");
-        RequestParams params = new RequestParams(Urls.REQUEST_VIDEO);
-        params.addQueryStringParameter("devid",devid);
-        params.addParameter("channel","0");
 
-        x.http().get(params, new Callback.CommonCallback<String>() {
-            @Override
-            public void onSuccess(String result) {
-                System.out.println(result);
-                Gson gson = new Gson();
-                VideoInfoBean videoInfoBean = gson.fromJson(result, VideoInfoBean.class);
-                int code = videoInfoBean.getError();
-                if (code == 200) {
-                    System.out.println("视频URL:" + videoInfoBean.getUrl());
-                    TestDecoder.setUrl(videoInfoBean.getUrl());
-                    startActivity(new Intent(RealTimeShow.this, MyTestActivity.class));
-                }else {
-//                    showVideoInDeviceWifi();
-                    System.out.println("非200");
-                    ToastShow.showToast(RealTimeShow.this,"设备不在线");
-                }
-            }
-
-            @Override
-            public void onError(Throwable ex, boolean isOnCallback) {
-                System.out.println("访问错误" + ex);
-//                showVideoInDeviceWifi();
-                ToastShow.showToast(RealTimeShow.this,"视频访问错误");
-            }
-
-            @Override
-            public void onCancelled(CancelledException cex) {
-
-            }
-
-            @Override
-            public void onFinished() {
-
-            }
-        });
-    }
 
     /**
      * 主机唤醒
      */
     private void wakeupDevice(){
-        RequestParams params = new RequestParams("http://120.24.174.213:9501/api/wakeupdevice");
+        RequestParams params = new RequestParams(Urls.DEVICE_WAKEUP);
         params.addQueryStringParameter("devid",devid);
         System.out.println("主机唤醒：" + params);
         x.http().get(params, new Callback.CommonCallback<String>() {

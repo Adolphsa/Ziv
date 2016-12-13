@@ -52,17 +52,5 @@
             android:background="@android:color/transparent"
             android:padding="8dp"
             />
-
-        <Button
-            android:id="@+id/bt_video"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:textColor="@android:color/darker_gray"
-            android:drawableTop="@drawable/selector_video"
-            android:textSize="15sp"
-            android:background="@android:color/transparent"
-            android:padding="8dp"
-            />
     </LinearLayout>
 </LinearLayout>

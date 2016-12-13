@@ -17,7 +17,7 @@ public class LocationService extends Service {
     public static final String LOCATION_ACTION = "com.zividig.ziv.service.location";
     public static final String PAR_KEY = "location_parcelable";
 
-    private static String URL = "http://dev.caowei.name/mytest/uploadtest/localtionhis_realtime.php";
+    private static String URL = "http://120.25.80.80/mytest/uploadtest/localtionhis_realtime.php";
     private LocationBean locationBean;
     private RequestParams params;
     private SharedPreferences spf;

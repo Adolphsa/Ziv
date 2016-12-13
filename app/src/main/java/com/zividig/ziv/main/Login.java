@@ -15,10 +15,13 @@ import com.igexin.sdk.PushManager;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.DeviceInfoBean;
 import com.zividig.ziv.customView.LoadingProgressDialog;
+import com.zividig.ziv.utils.HttpParamsUtils;
 import com.zividig.ziv.utils.MD5;
 import com.zividig.ziv.utils.NetworkTypeUtils;
+import com.zividig.ziv.utils.SignatureUtils;
 import com.zividig.ziv.utils.ToastShow;
 import com.zividig.ziv.utils.Urls;
+import com.zividig.ziv.utils.UtcTimeUtils;
 import com.zividig.ziv.utils.WifiDirectUtils;
 
 import org.json.JSONException;
@@ -29,14 +32,13 @@ import org.xutils.x;
 
 import java.util.List;
 
+import static com.zividig.ziv.utils.SignatureUtils.SIGNATURE_TOKEN;
+
 /**
  * 登录界面
  * Created by Administrator on 2016-06-14.
  */
 public class Login extends BaseActivity {
-
-//    private static String LOGIN_URL = "http://api.caowei.name/login";
-//    private static String GET_DEVICE_LIST = "http://api.caowei.name/devicelist";
 
     public static final String ET_USER = "et_user";
     private static final String ET_PWD = "et_pwd";
@@ -120,7 +122,7 @@ public class Login extends BaseActivity {
         cbPwd.setOnClickListener(new View.OnClickListener() { //记住密码
             @Override
             public void onClick(View v) {
-                System.out.println("cbPwd被点击了");
+//                System.out.println("cbPwd被点击了");
                 if (cbPwd.isChecked()){
 
                     Login.this.config.edit().putBoolean(CB_PWD,true).apply();
@@ -160,13 +162,22 @@ public class Login extends BaseActivity {
                 e.printStackTrace();
             }
 
-//            ToastShow.setToatBytTime(Login.this,"登录中...",500);
             showProgressDialog();
 
+            //计算signature
+            String timestamp = UtcTimeUtils.getTimestamp();
+            String noncestr = HttpParamsUtils.getRandomString(10);
+            String signature = SignatureUtils.getSinnature(timestamp,
+                    noncestr,
+                    Urls.APP_KEY,
+                    user,
+                    MD5.getMD5(password),
+                    getuiId);
             //发起请求
-            RequestParams params = new RequestParams(Urls.LOGIN_URL);
-            params.setAsJsonContent(true);
+            RequestParams params = HttpParamsUtils.setParams(Urls.LOGIN_URL,timestamp,noncestr,signature);
             params.setBodyContent(json.toString());
+//            System.out.println(params.toString());
+
             x.http().post(params, new Callback.CommonCallback<String>() {
 
                 @Override
@@ -174,8 +185,8 @@ public class Login extends BaseActivity {
                     System.out.println("登录" + result);
                     try {
                         JSONObject json = new JSONObject(result);
-                        String isSuccess = json.getString("loginstatus");
-                        if (isSuccess.equals("success")){
+                        int status = json.getInt("status");
+                        if (status == Urls.STATUS_CODE_200){
                             System.out.println("登录成功");
 
                             userNameIsChange(); //判断账号是否改换
@@ -184,15 +195,28 @@ public class Login extends BaseActivity {
                             config.edit().putString(ET_USER,user).apply();
                             config.edit().putString(ET_PWD,password).apply();
 
-//                            ToastShow.showToast(Login.this,"登录成功");
-                          //进入主菜单
-//                            closeDialog();
+                            //保存token
+                            SignatureUtils.token = json.getString(SignatureUtils.SIGNATURE_TOKEN);
+                            System.out.println("token---" + SignatureUtils.token);
+
+                            //获取设备信息
+                            getDeviceInfo(user);
                             enterMainActivity();
                             System.out.println("clientId: " + getuiId);
-                        }else {
+                        }else if (status == Urls.STATUS_CODE_400){
+                            System.out.println("登录失败");
+                            closeDialog();
+                            ToastShow.showToast(Login.this,"签名错误");
+                        } else if (status == Urls.STATUS_CODE_403){
                             System.out.println("登录失败");
                             closeDialog();
                             ToastShow.showToast(Login.this,"账号或密码错误");
+                        }else if (status == Urls.STATUS_CODE_404){
+                            closeDialog();
+                            ToastShow.showToast(Login.this,"手机号不存在");
+                        }else if (status == Urls.STATUS_CODE_500){
+                            closeDialog();
+                            ToastShow.showToast(Login.this,"数据库不存在");
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -214,10 +238,7 @@ public class Login extends BaseActivity {
                 }
 
                 @Override
-                public void onFinished() {
-                    //获取设备信息
-                    getDeviceInfo(user);
-                }
+                public void onFinished() {}
             });
         }else {
 
@@ -231,32 +252,61 @@ public class Login extends BaseActivity {
     private void getDeviceInfo(String user){
         System.out.println("执行获取设备信息");
 
-        RequestParams params = new RequestParams(Urls.GET_DEVICE_LIST + "/" + user);
-        x.http().get(params, new Callback.CommonCallback<String>() {
+        //配置json数据
+        JSONObject json = new JSONObject();
+        try {
+            json.put("username",user);
+            json.put(SIGNATURE_TOKEN, SignatureUtils.token);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //计算signature
+        String timestamp = UtcTimeUtils.getTimestamp();
+        String noncestr = HttpParamsUtils.getRandomString(10);
+        String signature = SignatureUtils.getSinnature(timestamp,
+                noncestr,
+                Urls.APP_KEY,
+                user,
+                SignatureUtils.token);
+
+        RequestParams params = HttpParamsUtils.setParams(Urls.GET_DEVICE_LIST,timestamp,noncestr,signature);
+        params.setBodyContent(json.toString());
+//        System.out.println(params.toString());
+
+        x.http().post(params, new Callback.CommonCallback<String>() {
 
             @Override
             public void onSuccess(String result) {
                 System.out.println("设备信息---" + result);
                 Gson gson = new Gson();
                 deviceInfoBean =  gson.fromJson(result, DeviceInfoBean.class);
-                devinfoList = deviceInfoBean.getDevinfo(); //设备列表
-                config.edit().putString("device_info",result).apply();
-                System.out.println("设备列表长度" + devinfoList.size());
+                int status = deviceInfoBean.getStatus();
 
-                //如果devid为空则去获取设备列表的设备，否则读取本地缓存的devid
-                if (config.getString("devid","").equals("")){
-                    if (devinfoList.size() > 0){
-                        devid =   deviceInfoBean.getDevinfo().get(0).getDevid(); //设备ID
-                        config.edit().putString("devid",devid).apply();
+                    if (status == Urls.STATUS_CODE_200){
+                        devinfoList = deviceInfoBean.getDevinfo(); //设备列表
+                        config.edit().putString("device_info",result).apply();
+                        System.out.println("设备列表长度" + devinfoList.size());
+
+                        //如果devid为空则去获取设备列表的设备，否则读取本地缓存的devid
+                        if (config.getString("devid","").equals("")){
+                            if (devinfoList.size() > 0){
+                                devid =   deviceInfoBean.getDevinfo().get(0).getDevid(); //设备ID
+                                config.edit().putString("devid",devid).apply();
+                            }
+
+                        }else {
+                            devid = config.getString("devid","");
+                        }
+                    }else if (status == Urls.STATUS_CODE_404){
+                        System.out.println("用户不存在");
                     }
 
-                }else {
-                    devid = config.getString("devid","");
-                }
-
                 System.out.println("设备的ID---" + devid);
-                if (!devid.isEmpty()){
-                    System.out.println("获取设备信息成功" + devid);
+                if (devid != null && devid.length() != 0){
+                    System.out.println("获取设备信息成功");
+                }else {
+                    System.out.println("获取设备信息失败");
                 }
 
             }
@@ -307,14 +357,6 @@ public class Login extends BaseActivity {
     public static void setDevid(String currentDevid){
         devid = currentDevid;
     }
-
-    /**
-     * 获取设备ID
-     * @return devid
-     */
-//    public static String getDevId(){
-//            return devid;
-//    }
 
     /**
      * 获取设备列表

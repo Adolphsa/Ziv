@@ -18,7 +18,19 @@ import com.zividig.ziv.fragments.MessageFragment;
 import com.zividig.ziv.fragments.MyCarFragment;
 import com.zividig.ziv.fragments.MyFragment;
 import com.zividig.ziv.fragments.SettingFragment;
+import com.zividig.ziv.utils.HttpParamsUtils;
+import com.zividig.ziv.utils.SignatureUtils;
 import com.zividig.ziv.utils.StatusBarUtils;
+import com.zividig.ziv.utils.Urls;
+import com.zividig.ziv.utils.UtcTimeUtils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.xutils.common.Callback;
+import org.xutils.http.RequestParams;
+import org.xutils.x;
+
+import static com.zividig.ziv.utils.SignatureUtils.SIGNATURE_TOKEN;
 
 public class MainActivity extends FragmentActivity implements ViewPager.OnPageChangeListener{
 
@@ -38,7 +50,7 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
     private MyFragment mMyFragment = null; //我
 
     private long exitTime = 0;
-    private SharedPreferences spf;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,8 +58,6 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
         setContentView(R.layout.activity_main);
 
         StatusBarUtils.setColor(this, getResources().getColor(R.color.myColorPrimaryDark));
-
-        spf = getSharedPreferences("config",MODE_PRIVATE);
 
         findViews();
         init();
@@ -81,7 +91,7 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
     public void onPageSelected(int position) {
         System.out.println("position" + position);
         if (position != 0){
-            mMyCarFragment.stoptGetDeviceState();
+            mMyCarFragment.stopGetDeviceState();
         }else {
             mMyCarFragment.startGetDeviceState();
         }
@@ -205,6 +215,69 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
 
     }
 
+    /**
+     * 用户登出
+     */
+    private void logout(){
+
+        SharedPreferences config = getSharedPreferences("config", MODE_PRIVATE);
+        String userName = config.getString(Login.ET_USER,"");
+        System.out.println("token---" + SignatureUtils.token);
+
+        //配置json数据
+        JSONObject json = new JSONObject();
+        try {
+            json.put("username",userName);
+            json.put(SIGNATURE_TOKEN, SignatureUtils.token);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //计算signature
+        String timestamp = UtcTimeUtils.getTimestamp();
+        String noncestr = HttpParamsUtils.getRandomString(10);
+        String signature = SignatureUtils.getSinnature(timestamp,
+                noncestr,
+                Urls.APP_KEY,
+                userName,
+                SignatureUtils.token);
+
+        RequestParams params = HttpParamsUtils.setParams(Urls.LOGOUT_URL,timestamp,noncestr,signature);
+        params.setBodyContent(json.toString());
+//        System.out.println(params.toString());
+
+        x.http().post(params, new Callback.CommonCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                try {
+                    JSONObject json = new JSONObject(result);
+                    int status = json.getInt("status");
+                    if (status == Urls.STATUS_CODE_200){
+                        System.out.println("成功退出");
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+
+            }
+
+            @Override
+            public void onCancelled(CancelledException cex) {
+
+            }
+
+            @Override
+            public void onFinished() {
+
+            }
+        });
+    }
+
     //退出程序前的提示
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -213,6 +286,7 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
                 Toast.makeText(getApplicationContext(), "再按一次退出程序", Toast.LENGTH_SHORT).show();
                 exitTime = System.currentTimeMillis();
             } else {
+//                logout();
                 finish();
                 System.exit(0);
             }

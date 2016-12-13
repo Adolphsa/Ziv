@@ -8,6 +8,24 @@ import java.util.List;
  */
 public class DeviceInfoBean {
 
+    private int status;
+    private String message;
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
     /**
      * userid : 13480995624

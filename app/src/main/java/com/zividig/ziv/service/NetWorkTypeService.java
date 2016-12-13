@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.IBinder;
 
 import com.zividig.ziv.utils.NetworkTypeUtils;
+import com.zividig.ziv.utils.Urls;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
@@ -50,7 +51,7 @@ public class NetWorkTypeService extends Service {
     public void getNetWorkType(){
         if (NetworkTypeUtils.getNetworkType(this).equals(NetworkTypeUtils.WIFI)){
             System.out.println("连接设备");
-            RequestParams params = new RequestParams("http://192.168.1.1/api/getdevinfo");
+            RequestParams params = new RequestParams(Urls.GET_DEVICE_INFO_WIFI);
             x.http().get(params, new Callback.CommonCallback<String>() {
                 @Override
                 public void onSuccess(String result) {

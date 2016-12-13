@@ -21,7 +21,7 @@ public class WifiDirectUtils {
     public static void WifiDirect(final Context context,final Class cls){
         if (NetworkTypeUtils.getNetworkType(context).equals(NetworkTypeUtils.WIFI)){
             System.out.println("连接设备");
-            RequestParams params = new RequestParams("http://192.168.1.1/api/getdevinfo");
+            RequestParams params = new RequestParams(Urls.GET_DEVICE_INFO_WIFI);
             x.http().get(params, new Callback.CommonCallback<String>() {
                 @Override
                 public void onSuccess(String result) {

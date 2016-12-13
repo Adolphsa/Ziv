@@ -26,6 +26,7 @@ import com.zividig.ziv.bean.MapTrackBean;
 import com.zividig.ziv.main.BaseActivity;
 import com.zividig.ziv.utils.DialogUtils;
 import com.zividig.ziv.utils.GPSConverterUtils;
+import com.zividig.ziv.utils.Urls;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
@@ -42,8 +43,6 @@ public class TrackQuery extends BaseActivity {
 
     BitmapDescriptor realtimeBitmap = BitmapDescriptorFactory
             .fromResource(R.mipmap.icon_gcoding);
-
-    private static final String MAP_DATA_URL = "http://dev.caowei.name/mytest/uploadtest/localtionhisziv.php";
     private MapTrackBean mapTrackBean;
     private MapView mMapView;
     private BaiduMap mBaiduMap;
@@ -111,7 +110,7 @@ public class TrackQuery extends BaseActivity {
      * 访问网络并得到轨迹数据
      */
     public void getMapData(){
-        RequestParams params = new RequestParams(MAP_DATA_URL);
+        RequestParams params = new RequestParams(Urls.MAP_DATA_URL);
         params.addBodyParameter("deviceId",mDevid);
         params.addBodyParameter("begin",mStartTime.toString());
         params.addBodyParameter("end",mEndTime.toString());

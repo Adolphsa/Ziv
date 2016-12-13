@@ -7,14 +7,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.gson.Gson;
 import com.zividig.ziv.R;
-import com.zividig.ziv.bean.RegisterMd5Bean;
 import com.zividig.ziv.customView.CountDownTimer;
+import com.zividig.ziv.utils.HttpParamsUtils;
 import com.zividig.ziv.utils.MD5;
+import com.zividig.ziv.utils.SignatureUtils;
+import com.zividig.ziv.utils.ToastShow;
 import com.zividig.ziv.utils.Urls;
+import com.zividig.ziv.utils.UtcTimeUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,9 +25,6 @@ import org.xutils.x;
 
 public class Register extends BaseActivity {
 
-//    private static String REGISTER_URL = "http://api.caowei.name/user";  //注册的URL
-//    public static String GET_YZM_URL = "http://api.caowei.name/sms";    //获取验证码的URL
-
     private EditText etUser;
     private EditText etPwd;
     private EditText etYzm;
@@ -35,7 +33,6 @@ public class Register extends BaseActivity {
     private String pwd;
     private String yzm;
     private String md5Yzm;
-    private RegisterMd5Bean registerMd5Bean;
 
     private Button getYzmButton;
 
@@ -90,11 +87,11 @@ public class Register extends BaseActivity {
         System.out.println(user + "\n" + pwd + "\n" + yzm);
         if (TextUtils.isEmpty(user) || user.length() != 11){
             System.out.println("usr的长度" + user.length());
-            Toast.makeText(Register.this,"请输入手机号码",Toast.LENGTH_SHORT).show();
+            ToastShow.showToast(Register.this,"请输入手机号码");
             return false;
         }
         if (TextUtils.isEmpty(pwd)){
-            Toast.makeText(Register.this,"请输入密码",Toast.LENGTH_SHORT).show();
+            ToastShow.showToast(Register.this,"请输入密码");
             return false;
         }
         return true;
@@ -103,15 +100,42 @@ public class Register extends BaseActivity {
     //获取验证码
     public void getRegisterYzm(View view){
         if (checkValidity()){
-            RequestParams params = new RequestParams(Urls.GET_YZM_URL + "/" + user);
-            System.out.println("获取注册验证码params:" + params);
-            x.http().get(params, new Callback.CommonCallback<String>() {
+
+            JSONObject json = new JSONObject();
+            try {
+                json.put("phonenum",user);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            //计算signature
+            String timestamp = UtcTimeUtils.getTimestamp();
+            String noncestr = HttpParamsUtils.getRandomString(10);
+            String signature = SignatureUtils.getSinnature(timestamp,
+                    noncestr,
+                    Urls.APP_KEY,
+                    user);
+
+            RequestParams params = HttpParamsUtils.setParams(Urls.GET_YZM_URL,timestamp,noncestr,signature);
+            params.setBodyContent(json.toString());
+//            System.out.println("获取注册验证码params:" + params);
+
+            x.http().post(params, new Callback.CommonCallback<String>() {
                 @Override
                 public void onSuccess(String result) {
-                    System.out.println("获取注册验证码成功" + result);
-                    Gson gson = new Gson();
-                    registerMd5Bean = gson.fromJson(result,RegisterMd5Bean.class);
-                    md5Yzm = registerMd5Bean.getCode(); //获取加密的验证码
+
+                    try {
+                        JSONObject json = new JSONObject(result);
+                        int status = json.getInt("status");
+                        if (status == Urls.STATUS_CODE_200){
+                            System.out.println("获取注册验证码成功" + result);
+                            md5Yzm = json.getString("code");
+                        }else {
+                            ToastShow.showToast(Register.this,"获取验证码失败");
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 @Override
@@ -140,7 +164,7 @@ public class Register extends BaseActivity {
             pwd = etPwd.getText().toString().trim();
             yzm = etYzm.getText().toString().trim();
             if (TextUtils.isEmpty(yzm)){
-                Toast.makeText(Register.this,"请输入验证码",Toast.LENGTH_SHORT).show();
+                ToastShow.showToast(Register.this,"请输入验证码");
                 return;
             }
             String tempYzm = yzm + "#$";
@@ -158,11 +182,20 @@ public class Register extends BaseActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    RequestParams params = new RequestParams(Urls.REGISTER_URL);
-                    params.setAsJsonContent(true);
-                    params.setBodyContent(json.toString());
 
-                    System.out.println(params.toString());
+                    //计算signature
+                    String timestamp = UtcTimeUtils.getTimestamp();
+                    String noncestr = HttpParamsUtils.getRandomString(10);
+                    String signature = SignatureUtils.getSinnature(timestamp,
+                                                                    noncestr,
+                                                                    Urls.APP_KEY,
+                                                                    user,
+                                                                    MD5.getMD5(pwd));
+
+                    RequestParams params = HttpParamsUtils.setParams(Urls.REGISTER_URL,timestamp,noncestr,signature);
+                    params.setBodyContent(json.toString());
+//                    System.out.println(params.toString());
+
                     x.http().post(params, new Callback.CommonCallback<String>() {
 
                         @Override
@@ -170,14 +203,17 @@ public class Register extends BaseActivity {
                             System.out.println("提交成功---" + result);
                             try {
                                 JSONObject json = new JSONObject(result);
-                                boolean issuccess = json.getBoolean("issuccess");
-                                if (issuccess){  //注册成功
-                                    Toast.makeText(Register.this,"注册成功",Toast.LENGTH_SHORT).show();
+                                int status = json.getInt("status");
+                                if (status == Urls.STATUS_CODE_200){  //注册成功
+
+                                    ToastShow.showToast(Register.this,"注册成功");
                                     startActivity(new Intent(Register.this,Login.class));
                                     finish();
 
-                                }else {
-                                    Toast.makeText(Register.this,"注册失败",Toast.LENGTH_SHORT).show();
+                                }else if (status == Urls.STATUS_CODE_400){
+                                    ToastShow.showToast(Register.this,"手机号已被注册");
+                                }else if (status == Urls.STATUS_CODE_500){
+                                    ToastShow.showToast(Register.this,"数据库错误");
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -202,7 +238,7 @@ public class Register extends BaseActivity {
 
                 }else {
                     System.out.println("不相等");
-                    Toast.makeText(Register.this,"验证码不正确，请重新输入",Toast.LENGTH_SHORT).show();
+                    ToastShow.showToast(Register.this,"验证码不正确，请重新输入");
                 }
             } catch (Exception e) {
                 e.printStackTrace();

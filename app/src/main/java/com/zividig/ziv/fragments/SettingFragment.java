@@ -19,6 +19,7 @@ import com.zividig.ziv.R;
 import com.zividig.ziv.function.About;
 import com.zividig.ziv.function.LightColor;
 import com.zividig.ziv.utils.ToastShow;
+import com.zividig.ziv.utils.Urls;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -79,7 +80,7 @@ public class SettingFragment extends Fragment {
                     case 1:
                         System.out.println("主机唤醒" + position);
                         devID = sp.getString("devid","");
-                        RequestParams params = new RequestParams("http://120.24.174.213:9501/api/wakeupdevice");
+                        RequestParams params = new RequestParams(Urls.DEVICE_WAKEUP);
                         params.addQueryStringParameter("devid",devID);
                         System.out.println("主机唤醒：" + params);
                         x.http().get(params, new Callback.CommonCallback<String>() {
