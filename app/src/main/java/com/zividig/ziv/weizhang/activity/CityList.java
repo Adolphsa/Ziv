@@ -71,8 +71,7 @@ public class CityList extends BaseActivity {
 				// 设置cityName
 				intent.putExtra("city_name", txt_name.getText());
 				// 设置cityId
-				intent.putExtra("city_id",
-						txt_name.getTag().toString());
+				intent.putExtra("city_id", txt_name.getTag().toString());
 				setResult(20, intent);
 				finish();
 			}

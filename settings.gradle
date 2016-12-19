@@ -1,1 +1,1 @@
-include ':app', ':sharesdk', ':zXingProj', 'ffmpeg'
+include ':app', ':sharesdk', ':zXingProj', 'ffmpeg', 'Violation'

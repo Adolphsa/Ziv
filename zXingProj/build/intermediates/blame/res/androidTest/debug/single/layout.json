@@ -120,12 +120,12 @@
         "source": "F:\\github\\Android\\Ziv\\zXingProj\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.3.0\\res\\layout\\abc_alert_dialog_button_bar_material.xml"
     },
     {
-        "merged": "F:\\github\\Android\\Ziv\\zXingProj\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\zx_layout_titlebar.xml",
-        "source": "F:\\github\\Android\\Ziv\\zXingProj\\build\\intermediates\\bundles\\debug\\res\\layout\\zx_layout_titlebar.xml"
-    },
-    {
         "merged": "F:\\github\\Android\\Ziv\\zXingProj\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\notification_template_big_media.xml",
         "source": "F:\\github\\Android\\Ziv\\zXingProj\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.3.0\\res\\layout\\notification_template_big_media.xml"
+    },
+    {
+        "merged": "F:\\github\\Android\\Ziv\\zXingProj\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\zx_layout_titlebar.xml",
+        "source": "F:\\github\\Android\\Ziv\\zXingProj\\build\\intermediates\\bundles\\debug\\res\\layout\\zx_layout_titlebar.xml"
     },
     {
         "merged": "F:\\github\\Android\\Ziv\\zXingProj\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\activity_capture.xml",

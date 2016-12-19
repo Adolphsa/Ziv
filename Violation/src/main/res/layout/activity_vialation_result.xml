@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_vialation_result"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.zividig.ndk_test.weizhang.activity.ViolationResultActivity">
+
+    <include android:id="@+id/titbar" layout="@layout/layout_title_bar" />
+
+    <LinearLayout
+        android:id="@+id/violation_ll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@android:color/white"
+        android:layout_below="@+id/titbar"
+        android:layout_marginTop="5dp"
+        >
+
+        <TextView
+            style="@style/violation_title"
+            android:text="总违章"
+            />
+        <TextView
+            android:id="@+id/acr_tv__vio"
+            style="@style/violation_content"
+            android:text="0"
+            />
+        <TextView
+            style="@style/violation_title"
+            android:text="总扣分"
+            />
+        <TextView
+            android:id="@+id/acr_tv_scores"
+            style="@style/violation_content"
+            android:text="0"
+            />
+        <TextView
+            style="@style/violation_title"
+            android:text="总罚款"
+            />
+        <TextView
+            android:id="@+id/acr_tv_money"
+            style="@style/violation_content"
+            android:text="0"
+            />
+    </LinearLayout>
+    <ListView
+        android:id="@+id/violation_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/violation_ll"
+        android:layout_marginTop="8dp"
+        android:padding="8dp"
+        android:scrollbars="none"
+        android:background="@android:color/white">
+
+    </ListView>
+    <ProgressBar
+        android:id="@+id/violation_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:indeterminate="true"
+        />
+    <TextView
+        android:id="@+id/violation_no"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="暂时没有查询到违章记录"
+        android:textSize="18sp"
+        android:visibility="gone"
+        />
+</RelativeLayout>

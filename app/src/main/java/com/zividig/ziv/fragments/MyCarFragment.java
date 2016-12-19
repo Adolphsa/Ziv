@@ -24,6 +24,7 @@ import com.bigkoo.convenientbanner.holder.Holder;
 import com.google.gson.Gson;
 import com.zivdigi.helloffmpeg.MyTestActivity;
 import com.zivdigi.helloffmpeg.TestDecoder;
+import com.zividig.ndk_test.weizhang.activity.ViolationActivity;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.VideoInfoBean;
 import com.zividig.ziv.function.AddDevice;
@@ -40,7 +41,6 @@ import com.zividig.ziv.utils.NetworkTypeUtils;
 import com.zividig.ziv.utils.ToastShow;
 import com.zividig.ziv.utils.Urls;
 import com.zividig.ziv.utils.WifiDirectUtils;
-import com.zividig.ziv.weizhang.activity.WeiZhangMainActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -305,7 +305,7 @@ public class MyCarFragment extends Fragment {
                         break;
                     case 5:
                         System.out.println("违章查询" + position);
-                        startActivity(new Intent(getContext(), WeiZhangMainActivity.class));
+                        startActivity(new Intent(getContext(), ViolationActivity.class));
                         break;
                     case 6:
                         System.out.println("轨迹查询" + position);

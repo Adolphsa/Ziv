@@ -73,6 +73,10 @@
 -dontwarn com.zivdigi.helloffmpeg.**
 -keep class com.zivdigi.helloffmpeg.**{*;}
 
+#violation
+-dontwarn com.zividig.ndk_test.**
+-keep class com.zividig.ndk_test.**{*;}
+
 # region for xUtils
 -keepattributes Signature,*Annotation*
 -keep public class org.xutils.** {
