@@ -7,15 +7,6 @@
         android:id="@+id/about_include"
         layout="@layout/layout_titlebar"/>
 
-    <ImageView
-        android:id="@+id/about_img"
-        android:layout_below="@id/about_include"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@mipmap/ziv_icon"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
-        />
     <LinearLayout
         android:id="@+id/about_text"
         android:layout_below="@+id/about_img"
@@ -35,7 +26,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="智威路宝"
+            android:text="@string/app_name"
             android:padding="8dp"
             android:textSize="18sp"
             />
@@ -60,11 +51,20 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1.0.0.1"
+            android:text="@string/app_version"
             android:padding="8dp"
             android:textSize="18sp"
             />
 
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/about_img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/ziv_icon"
+        android:layout_marginTop="28dp"
+        android:layout_below="@+id/about_include"
+        android:layout_centerHorizontal="true"/>
 
 </RelativeLayout>

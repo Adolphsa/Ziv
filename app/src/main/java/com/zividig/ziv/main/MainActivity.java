@@ -12,8 +12,9 @@ import android.view.KeyEvent;
 import android.widget.Toast;
 
 import com.lhh.apst.library.AdvancedPagerSlidingTabStrip;
+import com.xiaomi.mipush.sdk.MiPushClient;
 import com.zividig.ziv.R;
-import com.zividig.ziv.customView.CustomViewPager;
+import com.zividig.ziv.customView.CustomsViewPager;
 import com.zividig.ziv.fragments.MessageFragment;
 import com.zividig.ziv.fragments.MyCarFragment;
 import com.zividig.ziv.fragments.MyFragment;
@@ -35,7 +36,7 @@ import static com.zividig.ziv.utils.SignatureUtils.SIGNATURE_TOKEN;
 public class MainActivity extends FragmentActivity implements ViewPager.OnPageChangeListener{
 
     public AdvancedPagerSlidingTabStrip mTabs;
-    public CustomViewPager mViewPager;
+    public CustomsViewPager mViewPager;
 
     private static final int VIEW_FIRST 	= 0;
     private static final int VIEW_SECOND	= 1;
@@ -61,11 +62,14 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
 
         findViews();
         init();
+
+        String xiaomi = MiPushClient.getRegId(this);
+        System.out.println("mainActivity---小米" + xiaomi);
     }
 
     private void findViews(){
         mTabs = (AdvancedPagerSlidingTabStrip)findViewById(R.id.tabs);
-        mViewPager = (CustomViewPager)findViewById(R.id.vp_main);
+        mViewPager = (CustomsViewPager)findViewById(R.id.vp_main);
     }
 
     //初始化

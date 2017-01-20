@@ -15,7 +15,6 @@ import com.zividig.ziv.main.BaseActivity;
 import com.zividig.ziv.main.Login;
 import com.zividig.ziv.utils.DialogUtils;
 import com.zividig.ziv.utils.HttpParamsUtils;
-import com.zividig.ziv.utils.NetworkTypeUtils;
 import com.zividig.ziv.utils.SignatureUtils;
 import com.zividig.ziv.utils.ToastShow;
 import com.zividig.ziv.utils.Urls;
@@ -67,64 +66,8 @@ public class AddDevice extends BaseActivity {
             @Override
             public void onClick(View v) {
 
-                if (NetworkTypeUtils.getNetworkType(AddDevice.this).equals(NetworkTypeUtils.WIFI)) {
-                    System.out.println("连接设备");
-                    RequestParams params = new RequestParams(Urls.GET_DEVICE_INFO_WIFI);
-                    x.http().get(params, new Callback.CommonCallback<String>() {
-                        @Override
-                        public void onSuccess(String result) {
-                            System.out.println("wifi直连" + result);
-                            try {
-                                JSONObject json = new JSONObject(result);
-                                String devid = json.getString("devid");
-                                if (!devid.equals("")) {
-                                    startActivity(new Intent(AddDevice.this, CaptureActivity.class));
-                                } else {
-                                    if (!AddDevice.this.isFinishing()){
-                                        DialogUtils.showPrompt(AddDevice.this, "提示", "获取devid失败", "确定", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.dismiss();
-                                            }
-                                        });
-                                    }
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                                if (!AddDevice.this.isFinishing()){
-                                    DialogUtils.showPrompt(AddDevice.this, "提示", "解析数据失败", "确定", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.dismiss();
-                                        }
-                                    });
-                                }
+                startActivity(new Intent(AddDevice.this, CaptureActivity.class));
 
-                            }
-
-
-                        }
-
-                        @Override
-                        public void onError(Throwable ex, boolean isOnCallback) {
-                            System.out.println("wifi直连错误" + ex);
-                            ToastShow.showToast(AddDevice.this, "请连接设备WIFI");
-
-                        }
-
-                        @Override
-                        public void onCancelled(CancelledException cex) {
-
-                        }
-
-                        @Override
-                        public void onFinished() {
-
-                        }
-                    });
-                } else {
-                    ToastShow.showToast(AddDevice.this, "请连接设备WIFI");
-                }
             }
         });
 
@@ -172,9 +115,11 @@ public class AddDevice extends BaseActivity {
                 userName,
                 code,
                 SignatureUtils.token);
+        System.out.println("设备绑定的签名---" + signature);
+
         RequestParams params = HttpParamsUtils.setParams(Urls.URL_BIND_DEVICE, timestamp, noncestr, signature);
         params.setAsJsonContent(true);
-//        params.setBodyContent(json.toString());
+        params.setBodyContent(json.toString());
 
         x.http().post(params, new Callback.CommonCallback<String>() {
             @Override
@@ -209,6 +154,7 @@ public class AddDevice extends BaseActivity {
                         });
 
                     }else {
+                        System.out.println("绑定结果---" + result);
                         DialogUtils.showPrompt(AddDevice.this, "提示", "绑定设备失败，异常错误", "确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -256,11 +202,11 @@ public class AddDevice extends BaseActivity {
         });
     }
 
-    //切换网络
-    public void changeNetwork(View view) {
-        Intent intent = new Intent();
-        intent.setAction("android.net.wifi.PICK_WIFI_NETWORK");
-        startActivity(intent);
-    }
+//    //切换网络
+//    public void changeNetwork(View view) {
+//        Intent intent = new Intent();
+//        intent.setAction("android.net.wifi.PICK_WIFI_NETWORK");
+//        startActivity(intent);
+//    }
 
 }

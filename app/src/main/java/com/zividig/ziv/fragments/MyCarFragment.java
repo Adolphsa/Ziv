@@ -55,7 +55,7 @@ import java.util.ArrayList;
  */
 public class MyCarFragment extends Fragment {
 
-    private static final int DEVICE_STATE_FREQUENCY = 5000;
+    private static final int DEVICE_STATE_FREQUENCY = 10000;
 
     private static final int DEVICE_STATE_NORMAL = 100;
     private static final int DEVICE_STATE_STDBY = 101;
@@ -69,19 +69,19 @@ public class MyCarFragment extends Fragment {
     private ArrayList<Integer> localImages = new ArrayList<Integer>();
 
     private String[] itemTexts = {"图片抓拍",
-                                  "实时视频",
-                                  "车辆信息",
-                                  "车辆定位",
-                                  "电子围栏",
-                                  "违章查询",
-                                  "轨迹查询"};
+            "实时视频",
+            "车辆信息",
+            "车辆定位",
+            "电子围栏",
+            "违章查询",
+            "轨迹查询"};
     private int[] itemImages = {R.drawable.selector_real_time,
-                                 R.drawable.select_real_video,
-                                 R.drawable.selector_car_info,
-                                 R.drawable.selector_car_location,
-                                 R.drawable.selector_electric_fence,
-                                 R.drawable.selector_car_manage,
-                                 R.drawable.selector_history_back};
+            R.drawable.select_real_video,
+            R.drawable.selector_car_info,
+            R.drawable.selector_car_location,
+            R.drawable.selector_electric_fence,
+            R.drawable.selector_car_manage,
+            R.drawable.selector_history_back};
     private String devId;
 
     private TextView tvDevidState;
@@ -93,11 +93,12 @@ public class MyCarFragment extends Fragment {
         MyCarFragment myCarView = new MyCarFragment();
         return myCarView;
     }
-    Handler mHandler = new Handler(){
+
+    Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            switch (msg.what){
+            switch (msg.what) {
                 case DEVICE_STATE_NORMAL:
                     deviceState.setText("在线");
                     break;
@@ -119,9 +120,10 @@ public class MyCarFragment extends Fragment {
     Runnable mRunnable = new Runnable() {
         @Override
         public void run() {
-            String devid = mSpf.getString("devid","");
+            String devid = mSpf.getString("devid", "");
             RequestParams params = new RequestParams(Urls.DEVICE_STATE);
-            params.addBodyParameter("devid",devid);
+            params.addBodyParameter("devid", devid);
+            System.out.println("获取设备状态---" + params.toString());
             x.http().get(params, new Callback.CommonCallback<String>() {
                 @Override
                 public void onSuccess(String result) {
@@ -129,16 +131,16 @@ public class MyCarFragment extends Fragment {
                         System.out.println("查询状态结果---" + result);
                         JSONObject json = new JSONObject(result);
                         String workMode = json.getString("workmode");
-                        if (workMode.equals("NORMAL")){
+                        if (workMode.equals("NORMAL")) {
                             mHandler.sendEmptyMessage(DEVICE_STATE_NORMAL);
-                        }else if (workMode.equals("STDBY")){
+                        } else if (workMode.equals("STDBY")) {
                             mHandler.sendEmptyMessage(DEVICE_STATE_STDBY);
-                        }else if (workMode.equals("OFF")){
+                        } else if (workMode.equals("OFF")) {
                             mHandler.sendEmptyMessage(DEVICE_STATE_OFF);
-                        }else if (workMode.equals("UNKNOWN")){
+                        } else if (workMode.equals("UNKNOWN")) {
                             mHandler.sendEmptyMessage(DEVICE_STATE_UNKNOWN);
                         }
-                        mHandler.postDelayed(mRunnable,DEVICE_STATE_FREQUENCY);
+                        mHandler.postDelayed(mRunnable, DEVICE_STATE_FREQUENCY);
                     } catch (JSONException e) {
                         e.printStackTrace();
                         System.out.println("解析失败");
@@ -178,15 +180,17 @@ public class MyCarFragment extends Fragment {
         initAd();
         initFunctionButton();
 
-        getDevID();
-        if (devId != null && devId.length() != 0){
-            mHandler.postDelayed(mRunnable,DEVICE_STATE_FREQUENCY);
-        }
+
+//        if (devId != null && devId.length() != 0) {
+//            System.out.println("执行mHandler.postDelayed");
+//            mHandler.postDelayed(mRunnable, DEVICE_STATE_FREQUENCY);
+//
+//        }
         return view;
     }
 
 
-    private void initView(){
+    private void initView() {
 
         tvDevidState = (TextView) view.findViewById(R.id.tv_device_states);
         deviceState = (TextView) view.findViewById(R.id.tv_device_state);
@@ -259,12 +263,12 @@ public class MyCarFragment extends Fragment {
                     case 1:
                         System.out.println("实时视频" + position);
                         //判断是否是设备WIFI
-                        if (NetworkTypeUtils.getConnectWifiSsid(ZivApp.getInstance()).contains("car_")){
-                            WifiDirectUtils.WifiDirect(getContext(),MyTestActivity.class);
+                        if (NetworkTypeUtils.getConnectWifiSsid(ZivApp.getInstance()).contains("car_")) {
+                            WifiDirectUtils.WifiDirect(getContext(), MyTestActivity.class);
                         } else {
-                            if (!devId.equals("")){
+                            if (!devId.equals("")) {
                                 startVideo(devId);
-                            }else {
+                            } else {
                                 ToastShow.showToast(getContext(), "请先添加设备");
                             }
 
@@ -278,10 +282,10 @@ public class MyCarFragment extends Fragment {
                         System.out.println("车辆定位" + position);
                         if (!devId.equals("")) {
                             //开启轮询服务获取GPS信息
-                            if (NetworkTypeUtils.getConnectWifiSsid(ZivApp.getInstance()).contains("car_")){
+                            if (NetworkTypeUtils.getConnectWifiSsid(ZivApp.getInstance()).contains("car_")) {
                                 startActivity(new Intent(getContext(), CarLocation.class));
-                            }else {
-                                MyAlarmManager.startPollingService(getContext(),1,LocationService.class,devId);
+                            } else {
+                                MyAlarmManager.startPollingService(getContext(), 1, LocationService.class, devId);
                                 startActivity(new Intent(getContext(), CarLocation.class));
                             }
 
@@ -293,10 +297,10 @@ public class MyCarFragment extends Fragment {
                         System.out.println("电子围栏" + position);
                         if (!devId.equals("")) {
                             //开启轮询服务获取GPS信息
-                            if (NetworkTypeUtils.getConnectWifiSsid(ZivApp.getInstance()).contains("car_")){
+                            if (NetworkTypeUtils.getConnectWifiSsid(ZivApp.getInstance()).contains("car_")) {
                                 startActivity(new Intent(getContext(), ElectronicFence.class));
-                            }else {
-                                MyAlarmManager.startPollingService(getContext(),1,LocationService.class,devId);
+                            } else {
+                                MyAlarmManager.startPollingService(getContext(), 1, LocationService.class, devId);
                                 startActivity(new Intent(getContext(), ElectronicFence.class));
                             }
                         } else {
@@ -362,9 +366,13 @@ public class MyCarFragment extends Fragment {
         super.onResume();
         //开始自动翻页
         convenientBanner.startTurning(3000);
-        if (devId != null && devId.length() != 0){
-            mHandler.postDelayed(mRunnable,DEVICE_STATE_FREQUENCY);
+
+        getDevID();
+        if (devId != null && devId.length() != 0) {
+            mHandler.postDelayed(mRunnable, DEVICE_STATE_FREQUENCY);
         }
+
+
     }
 
     @Override
@@ -388,17 +396,17 @@ public class MyCarFragment extends Fragment {
 //        countDownTimer.cancel();
     }
 
-    private void getDevID(){
-        devId = mSpf.getString("devid","");
+    private void getDevID() {
+        devId = mSpf.getString("devid", "");
         System.out.println("fragment---deviceId:" + devId);
     }
 
-    public void startGetDeviceState(){
-        mHandler.postDelayed(mRunnable,DEVICE_STATE_FREQUENCY);
+    public void startGetDeviceState() {
+        mHandler.postDelayed(mRunnable, DEVICE_STATE_FREQUENCY);
     }
 
-    public void stopGetDeviceState(){
-        if (mRunnable != null){
+    public void stopGetDeviceState() {
+        if (mRunnable != null) {
             mHandler.removeCallbacks(mRunnable);
         }
 
@@ -412,8 +420,8 @@ public class MyCarFragment extends Fragment {
     public void startVideo(String deviceId) {
         System.out.println("点击了开启实时视频1");
         RequestParams params = new RequestParams(Urls.REQUEST_VIDEO);
-        params.addQueryStringParameter("devid",deviceId);
-        params.addParameter("channel","0");
+        params.addQueryStringParameter("devid", deviceId);
+        params.addParameter("channel", "0");
 
         x.http().get(params, new Callback.CommonCallback<String>() {
             @Override
@@ -426,16 +434,16 @@ public class MyCarFragment extends Fragment {
                     System.out.println("视频URL:" + videoInfoBean.getUrl());
                     TestDecoder.setUrl(videoInfoBean.getUrl());
                     getActivity().startActivity(new Intent(getContext(), MyTestActivity.class));
-                }else {
+                } else {
                     System.out.println("非200");
-                    ToastShow.showToast(getContext(),"连接异常，请检测设备状态");
+                    ToastShow.showToast(getContext(), "连接异常，请检测设备状态");
                 }
             }
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
                 System.out.println("访问错误" + ex);
-                ToastShow.showToast(getContext(),"视频访问错误");
+                ToastShow.showToast(getContext(), "视频访问错误");
             }
 
             @Override

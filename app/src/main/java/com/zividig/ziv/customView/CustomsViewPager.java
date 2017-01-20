@@ -9,12 +9,12 @@ import android.view.MotionEvent;
  * 自定义的ViewPager
  * Created by linhonghong on 2015/8/10.
  */
-public class CustomViewPager extends ViewPager {
+public class CustomsViewPager extends ViewPager {
     private boolean mNoFocus = false; //if true, keep View don't move
-    public CustomViewPager(Context context, AttributeSet attrs) {
+    public CustomsViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
-    public CustomViewPager(Context context){
+    public CustomsViewPager(Context context){
         this(context,null);
     }
 

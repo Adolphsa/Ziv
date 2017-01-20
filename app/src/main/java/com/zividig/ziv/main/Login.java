@@ -199,8 +199,6 @@ public class Login extends BaseActivity {
                             SignatureUtils.token = json.getString(SignatureUtils.SIGNATURE_TOKEN);
                             System.out.println("token---" + SignatureUtils.token);
 
-                            //获取设备信息
-                            getDeviceInfo(user);
                             enterMainActivity();
                             System.out.println("clientId: " + getuiId);
                         }else if (status == Urls.STATUS_CODE_400){
@@ -238,7 +236,10 @@ public class Login extends BaseActivity {
                 }
 
                 @Override
-                public void onFinished() {}
+                public void onFinished() {
+                    //获取设备信息
+                    getDeviceInfo(user);
+                }
             });
         }else {
 

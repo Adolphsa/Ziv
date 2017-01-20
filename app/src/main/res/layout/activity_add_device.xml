@@ -18,12 +18,11 @@
             android:id="@+id/tv_change_network"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="1.请在设备WIFI网络下扫描二维码"
+            android:text="1.请扫描二维码"
             android:textSize="17sp"
             android:padding="10dp"
             android:clickable="true"
             android:onClick="changeNetwork"
-            android:drawableRight="@drawable/selector_change_network"
             android:gravity="center_vertical"
             />
         <Button
@@ -40,7 +39,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="2.请切换回正常网络，然后点击添加设备"
+            android:text="2.请点击添加设备"
             android:textSize="17sp"
             android:padding="10dp"
             android:layout_marginTop="20dp"

@@ -57,6 +57,10 @@
 -dontwarn com.igexin.**
 -keep class com.igexin.**{*;}
 
+#xiaomi
+-dontwarn com.xiaomi.push.**
+-keep class com.zividig.ziv.service.XiaoMiMessageReceiver{*;}
+
 #apsts
 -dontwarn homhomlin.lib.**
 -keep class homhomlin.lib.**{*;}
@@ -76,6 +80,30 @@
 #violation
 -dontwarn com.zividig.ndk_test.**
 -keep class com.zividig.ndk_test.**{*;}
+
+# OkHttp3
+-dontwarn okhttp3.logging.**
+-keep class okhttp3.internal.**{*;}
+-dontwarn okio.**
+
+# Retrofit
+-dontwarn retrofit2.**
+-keep class retrofit2.** { *; }
+-keepattributes Signature
+-keepattributes Exceptions
+
+# RxJava RxAndroid
+-dontwarn sun.misc.**
+-keepclassmembers class rx.internal.util.unsafe.*ArrayQueue*Field* {
+    long producerIndex;
+    long consumerIndex;
+}
+-keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueProducerNodeRef {
+    rx.internal.util.atomic.LinkedQueueNode producerNode;
+}
+-keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueConsumerNodeRef {
+    rx.internal.util.atomic.LinkedQueueNode consumerNode;
+}
 
 # region for xUtils
 -keepattributes Signature,*Annotation*

@@ -15,10 +15,11 @@
 
     <GridView
         android:id="@+id/gv_mycar"
-        android:background="#fff"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:numColumns="3"
         android:padding="10dp"
+        android:horizontalSpacing="2dp"
+        android:verticalSpacing="2dp"
         />
 </LinearLayout>

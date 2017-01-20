@@ -48,10 +48,10 @@ public class Urls {
     public static final String REQUEST_VIDEO = "http://120.25.80.80:9501/api/requestrtspstream";
 
     //主机唤醒
-    public static final String DEVICE_WAKEUP = "http://120.24.174.213:9501/api/wakeupdevice";
+    public static final String DEVICE_WAKEUP = "http://120.25.80.80:9501/api/wakeupdevice";
 
     //获取设备状态
-    public static final String DEVICE_STATE = "http://120.24.174.213:9501/api/getdeviceinfo";
+    public static final String DEVICE_STATE = "http://120.25.80.80:9501/api/getdeviceinfo";
 
     //地图轨迹
     public static final String MAP_DATA_URL = "http://dev.caowei.name/mytest/uploadtest/localtionhisziv.php";

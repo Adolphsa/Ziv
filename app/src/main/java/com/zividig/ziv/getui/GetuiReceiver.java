@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.igexin.sdk.PushConsts;
+import com.igexin.sdk.PushManager;
 import com.zividig.ziv.bean.MessageBean;
 import com.zividig.ziv.fragments.MessageFragment;
 import com.zividig.ziv.utils.JsonUtils;
@@ -17,6 +18,7 @@ import com.zividig.ziv.utils.JsonUtils;
  */
 public class GetuiReceiver extends BroadcastReceiver {
 
+    private static final String TAG = "GetuiReceiver";
     public static final String GETUI_MESSAGE_ACTION = "com.zividig.ziv.getui.message";
     public static final String GETUI_MESSAGE_KEY = "message_baen";
     public static StringBuilder payloadData = new StringBuilder();
@@ -39,8 +41,8 @@ public class GetuiReceiver extends BroadcastReceiver {
                 Log.d("getui","taskid" + taskid + "messageid" + messageid);
 
                 // smartPush第三方回执调用接口，actionid范围为90000-90999，可根据业务场景执行
-//                boolean result = PushManager.getInstance().sendFeedbackMessage(context, taskid, messageid, 90001);
-//                System.out.println("第三方回执接口调用" + (result ? "成功" : "失败"));
+                boolean result = PushManager.getInstance().sendFeedbackMessage(context, taskid, messageid, 90001);
+                System.out.println("第三方回执接口调用" + (result ? "成功" : "失败"));
 
                 if (payload != null) {
                     String data = new String(payload);
