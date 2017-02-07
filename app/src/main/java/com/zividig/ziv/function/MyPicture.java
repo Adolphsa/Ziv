@@ -96,6 +96,7 @@ public class MyPicture extends BaseActivity {
                                                     where,
                                                     whereArgs,
                                                     MediaStore.Images.Media.DATE_TAKEN);
+
         while (cursor.moveToNext()){
 
             //获取图片的路径
@@ -116,6 +117,8 @@ public class MyPicture extends BaseActivity {
             }
 
         }
+
+        cursor.close();
 
         if (beans.size() == 0){
             System.out.println("beans.size为0");
@@ -184,6 +187,7 @@ public class MyPicture extends BaseActivity {
      * 更新图片
      */
     private void updateImage() {
+        System.out.println("MyPicture---更新图片");
         Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         String path = Environment.getExternalStorageDirectory() + "/Ziv/images";
         Uri uri = Uri.fromFile(new File(path));

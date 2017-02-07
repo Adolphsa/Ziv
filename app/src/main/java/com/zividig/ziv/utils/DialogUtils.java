@@ -2,9 +2,12 @@ package com.zividig.ziv.utils;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.view.WindowManager;
+
+import com.zividig.ziv.customView.LoadingProgressDialog;
 
 /**
  * Created by adolph
@@ -76,5 +79,29 @@ public class DialogUtils {
     public static AlertDialog showPrompt(Context context,String title, String message, String confirmButton,DialogInterface.OnClickListener confirmButtonClickListener) {
         return showAlert(context, title, message, confirmButton, confirmButtonClickListener, null,
                 null, null, null, null, false, null, null);
+    }
+
+    /**
+     * 显示进度条提示框
+     * @param mDialog
+     * @param context
+     * @param smg
+     */
+    public static void showProgressDialog(Dialog mDialog,Context context,String smg,boolean progress,boolean button,boolean test){
+        if (mDialog == null){
+            mDialog = LoadingProgressDialog.createLoadingDialog(context,smg,progress,button,test);
+            mDialog.show();
+        }
+    }
+
+    /**
+     * 关闭进度条提示框
+     * @param mDialog
+     */
+    public static void closeDialog(Dialog mDialog) {
+        if (mDialog != null) {
+            mDialog.dismiss();
+
+        }
     }
 }

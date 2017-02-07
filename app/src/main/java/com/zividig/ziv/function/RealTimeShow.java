@@ -1,8 +1,10 @@
 package com.zividig.ziv.function;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
@@ -25,6 +27,7 @@ import com.zividig.ziv.bean.RealTimeBean;
 import com.zividig.ziv.main.BaseActivity;
 import com.zividig.ziv.main.ZivApp;
 import com.zividig.ziv.utils.DialogUtils;
+import com.zividig.ziv.utils.Others;
 import com.zividig.ziv.utils.ToastShow;
 import com.zividig.ziv.utils.Urls;
 import com.zividig.ziv.utils.UtcTimeUtils;
@@ -37,8 +40,6 @@ import org.xutils.image.ImageOptions;
 import org.xutils.x;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 
 /**
  * 实时预览
@@ -46,8 +47,7 @@ import java.io.FileOutputStream;
  */
 public class RealTimeShow extends BaseActivity {
 
-//    private static String URL_VIDEO = "http://120.24.174.213:9501/api/requestrtspstream";
-
+    private Context mContext;
     private PhotoView photoView;
     private ProgressBar progressBar;
     private ImageOptions options;
@@ -65,6 +65,8 @@ public class RealTimeShow extends BaseActivity {
         super.onCreate(savedInstanceState);
         SDKInitializer.initialize(ZivApp.getInstance());
         setContentView(R.layout.acticity_real_time_show);
+
+        mContext = RealTimeShow.this;
         // 标题
         TextView txtTitle = (TextView) findViewById(R.id.tv_title);
         txtTitle.setText("图片抓拍");
@@ -260,43 +262,29 @@ public class RealTimeShow extends BaseActivity {
             }
 
             File zivFile = new File(Environment.getExternalStorageDirectory(), "Ziv"); //创建Ziv文件夹
-            File imageFile = new File(zivFile ,"images");
+            if (!zivFile.exists()){
+                System.out.println("ziv创建");
+                zivFile.mkdirs();
+            }
+            final File imageFile = new File(zivFile ,"images");
             if (!imageFile.exists()) {
-                System.out.println("创建");
-                boolean mkdirs = imageFile.mkdirs();
+                System.out.println("images创建");
+                imageFile.mkdirs();
             }
 
             System.out.println(imageFile);
-            final String target = imageFile + "/" + UtcTimeUtils.getDateAndTime() + ".png";
-
+            final String target = UtcTimeUtils.getDateAndTime() + ".png";
+            final File file = new File(imageFile,target);
             System.out.println(target);
 
             x.image().loadFile(url, options, new Callback.CacheCallback<File>() {
                 @Override
                 public boolean onCache(File result) {
                     System.out.println("图片的地址：" + result.getPath() + "---图片的名称：" + result.getName());
-                    try {
-                        FileInputStream fsFrom = new FileInputStream(result);
-                        FileOutputStream fsTo = new FileOutputStream(new File(target));
-
-                        byte[] bt = new byte[1024 * 1024];
-                        int c;
-                        while ((c = fsFrom.read(bt)) > 0) {
-                            fsTo.write(bt, 0, c);
-
-                            System.out.println("c的值---" + c);
-                        }
-
-                        fsFrom.close();
-                        fsTo.close();
-
-                        updateImage();
-                        ToastShow.showToast(RealTimeShow.this,"图片已保存");
-                        return true;
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
+                    Bitmap bmp = android.graphics.BitmapFactory.decodeFile(result.getPath());
+                    Others.saveImageToGallery(mContext,bmp,file,target);
+                    updateImage();
+                    ToastShow.showToast(RealTimeShow.this,"图片已保存");
                     return true;
                 }
 
@@ -320,9 +308,7 @@ public class RealTimeShow extends BaseActivity {
                 }
 
                 @Override
-                public void onFinished() {
-                    updateImage();
-                }
+                public void onFinished() {}
             });
 
         } else {
@@ -335,6 +321,7 @@ public class RealTimeShow extends BaseActivity {
      * 更新图片
      */
     private void updateImage() {
+        System.out.println("realTimeShow---更新图片");
         Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         String path = Environment.getExternalStorageDirectory() + "/Ziv/images";
         Uri uri = Uri.fromFile(new File(path));

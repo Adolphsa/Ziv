@@ -8,26 +8,28 @@ import java.util.List;
  */
 public class MapTrackBean {
 
+
     /**
-     * begin : 111
-     * end : 999999999999
-     * itemnum : 14
-     * locationdata : [{"ti":2016,"lat":30.507321,"lon":114.233112,"spd":0,"hd":309,"alt":33},{"ti":2016,"lat":30.507321,"lon":114.233112,"spd":0,"hd":309,"alt":33},{"ti":2016,"lat":30.507321,"lon":114.233112,"spd":0,"hd":309,"alt":33},{"ti":2016,"lat":30.507321,"lon":114.233112,"spd":0,"hd":309,"alt":33},{"ti":2016,"lat":30.507321,"lon":114.233112,"spd":0,"hd":309,"alt":33},{"ti":2016,"lat":30.50732,"lon":114.233112,"spd":0,"hd":309,"alt":33},{"ti":2016,"lat":30.507321,"lon":114.233112,"spd":0,"hd":309,"alt":33},{"ti":2016,"lat":30.507321,"lon":114.233112,"spd":0,"hd":309,"alt":33},{"ti":2016,"lat":30.507321,"lon":114.233112,"spd":0,"hd":309,"alt":33},{"ti":2016,"lat":30.50732,"lon":114.233112,"spd":0,"hd":309,"alt":33},{"ti":2016,"lat":30.507321,"lon":114.233112,"spd":0,"hd":309,"alt":33},{"ti":2016,"lat":30.50732,"lon":114.233112,"spd":0,"hd":309,"alt":33},{"ti":2016,"lat":30.507321,"lon":114.233112,"spd":0,"hd":309,"alt":33},{"ti":2016,"lat":30.50732,"lon":114.233112,"spd":0,"hd":309,"alt":33}]
+     * status : 200
+     * begin : 2017-01-19 18:10:31
+     * end : 2017-01-20 18:10:31
+     * itemnum : 2704
+     * locationdata : [{"ti":1484895292,"lat":22.549794,"lon":113.920605,"spd":0,"hd":0,"alt":32}]
      */
 
-    private String begin; //开始时间
-    private String end;     //结束时间
-    private int itemnum;  //地图数据的个数
-    /**
-     * ti : 2016
-     * lat : 30.507321
-     * lon : 114.233112
-     * spd : 0
-     * hd : 309
-     * alt : 33
-     */
-
+    private int status;
+    private String begin;
+    private String end;
+    private int itemnum;
     private List<LocationdataBean> locationdata;
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
 
     public String getBegin() {
         return begin;
@@ -62,12 +64,21 @@ public class MapTrackBean {
     }
 
     public static class LocationdataBean {
+        /**
+         * ti : 1484895292
+         * lat : 22.549794
+         * lon : 113.920605
+         * spd : 0
+         * hd : 0
+         * alt : 32
+         */
+
         private int ti;
         private double lat;
         private double lon;
-        private float spd;
-        private int hd;
-        private int alt;
+        private double spd;
+        private double hd;
+        private double alt;
 
         public int getTi() {
             return ti;
@@ -93,27 +104,27 @@ public class MapTrackBean {
             this.lon = lon;
         }
 
-        public float getSpd() {
+        public double getSpd() {
             return spd;
         }
 
-        public void setSpd(float spd) {
+        public void setSpd(double spd) {
             this.spd = spd;
         }
 
-        public int getHd() {
+        public double getHd() {
             return hd;
         }
 
-        public void setHd(int hd) {
+        public void setHd(double hd) {
             this.hd = hd;
         }
 
-        public int getAlt() {
+        public double getAlt() {
             return alt;
         }
 
-        public void setAlt(int alt) {
+        public void setAlt(double alt) {
             this.alt = alt;
         }
     }

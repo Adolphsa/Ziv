@@ -55,6 +55,9 @@ public class TrackQueryDateChoose extends BaseActivity {
         startDateTime = (EditText) findViewById(R.id.inputDate);
         endDateTime = (EditText) findViewById(R.id.inputDate2);
 
+        initStartDateTime = getInitialTime();
+        initEndDateTime = getInitialTime();
+
         startDateTime.setText(initStartDateTime);
         endDateTime.setText(initEndDateTime);
 
@@ -132,5 +135,11 @@ public class TrackQueryDateChoose extends BaseActivity {
         timePickerView.setCyclic(false);
         timePickerView.setCancelable(true);
         return timePickerView;
+    }
+
+    private String getInitialTime(){
+        SimpleDateFormat formatter = new    SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date curDate = new Date(System.currentTimeMillis());//获取当前时间
+        return formatter.format(curDate);
     }
 }

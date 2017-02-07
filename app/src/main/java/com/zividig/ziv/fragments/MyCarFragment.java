@@ -55,7 +55,7 @@ import java.util.ArrayList;
  */
 public class MyCarFragment extends Fragment {
 
-    private static final int DEVICE_STATE_FREQUENCY = 10000;
+    private static final int DEVICE_STATE_FREQUENCY = 3000;
 
     private static final int DEVICE_STATE_NORMAL = 100;
     private static final int DEVICE_STATE_STDBY = 101;
@@ -128,7 +128,6 @@ public class MyCarFragment extends Fragment {
                 @Override
                 public void onSuccess(String result) {
                     try {
-                        System.out.println("查询状态结果---" + result);
                         JSONObject json = new JSONObject(result);
                         String workMode = json.getString("workmode");
                         if (workMode.equals("NORMAL")) {

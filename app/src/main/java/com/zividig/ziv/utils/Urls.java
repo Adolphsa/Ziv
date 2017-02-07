@@ -53,7 +53,10 @@ public class Urls {
     //获取设备状态
     public static final String DEVICE_STATE = "http://120.25.80.80:9501/api/getdeviceinfo";
 
+    //实时位置
+    public static final String REAL_LOCATION = "http://api.zivdigi.com/v1/location/realtime";
+
     //地图轨迹
-    public static final String MAP_DATA_URL = "http://dev.caowei.name/mytest/uploadtest/localtionhisziv.php";
+    public static final String MAP_DATA_URL = "http://api.zivdigi.com/v1/location/history";
 
 }

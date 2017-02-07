@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -19,17 +20,43 @@ import com.zividig.ziv.R;
 
 public class LoadingProgressDialog {
 
-    public static Dialog createLoadingDialog(Context context, String msg){
+    public static Dialog createLoadingDialog(Context context, String msg, boolean progress, boolean button, final boolean test){
         // 首先得到整个View
         View view = LayoutInflater.from(context).inflate(
                 R.layout.layout_progress_dialog, null);
         // 获取整个布局
-        LinearLayout layout = (LinearLayout) view
+        final LinearLayout layout = (LinearLayout) view
                 .findViewById(R.id.dialog_view);
+
         // 页面中的Img
         ImageView img = (ImageView) view.findViewById(R.id.pd_img);
+        if (progress){
+            img.setVisibility(View.VISIBLE);
+        }else {
+            img.setVisibility(View.GONE);
+        }
+
         // 页面中显示文本
         TextView tipText = (TextView) view.findViewById(R.id.pd_text);
+
+        //页面中显示按钮
+        Button btn = (Button) view.findViewById(R.id.pd_btn);
+        if (button){
+            btn.setVisibility(View.VISIBLE);
+        }else {
+            btn.setVisibility(View.GONE);
+        }
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println("被点击");
+                if (test){
+                    layout.setVisibility(View.VISIBLE);
+                }else {
+                    layout.setVisibility(View.GONE);
+                }
+            }
+        });
 
         // 加载动画，动画用户使img图片不停的旋转
         Animation animation = AnimationUtils.loadAnimation(context,

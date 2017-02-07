@@ -129,15 +129,15 @@ public class CarLocation extends BaseActivity {
                 mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(mBuilder.build()));
 
             }else {
-                System.out.println("增加点");
+//                System.out.println("增加点");
                 mBaiduMap.addOverlay(overlay);
 
                 Point pt= mBaiduMap.getMapStatus().targetScreen;
                 Point point= mBaiduMap.getProjection().toScreenLocation(desLatLng);
-                System.out.println("point.x = " + point.x);
-                System.out.println("point.y = " + point.y);
-                System.out.println("pt.x = " + pt.x);
-                System.out.println("pt.y = " + pt.y);
+//                System.out.println("point.x = " + point.x);
+//                System.out.println("point.y = " + point.y);
+//                System.out.println("pt.x = " + pt.x);
+//                System.out.println("pt.y = " + pt.y);
                 if(point.x < pt.x*0.4 || point.x > pt.x*1.6 || point.y < pt.y*0.4 || point.y > pt.y*1.6)
                 {
 

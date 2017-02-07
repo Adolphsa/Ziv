@@ -23,4 +23,13 @@
         android:textSize="18sp"
         android:padding="8dp"
         />
+    <Button
+        android:id="@+id/pd_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="确定"
+        android:textColor="@android:color/white"
+        android:background="@drawable/login_btn"
+        android:visibility="gone"
+        />
 </LinearLayout>

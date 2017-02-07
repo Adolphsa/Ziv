@@ -26,8 +26,13 @@ import com.zividig.ziv.bean.MapTrackBean;
 import com.zividig.ziv.main.BaseActivity;
 import com.zividig.ziv.utils.DialogUtils;
 import com.zividig.ziv.utils.GPSConverterUtils;
+import com.zividig.ziv.utils.HttpParamsUtils;
+import com.zividig.ziv.utils.SignatureUtils;
 import com.zividig.ziv.utils.Urls;
+import com.zividig.ziv.utils.UtcTimeUtils;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
@@ -35,14 +40,18 @@ import org.xutils.x;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.zividig.ziv.utils.SignatureUtils.SIGNATURE_TOKEN;
+
 
 /**
  * 轨迹查询
  */
 public class TrackQuery extends BaseActivity {
 
-    BitmapDescriptor realtimeBitmap = BitmapDescriptorFactory
-            .fromResource(R.mipmap.icon_gcoding);
+    BitmapDescriptor mapStart = BitmapDescriptorFactory
+            .fromResource(R.mipmap.map_start);
+    BitmapDescriptor mapEnd = BitmapDescriptorFactory
+            .fromResource(R.mipmap.map_end);
     private MapTrackBean mapTrackBean;
     private MapView mMapView;
     private BaiduMap mBaiduMap;
@@ -54,12 +63,14 @@ public class TrackQuery extends BaseActivity {
     private Long mStartTime;
     private Long mEndTime;
     private String mDevid;
+    private Gson mGson;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_track_query);
 
+        mGson = new Gson();
         Bundle bundle = getIntent().getExtras();
         mStartTime = bundle.getLong("start_time");
         mEndTime = bundle.getLong("end_time");
@@ -110,26 +121,69 @@ public class TrackQuery extends BaseActivity {
      * 访问网络并得到轨迹数据
      */
     public void getMapData(){
-        RequestParams params = new RequestParams(Urls.MAP_DATA_URL);
-        params.addBodyParameter("deviceId",mDevid);
-        params.addBodyParameter("begin",mStartTime.toString());
-        params.addBodyParameter("end",mEndTime.toString());
+
+        //配置JSON
+        JSONObject json = new JSONObject();
+        try {
+            json.put("devid", mDevid);
+            json.put("begintime",mStartTime);
+            json.put("endtime",mEndTime);
+            json.put(SIGNATURE_TOKEN, SignatureUtils.token);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        //计算signature
+        String timestamp = UtcTimeUtils.getTimestamp();
+        String noncestr = HttpParamsUtils.getRandomString(10);
+        String signature = SignatureUtils.getSinnature(
+                timestamp,
+                noncestr,
+                Urls.APP_KEY,
+                mDevid,
+                Long.toString(mStartTime),
+                Long.toString(mEndTime),
+                SignatureUtils.token);
+
+        //请求参数相关
+        RequestParams params = HttpParamsUtils.setParams(Urls.MAP_DATA_URL,timestamp,noncestr,signature);
+        params.setBodyContent(json.toString());
         System.out.println("轨迹数据URL---" + params);
-        x.http().get(params, new Callback.CommonCallback<String>() {
+        x.http().post(params, new Callback.CommonCallback<String>() {
             @Override
             public void onSuccess(String result) {
-//                System.out.println("轨迹结果：" + result);
-                Gson gson = new Gson();
-                mapTrackBean = gson.fromJson(result,MapTrackBean.class);
-                if (mapTrackBean != null){
+                System.out.println("轨迹结果：" + result);
 
-                    //获取当前的经纬度
-                    latitude = mapTrackBean.getLocationdata().get(0).getLat();
-                    longitude = mapTrackBean.getLocationdata().get(0).getLon();
-                    System.out.println("经度" + latitude + "w纬度" + longitude);
-                    //显示轨迹
-                    showTrackInMap(mapTrackBean.getLocationdata());
+                try {
+                    JSONObject json = new JSONObject(result);
+                    int status = json.getInt("status");
+                    int itemNum = json.getInt("itemnum");
+                    if (status == Urls.STATUS_CODE_200 && itemNum > 0){
+                        mapTrackBean = mGson.fromJson(result,MapTrackBean.class);
+                        if (mapTrackBean != null && mapTrackBean.getItemnum() > 0){
+
+                            //获取当前的经纬度
+                            latitude = mapTrackBean.getLocationdata().get(0).getLat();
+                            longitude = mapTrackBean.getLocationdata().get(0).getLon();
+                            System.out.println("经度" + latitude + "w纬度" + longitude);
+                            //显示轨迹
+                            showTrackInMap(mapTrackBean.getLocationdata());
+                        }
+                    }else {
+                        if (!TrackQuery.this.isFinishing()){
+                            DialogUtils.showPrompt(TrackQuery.this, "提示", "当前查询无数据", "确定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    finish();
+                                }
+                            });
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
+
+
             }
 
             @Override
@@ -177,6 +231,7 @@ public class TrackQuery extends BaseActivity {
 
         System.out.println("标注的长度：" + overLatLng.size());
         LatLng firstLatLng = GPSConverterUtils.gpsToBaidu(new LatLng(latitude,longitude));
+        LatLng lastLatLng = overLatLng.get(overLatLng.size() - 1);
         MapStatusUpdate u = MapStatusUpdateFactory.newLatLng(firstLatLng);
         mBaiduMap.animateMapStatus(u);
 
@@ -184,16 +239,22 @@ public class TrackQuery extends BaseActivity {
         polylineOption = new PolylineOptions()
                 .points(overLatLng)
                 .color(Color.BLUE)
-                .width(6)
+                .width(10)
                 .visible(true);
         //在地图上添加折线Option，用于显示
         mBaiduMap.addOverlay(polylineOption);
 
         //标注第一个点的位置
-        MarkerOptions markerOptions = new MarkerOptions()
+        MarkerOptions markerStart = new MarkerOptions()
                 .position(firstLatLng)
-                .icon(realtimeBitmap).zIndex(9).draggable(true);
-        mBaiduMap.addOverlay(markerOptions);
+                .icon(mapStart).zIndex(9).draggable(true);
+        mBaiduMap.addOverlay(markerStart);
+
+        //标注最后一个点的位置
+        MarkerOptions markerEnd = new MarkerOptions()
+                .position(lastLatLng)
+                .icon(mapEnd).zIndex(9).draggable(true);
+        mBaiduMap.addOverlay(markerEnd);
 
         //缩放地图到合适的比例
         LatLngBounds lngBounds = builder.build();

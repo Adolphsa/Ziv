@@ -395,7 +395,7 @@ public class Login extends BaseActivity {
      */
     private void showProgressDialog(){
         if (mDialog == null){
-            mDialog = LoadingProgressDialog.createLoadingDialog(Login.this,"正在登陆中...");
+            mDialog = LoadingProgressDialog.createLoadingDialog(Login.this,"正在登录中...",true,false,true);
             mDialog.show();
         }
     }
