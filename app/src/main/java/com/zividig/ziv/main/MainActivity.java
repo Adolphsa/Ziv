@@ -98,6 +98,7 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
             mMyCarFragment.stopGetDeviceState();
         }else {
             mMyCarFragment.startGetDeviceState();
+            mMyCarFragment.setTitle();
         }
     }
 

@@ -1,10 +1,13 @@
 package com.zividig.ziv.fragments;
 
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -20,7 +23,8 @@ import com.zividig.ziv.R;
 import com.zividig.ziv.customView.LoadingProgressDialog;
 import com.zividig.ziv.function.About;
 import com.zividig.ziv.function.LightColor;
-import com.zividig.ziv.utils.DialogUtils;
+import com.zividig.ziv.service.DeviceStateService;
+import com.zividig.ziv.utils.MyAlarmManager;
 import com.zividig.ziv.utils.Urls;
 
 import org.xutils.common.Callback;
@@ -33,7 +37,8 @@ import org.xutils.x;
  */
 public class SettingFragment extends Fragment {
 
-    private ListView lvSetting;
+    private ListView lvSettingDevice;
+    private ListView lvSettingSoftware;
     ViewHolder holder;
     private SettingAdapter adapter;
     private SharedPreferences sp;
@@ -42,10 +47,50 @@ public class SettingFragment extends Fragment {
     private Dialog dialog;
     private Dialog dialog2;
 
+    private String workModel;
+    private int count;
+
+    private Handler mHandler = new Handler();
+
     public static SettingFragment instance() {
         SettingFragment view = new SettingFragment();
         return view;
     }
+
+    Runnable mRunnable = new Runnable() {
+        @Override
+        public void run() {
+            showStateInfo("主机唤醒失败，请重试。");
+            if (br != null){
+                getContext().unregisterReceiver(br);
+                System.out.println("哈下");
+            }
+        }
+    };
+
+    //广播接收
+    private BroadcastReceiver br = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            count++;
+            System.out.println("count---" + count);
+            workModel = intent.getStringExtra("device_state");
+            System.out.println("工作模式---" +workModel);
+            if (workModel.equals("NORMAL")){
+                showStateInfo("主机已唤醒");
+                getContext().unregisterReceiver(br);
+                br = null;
+                mHandler.removeCallbacks(mRunnable);
+            }
+            if (count >= 5){
+                showStateInfo("主机唤醒失败，请重试。");
+                getContext().unregisterReceiver(br);
+                count = 0;
+                br = null;
+                mHandler.removeCallbacks(mRunnable);
+            }
+        }
+    };
 
     @Nullable
     @Override
@@ -57,17 +102,77 @@ public class SettingFragment extends Fragment {
         TextView title = (TextView)view.findViewById(R.id.tv_title);
         title.setText("设置");
 
-        lvSetting = (ListView) view.findViewById(R.id.lv_setting);
+        //主机设备列表
+        lvSettingDevice = (ListView) view.findViewById(R.id.lv_setting_device);
         adapter = new SettingAdapter();
-        lvSetting.setAdapter(adapter);
+        lvSettingDevice.setAdapter(adapter);
         //listView的点击事件
-        lvSetting.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        lvSettingDevice.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 switch (position){
                     case 0:
-                        holder = (ViewHolder) view.getTag();
+                        System.out.println("主机唤醒" + position);
+                        if (!SettingFragment.this.isHidden()){
+                            dialog = LoadingProgressDialog.createLoadingDialog(getContext(),"正在唤醒中...",true,false,null);
+                            dialog.show();
+                        }
+
+                        //开启轮询服务
+                        MyAlarmManager.startPollingService(getContext(), 5, DeviceStateService.class, "");
+
+                        devID = sp.getString("devid","");
+                        RequestParams params = new RequestParams(Urls.DEVICE_WAKEUP);
+                        params.addQueryStringParameter("devid",devID);
+//                        params.setConnectTimeout(20 * 1000);
+                        System.out.println("主机唤醒：" + params);
+
+                        x.http().get(params, new Callback.CommonCallback<String>() {
+                            @Override
+                            public void onSuccess(String result) {
+                                System.out.println("主机唤醒结果：" + result);
+                            }
+
+                            @Override
+                            public void onError(Throwable ex, boolean isOnCallback) {System.out.println("主机唤醒错误：" + ex);}
+
+                            @Override
+                            public void onCancelled(CancelledException cex) {}
+
+                            @Override
+                            public void onFinished() {}
+                        });
+
+                        //注册广播接收器
+                        IntentFilter filter = new IntentFilter();
+                        filter.addAction(DeviceStateService.DEVICE_STATE_ACTION);
+                        filter.setPriority(Integer.MAX_VALUE);
+                        getContext().registerReceiver(br, filter);
+
+
+                        //延时25s直接显示唤醒失败
+                        mHandler.postDelayed(mRunnable,25*1000);
+                        break;
+                    case 1:
+                        System.out.println("灯光设置" + position);
+                        startActivity(new Intent(getContext(), LightColor.class));
+                        break;
+
+                }
+            }
+        });
+
+        //软件相关设置列表
+        lvSettingSoftware = (ListView) view.findViewById(R.id.lv_setting_software);
+        SettingSoftWareAdapter settingSoftWareAdapter = new SettingSoftWareAdapter();
+        lvSettingSoftware.setAdapter(settingSoftWareAdapter);
+        lvSettingSoftware.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                holder = (ViewHolder) view.getTag();
+                switch (position){
+                    case 0:
                         boolean autoUpdate = sp.getBoolean("auto_update",false);
                         if (autoUpdate){
                             holder.RightIcon.setImageResource(R.mipmap.switch_off); //关闭自动更新
@@ -81,59 +186,20 @@ public class SettingFragment extends Fragment {
                         }
                         break;
                     case 1:
-                        System.out.println("主机唤醒" + position);
-                        if (!SettingFragment.this.isHidden()){
-                            dialog = LoadingProgressDialog.createLoadingDialog(getContext(),"正在登录中...",true,false,true);
-                            dialog.show();
+                        System.out.println("震动免打扰" + position);
+                        boolean disturb = sp.getBoolean("no_disturb",false);
+                        if (disturb){
+                            holder.RightIcon.setImageResource(R.mipmap.switch_off); //关闭
+                            sp.edit().putBoolean("no_disturb",false).apply();
+                            System.out.println("关闭");
+
+                        }else {
+                            holder.RightIcon.setImageResource(R.mipmap.switch_on); //开启
+                            sp.edit().putBoolean("no_disturb",true).apply();
+                            System.out.println("开启");
                         }
-                        devID = sp.getString("devid","");
-                        RequestParams params = new RequestParams(Urls.DEVICE_WAKEUP);
-                        params.addQueryStringParameter("devid",devID);
-                        params.setConnectTimeout(10 * 1000);
-                        System.out.println("主机唤醒：" + params);
-                        x.http().get(params, new Callback.CommonCallback<String>() {
-                            @Override
-                            public void onSuccess(String result) {
-                                System.out.println("主机唤醒结果：" + result);
-                                if (dialog != null){
-                                    dialog.dismiss();
-                                }
-
-                                DialogUtils.showProgressDialog(dialog2, getContext(), "主机已唤醒", false, true,false);
-//                                try {
-//                                    JSONObject json = new JSONObject(result);
-//                                    int errorCode = json.getInt("error");
-//                                    System.out.println("返回码是：" + errorCode);
-//                                    if (errorCode == 200){
-//                                        ToastShow.showToast(getActivity(),"主机正在唤醒中...");
-//                                    }
-//                                } catch (JSONException e) {
-//                                    e.printStackTrace();
-//                                }
-                            }
-
-                            @Override
-                            public void onError(Throwable ex, boolean isOnCallback) {
-                                System.out.println("主机唤醒错误：" + ex);
-
-                            }
-
-                            @Override
-                            public void onCancelled(CancelledException cex) {
-
-                            }
-
-                            @Override
-                            public void onFinished() {
-
-                            }
-                        });
                         break;
                     case 2:
-                        System.out.println("灯光设置" + position);
-                        startActivity(new Intent(getContext(), LightColor.class));
-                        break;
-                    case 3:
                         System.out.println("关于" + position);
                         startActivity(new Intent(getContext(), About.class));
                         break;
@@ -143,41 +209,31 @@ public class SettingFragment extends Fragment {
         return view;
     }
 
-//    private void showProgressDialog(){
-//        if (dialog == null){
-//            dialog = new ProgressDialog(getContext());
-//            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-//            dialog.setCancelable(false);// 设置是否可以通过点击Back键取消
-//            dialog.setCanceledOnTouchOutside(false);// 设置在点击Dialog外是否取消Dialog进度条
-//            dialog.setTitle("提示");
-//            dialog.setMessage("主机正在唤醒中，请稍候……");
-//
-//            //取消按钮监听事件
-//            dialog.setButton(DialogInterface.BUTTON_NEGATIVE,"取消",new DialogInterface.OnClickListener(){
-//
-//                @Override
-//                public void onClick(DialogInterface dialog, int which) {
-//
-//                }
-//            });
-//
-//            //确定按钮监听事件
-//            dialog.setButton(DialogInterface.BUTTON_POSITIVE, "确定", new DialogInterface.OnClickListener() {
-//                @Override
-//                public void onClick(DialogInterface dialog, int which) {
-//
-//                }
-//            });
-//        }
-//
-//
-//        dialog.show();
-//    }
+    private void showStateInfo(String smg){
+
+        //关闭dialog1
+        if (dialog != null){
+            dialog.dismiss();
+        }
+
+        //显示dialog2
+        dialog2 = LoadingProgressDialog.createLoadingDialog(getContext(), smg, false, true, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog2.dismiss();
+            }
+        });
+        dialog2.show();
+
+        //停止轮询服务
+        MyAlarmManager.stopPollingService(getContext(),DeviceStateService.class);
+    }
+
     class SettingAdapter extends BaseAdapter{
 
         @Override
         public int getCount() {
-            return 4;
+            return 2;
         }
 
         @Override
@@ -206,31 +262,73 @@ public class SettingFragment extends Fragment {
 
            switch (position){
                case 0:
-                   holder.leftIcon.setImageResource(R.mipmap.update);
-                   holder.itemText.setText("自动更新");
-                   Boolean autoUpdate = sp.getBoolean("auto_update",false);
-                   if (autoUpdate){
-                       holder.RightIcon.setImageResource(R.mipmap.switch_on);
-                   }else {
-                       holder.RightIcon.setImageResource(R.mipmap.switch_off);
-                   }
-                   break;
-               case 1:
                    holder.leftIcon.setImageResource(R.mipmap.recover);
                    holder.itemText.setText("主机唤醒");
                    holder.RightIcon.setImageResource(R.mipmap.rights);
                    break;
-               case 2:
-                   holder.leftIcon.setImageResource(R.mipmap.restaet);
+               case 1:
+                   holder.leftIcon.setImageResource(R.mipmap.photo_flash);
                    holder.itemText.setText("灯光设置");
                    holder.RightIcon.setImageResource(R.mipmap.rights);
                    break;
-               case 3:
-                   holder.leftIcon.setImageResource(R.mipmap.about);
-                   holder.itemText.setText("关于");
-                   holder.RightIcon.setImageResource(R.mipmap.rights);
-                   break;
+
            }
+            return convertView;
+        }
+    }
+
+    class SettingSoftWareAdapter extends BaseAdapter{
+
+        @Override
+        public int getCount() {return 3;}
+
+        @Override
+        public Object getItem(int position) {return null;}
+
+        @Override
+        public long getItemId(int position) {return position;}
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null){
+                convertView = View.inflate(getContext(),R.layout.layout_setting_list_view,null);
+                holder = new ViewHolder();
+                holder.leftIcon = (ImageView) convertView.findViewById(R.id.item_left_icon);
+                holder.itemText = (TextView) convertView.findViewById(R.id.item_text);
+                holder.RightIcon = (ImageView) convertView.findViewById(R.id.item_right_icon);
+                convertView.setTag(holder);
+            }else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+
+            switch (position){
+                case 0:
+                    holder.leftIcon.setImageResource(R.mipmap.update);
+                    holder.itemText.setText("自动更新");
+                    Boolean autoUpdate = sp.getBoolean("auto_update",false);
+                    if (autoUpdate){
+                        holder.RightIcon.setImageResource(R.mipmap.switch_on);
+                    }else {
+                        holder.RightIcon.setImageResource(R.mipmap.switch_off);
+                    }
+                    break;
+
+                case 1:
+                    holder.leftIcon.setImageResource(R.mipmap.restaet);
+                    holder.itemText.setText("震动免打扰");
+                    Boolean autoUpdate1 = sp.getBoolean("no_disturb",false);
+                    if (autoUpdate1){
+                        holder.RightIcon.setImageResource(R.mipmap.switch_on);
+                    }else {
+                        holder.RightIcon.setImageResource(R.mipmap.switch_off);
+                    }
+                    break;
+                case 2:
+                    holder.leftIcon.setImageResource(R.mipmap.about);
+                    holder.itemText.setText("关于");
+                    holder.RightIcon.setImageResource(R.mipmap.rights);
+                    break;
+            }
             return convertView;
         }
     }

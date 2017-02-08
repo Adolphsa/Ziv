@@ -68,7 +68,6 @@ public class LocationService extends Service {
     public void getLocation() {
 
         String devid = spf.getString("devid","");
-//        System.out.println("服务中的devid---" + devid);
 
         //配置JSON
         JSONObject json = new JSONObject();

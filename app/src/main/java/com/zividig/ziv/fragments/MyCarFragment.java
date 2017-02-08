@@ -33,7 +33,6 @@ import com.zividig.ziv.function.CarLocation;
 import com.zividig.ziv.function.ElectronicFence;
 import com.zividig.ziv.function.RealTimeShow;
 import com.zividig.ziv.function.TrackQueryDateChoose;
-import com.zividig.ziv.main.MainActivity;
 import com.zividig.ziv.main.ZivApp;
 import com.zividig.ziv.service.LocationService;
 import com.zividig.ziv.utils.MyAlarmManager;
@@ -87,7 +86,7 @@ public class MyCarFragment extends Fragment {
     private TextView tvDevidState;
     private TextView deviceState;
     private SharedPreferences mSpf;
-    private MainActivity mMainActivity;
+    private TextView mTitle;
 
     public static MyCarFragment instance() {
         MyCarFragment myCarView = new MyCarFragment();
@@ -121,49 +120,51 @@ public class MyCarFragment extends Fragment {
         @Override
         public void run() {
             String devid = mSpf.getString("devid", "");
-            RequestParams params = new RequestParams(Urls.DEVICE_STATE);
-            params.addBodyParameter("devid", devid);
-            System.out.println("获取设备状态---" + params.toString());
-            x.http().get(params, new Callback.CommonCallback<String>() {
-                @Override
-                public void onSuccess(String result) {
-                    try {
-                        JSONObject json = new JSONObject(result);
-                        String workMode = json.getString("workmode");
-                        if (workMode.equals("NORMAL")) {
-                            mHandler.sendEmptyMessage(DEVICE_STATE_NORMAL);
-                        } else if (workMode.equals("STDBY")) {
-                            mHandler.sendEmptyMessage(DEVICE_STATE_STDBY);
-                        } else if (workMode.equals("OFF")) {
-                            mHandler.sendEmptyMessage(DEVICE_STATE_OFF);
-                        } else if (workMode.equals("UNKNOWN")) {
-                            mHandler.sendEmptyMessage(DEVICE_STATE_UNKNOWN);
+            if (!devid.equals("")){
+                RequestParams params = new RequestParams(Urls.DEVICE_STATE);
+                params.addBodyParameter("devid", devid);
+                System.out.println("获取设备状态---" + params.toString());
+                x.http().get(params, new Callback.CommonCallback<String>() {
+                    @Override
+                    public void onSuccess(String result) {
+                        try {
+                            JSONObject json = new JSONObject(result);
+                            String workMode = json.getString("workmode");
+                            if (workMode.equals("NORMAL")) {
+                                mHandler.sendEmptyMessage(DEVICE_STATE_NORMAL);
+                            } else if (workMode.equals("STDBY")) {
+                                mHandler.sendEmptyMessage(DEVICE_STATE_STDBY);
+                            } else if (workMode.equals("OFF")) {
+                                mHandler.sendEmptyMessage(DEVICE_STATE_OFF);
+                            } else if (workMode.equals("UNKNOWN")) {
+                                mHandler.sendEmptyMessage(DEVICE_STATE_UNKNOWN);
+                            }
+                            mHandler.postDelayed(mRunnable, DEVICE_STATE_FREQUENCY);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            System.out.println("解析失败");
+                            mHandler.sendEmptyMessage(DEVICE_STATE_DEFAULT);
+                            mHandler.removeCallbacks(mRunnable);
                         }
-                        mHandler.postDelayed(mRunnable, DEVICE_STATE_FREQUENCY);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        System.out.println("解析失败");
+                    }
+
+                    @Override
+                    public void onError(Throwable ex, boolean isOnCallback) {
                         mHandler.sendEmptyMessage(DEVICE_STATE_DEFAULT);
                         mHandler.removeCallbacks(mRunnable);
                     }
-                }
 
-                @Override
-                public void onError(Throwable ex, boolean isOnCallback) {
-                    mHandler.sendEmptyMessage(DEVICE_STATE_DEFAULT);
-                    mHandler.removeCallbacks(mRunnable);
-                }
+                    @Override
+                    public void onCancelled(CancelledException cex) {
 
-                @Override
-                public void onCancelled(CancelledException cex) {
+                    }
 
-                }
+                    @Override
+                    public void onFinished() {
 
-                @Override
-                public void onFinished() {
-
-                }
-            });
+                    }
+                });
+            }
 
         }
     };
@@ -173,18 +174,11 @@ public class MyCarFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_mycar, null);
         mSpf = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
-        mMainActivity = (MainActivity) getActivity();
 
         initView();
         initAd();
         initFunctionButton();
 
-
-//        if (devId != null && devId.length() != 0) {
-//            System.out.println("执行mHandler.postDelayed");
-//            mHandler.postDelayed(mRunnable, DEVICE_STATE_FREQUENCY);
-//
-//        }
         return view;
     }
 
@@ -198,8 +192,8 @@ public class MyCarFragment extends Fragment {
         deviceState.setVisibility(View.VISIBLE); //设备状态
 
         //设置标题
-        TextView title = (TextView) view.findViewById(R.id.tv_title);
-        title.setText("我的车");
+        mTitle = (TextView) view.findViewById(R.id.tv_title);
+        setTitle();
 
         //添加设备按钮
         Button addDevice = (Button) view.findViewById(R.id.bt_add_device);
@@ -211,6 +205,18 @@ public class MyCarFragment extends Fragment {
             }
         });
 
+    }
+
+    //设置我的车的标题
+    public void setTitle(){
+        String devid = mSpf.getString("devid", "");;
+        if (!devid.equals("")){
+            String tmp = devid.substring(devid.length()-4,devid.length());
+            String tmp2 = "****" + tmp;
+            mTitle.setText(tmp2);
+        }else {
+            mTitle.setText("我的车");
+        }
     }
 
     //初始化功能按钮
@@ -370,8 +376,6 @@ public class MyCarFragment extends Fragment {
         if (devId != null && devId.length() != 0) {
             mHandler.postDelayed(mRunnable, DEVICE_STATE_FREQUENCY);
         }
-
-
     }
 
     @Override
@@ -395,9 +399,12 @@ public class MyCarFragment extends Fragment {
 //        countDownTimer.cancel();
     }
 
-    private void getDevID() {
+
+
+    private String getDevID() {
         devId = mSpf.getString("devid", "");
         System.out.println("fragment---deviceId:" + devId);
+        return devId;
     }
 
     public void startGetDeviceState() {

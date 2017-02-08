@@ -20,10 +20,11 @@ import com.zividig.ziv.R;
 
 public class LoadingProgressDialog {
 
-    public static Dialog createLoadingDialog(Context context, String msg, boolean progress, boolean button, final boolean test){
+    public static Dialog createLoadingDialog(Context context, String msg, boolean progress, boolean button, View.OnClickListener listener){
         // 首先得到整个View
         View view = LayoutInflater.from(context).inflate(
                 R.layout.layout_progress_dialog, null);
+
         // 获取整个布局
         final LinearLayout layout = (LinearLayout) view
                 .findViewById(R.id.dialog_view);
@@ -46,17 +47,7 @@ public class LoadingProgressDialog {
         }else {
             btn.setVisibility(View.GONE);
         }
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                System.out.println("被点击");
-                if (test){
-                    layout.setVisibility(View.VISIBLE);
-                }else {
-                    layout.setVisibility(View.GONE);
-                }
-            }
-        });
+        btn.setOnClickListener(listener);
 
         // 加载动画，动画用户使img图片不停的旋转
         Animation animation = AnimationUtils.loadAnimation(context,

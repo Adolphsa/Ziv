@@ -8,8 +8,18 @@ import java.util.List;
  */
 public class DeviceInfoBean {
 
+
+    /**
+     * status : 200
+     * userid : 13480995624
+     * devnum : 1
+     * devinfo : [{"devid":"ZIV3C00010000AD0849","devtype":null,"alias":null,"carid":null}]
+     */
+
     private int status;
-    private String message;
+    private String userid;
+    private int devnum;
+    private List<DevinfoBean> devinfo;
 
     public int getStatus() {
         return status;
@@ -18,29 +28,6 @@ public class DeviceInfoBean {
     public void setStatus(int status) {
         this.status = status;
     }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    /**
-     * userid : 13480995624
-     * devnum : 1
-     * devinfo : [{"devid":"1234567890123456789","devtype":"2 channel MDVR"}]
-     */
-
-    private String userid;
-    private int devnum;
-    /**
-     * devid : 1234567890123456789
-     * devtype : 2 channel MDVR
-     */
-
-    private List<DevinfoBean> devinfo;
 
     public String getUserid() {
         return userid;
@@ -67,8 +54,17 @@ public class DeviceInfoBean {
     }
 
     public static class DevinfoBean {
+        /**
+         * devid : ZIV3C00010000AD0849
+         * devtype : null
+         * alias : null
+         * carid : null
+         */
+
         private String devid;
         private String devtype;
+        private String alias;
+        private String carid;
 
         public String getDevid() {
             return devid;
@@ -85,6 +81,21 @@ public class DeviceInfoBean {
         public void setDevtype(String devtype) {
             this.devtype = devtype;
         }
-    }
 
+        public String getAlias() {
+            return alias;
+        }
+
+        public void setAlias(String alias) {
+            this.alias = alias;
+        }
+
+        public String getCarid() {
+            return carid;
+        }
+
+        public void setCarid(String carid) {
+            this.carid = carid;
+        }
+    }
 }
