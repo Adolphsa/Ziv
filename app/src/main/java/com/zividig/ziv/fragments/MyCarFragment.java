@@ -61,6 +61,7 @@ public class MyCarFragment extends Fragment {
     private static final int DEVICE_STATE_OFF = 102;
     private static final int DEVICE_STATE_UNKNOWN = 103;
     private static final int DEVICE_STATE_DEFAULT = 104;
+    private static final int ID_IS_NULL = 105;
 
     private View view; //布局文件
 
@@ -112,6 +113,10 @@ public class MyCarFragment extends Fragment {
                     break;
                 case DEVICE_STATE_DEFAULT:
                     deviceState.setText("正在查询");
+                    break;
+                case ID_IS_NULL:
+                    deviceState.setText("ID为空");
+                    break;
             }
         }
     };
@@ -120,7 +125,10 @@ public class MyCarFragment extends Fragment {
         @Override
         public void run() {
             String devid = mSpf.getString("devid", "");
-            if (!devid.equals("")){
+            if (devid.equals("")){
+                mHandler.sendEmptyMessage(ID_IS_NULL);
+                mHandler.postDelayed(mRunnable, DEVICE_STATE_FREQUENCY);
+            }else {
                 RequestParams params = new RequestParams(Urls.DEVICE_STATE);
                 params.addBodyParameter("devid", devid);
                 System.out.println("获取设备状态---" + params.toString());
@@ -165,7 +173,6 @@ public class MyCarFragment extends Fragment {
                     }
                 });
             }
-
         }
     };
 
@@ -373,9 +380,8 @@ public class MyCarFragment extends Fragment {
         convenientBanner.startTurning(3000);
 
         getDevID();
-        if (devId != null && devId.length() != 0) {
-            mHandler.postDelayed(mRunnable, DEVICE_STATE_FREQUENCY);
-        }
+        mHandler.postDelayed(mRunnable, DEVICE_STATE_FREQUENCY);
+
     }
 
     @Override

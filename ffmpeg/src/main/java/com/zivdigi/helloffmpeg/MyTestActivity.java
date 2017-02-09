@@ -1,5 +1,6 @@
 package com.zivdigi.helloffmpeg;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -16,6 +17,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
+import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.util.DisplayMetrics;
@@ -30,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.nio.Buffer;
 import java.text.SimpleDateFormat;
@@ -75,6 +78,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
     private ProgressBar mCycleProgressBar;  //圆形进度条
     private Button mPlay;                   //播放按钮
     private VideoPlayTask mVideoPlayTask;
+    private Context mContext;
 
     private boolean isScreenshot = false;
 
@@ -132,6 +136,8 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_fragment_sssp_play);
+
+        mContext = MyTestActivity.this;
 
         //设置status的颜色
         FfmpegStatusBarUtils.setColor(this,getResources().getColor(R.color.statusColor));
@@ -389,10 +395,11 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
                     if (isScreenshot){
                         File zivFile = new File(Environment.getExternalStorageDirectory(), "Ziv"); //创建Ziv文件夹
                         File imageFile = new File(zivFile ,"images");
-                        String target = imageFile + "/" + getDateAndTime() + ".jpeg";
-                        System.out.println("路径为---" + target);
+                        String target = getDateAndTime() + ".jpeg";
+                        File file = new File(imageFile,target);
+                        System.out.println("路径为---" + file);
                         try {
-                            FileOutputStream out = new FileOutputStream(new File(target));
+                            FileOutputStream out = new FileOutputStream(file);
                             dates = new byte[fb.width * fb.height * 2];
                             td.yuv420p_to_yuv420sp(fb.pix,dates,fb.width,fb.height);
                             YuvImage yuvImage = new YuvImage(dates, ImageFormat.NV21,fb.width,fb.height,null);
@@ -403,11 +410,21 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
                                 System.out.println("截图在file2");
                                 out.flush();
                                 out.close();
-                                updateImage();
 
+                                // 其次把文件插入到系统图库
+                                try {
+                                    MediaStore.Images.Media.insertImage(mContext.getContentResolver(),
+                                            file.getAbsolutePath(), target, null);
+                                } catch (FileNotFoundException e) {
+                                    e.printStackTrace();
+                                }
+                                mContext.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)));
+                                updateImage();
                             }
+
+//                            updateImage();
                             //判断图片是否已保存
-                            if (new File(target).exists()){
+                            if (file.exists()){
                                 mHandler.sendEmptyMessage(FILE_EXIST);
                             }
 
