@@ -54,6 +54,7 @@ public class Login extends BaseActivity {
 
     private DeviceInfoBean deviceInfoBean;
     private static String devid;
+    private static String carid;
     private static List<DeviceInfoBean.DevinfoBean> devinfoList;
     private PushManager pushManager;
 
@@ -250,7 +251,7 @@ public class Login extends BaseActivity {
     /**
      * 获取设备信息
      */
-    private void getDeviceInfo(String user){
+    public String getDeviceInfo(String user){
         System.out.println("执行获取设备信息");
 
         //配置json数据
@@ -294,10 +295,32 @@ public class Login extends BaseActivity {
                             if (devinfoList.size() > 0){
                                 devid =   deviceInfoBean.getDevinfo().get(0).getDevid(); //设备ID
                                 config.edit().putString("devid",devid).apply();
+                                System.out.println("列表为空的时候");
                             }
 
                         }else {
                             devid = config.getString("devid","");
+                            String tmp;
+                            int count = 0;
+                            for (DeviceInfoBean.DevinfoBean devinfoBean: devinfoList){
+                                tmp = devinfoBean.getDevid();
+                                if (devid.equals(tmp)){
+                                    System.out.println("找到相等的");
+                                    break;
+                                }else {
+                                    count++;
+                                    System.out.println("没有相等的");
+                                    if (count == devinfoList.size()){
+                                        if (devinfoList.size() > 0){
+                                            devid =   deviceInfoBean.getDevinfo().get(0).getDevid(); //设备ID
+                                            config.edit().putString("devid",devid).apply();
+                                        }else {
+                                            config.edit().putString("devid","").apply();
+                                        }
+
+                                    }
+                                }
+                            }
                         }
                     }else if (status == Urls.STATUS_CODE_404){
                         System.out.println("用户不存在");
@@ -323,6 +346,8 @@ public class Login extends BaseActivity {
             @Override
             public void onFinished() {}
         });
+
+        return devid;
 
     }
 

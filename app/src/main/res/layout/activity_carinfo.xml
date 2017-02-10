@@ -123,74 +123,139 @@
 
     </RelativeLayout>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="6dp"
+            android:text="档位:  1  "
+            android:textSize="23sp"
+            android:textColor="@android:color/white"
+            android:layout_centerHorizontal="true"
+            />
+    </RelativeLayout>
+
+
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:src="@mipmap/quxian"
         android:layout_weight="1"
         />
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         >
-
-        <!-- 油量-->
-        <RelativeLayout
-            android:layout_weight="1"
+        <TextView
+            android:id="@+id/tv_voltage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
+            android:padding="6dp"
+            android:text="电压:   12V"
+            android:textSize="20sp"
+            android:textColor="@android:color/white"
+            android:layout_marginLeft="30dp"
+            />
+        <TextView
+            android:id="@+id/tv_temperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/tv_voltage"
+            android:padding="6dp"
+            android:text="水温:   15℃"
+            android:textSize="20sp"
+            android:textColor="@android:color/white"
+            android:layout_marginLeft="90dp"
+            />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+
+        <!--汽车电压-->
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
             >
+
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@mipmap/dashboard_oil"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:src="@mipmap/voltage_dial"
                 />
+
             <ImageView
-                android:id="@+id/img_oil_point"
+                android:id="@+id/img_voltage_point"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@mipmap/needle_oil"
+                android:src="@mipmap/voltage_point_v"
+                android:layout_centerInParent="true"
                 />
         </RelativeLayout>
 
+        <!-- 油量-->
+        <!--<RelativeLayout-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginTop="25dp"-->
+            <!--android:layout_marginLeft="5dp"-->
+            <!--android:layout_marginRight="5dp"-->
+            <!--&gt;-->
+            <!--<ImageView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:src="@mipmap/dashboard_oil"-->
+                <!--/>-->
+            <!--<ImageView-->
+                <!--android:id="@+id/img_oil_point"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:src="@mipmap/needle_oil"-->
+                <!--/>-->
+        <!--</RelativeLayout>-->
+
         <!-- 转速-->
-        <RelativeLayout
-            android:layout_weight="1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@mipmap/dashboard_speed"
-                />
-            <ImageView
-                android:id="@+id/img_turning_point"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@mipmap/needle_speed"
-                />
-        </RelativeLayout>
+        <!--<RelativeLayout-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content">-->
+            <!--<ImageView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:src="@mipmap/dashboard_speed"-->
+                <!--/>-->
+            <!--<ImageView-->
+                <!--android:id="@+id/img_turning_point"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:src="@mipmap/needle_speed"-->
+                <!--/>-->
+        <!--</RelativeLayout>-->
 
         <!-- 水温-->
         <RelativeLayout
-            android:layout_weight="1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="30dp"
             >
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:scaleType="fitXY"
                 android:src="@mipmap/dashboard_temperature"
                 />
+
             <ImageView
                 android:id="@+id/img_temperature_point"
                 android:layout_width="wrap_content"
@@ -198,5 +263,5 @@
                 android:src="@mipmap/needle_oil"
                 />
         </RelativeLayout>
-    </LinearLayout>
+    </RelativeLayout>
 </LinearLayout>

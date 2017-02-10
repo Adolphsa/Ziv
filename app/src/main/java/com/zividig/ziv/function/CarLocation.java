@@ -59,7 +59,7 @@ public class CarLocation extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_carlocation2);
+        setContentView(R.layout.activity_carlocation);
 
         // 标题
         TextView txtTitle = (TextView) findViewById(R.id.tv_title);

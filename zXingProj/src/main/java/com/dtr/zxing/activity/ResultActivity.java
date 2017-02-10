@@ -13,8 +13,6 @@ import com.dtr.zxing.utils.ToastShow;
 
 public class ResultActivity extends Activity {
 
-    private static String URL_SET_TWO_CODE = "http://192.168.1.1/api/setqrcode";
-
     private TextView mResultText;
     private SharedPreferences spf;
     private String result;
@@ -23,6 +21,7 @@ public class ResultActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
+        ToastShow.setColor(ResultActivity.this,getResources().getColor(R.color.chenjinshi));
 
         spf = getSharedPreferences("config", MODE_PRIVATE);
 

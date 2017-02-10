@@ -1,6 +1,5 @@
 package com.zividig.ziv.fragments;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -31,6 +30,7 @@ import com.zividig.ziv.adapter.MessageAdapter;
 import com.zividig.ziv.adapter.OnItemClickListener;
 import com.zividig.ziv.bean.MessageBean;
 import com.zividig.ziv.getui.GetuiReceiver;
+import com.zividig.ziv.main.MainActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +41,7 @@ import java.util.List;
  */
 public class MessageFragment extends Fragment {
 
-    private Activity mContext;
+    private MainActivity mContext;
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
@@ -76,7 +76,7 @@ public class MessageFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_message, null);
-        mContext = getActivity();
+        mContext = (MainActivity) getActivity();
         spf = mContext.getSharedPreferences("config", Context.MODE_PRIVATE);
 
         //设置标题

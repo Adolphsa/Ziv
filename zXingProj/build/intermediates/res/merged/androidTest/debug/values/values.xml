@@ -48,6 +48,7 @@
     <color name="car_model_checked">#b9c778</color>
     <color name="car_model_unchecked">#767676</color>
     <color name="car_store_auction_rect">#aebe65</color>
+    <color name="chenjinshi">#0fcfff</color>
     <color name="colorAccent">#00c8ff</color>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>

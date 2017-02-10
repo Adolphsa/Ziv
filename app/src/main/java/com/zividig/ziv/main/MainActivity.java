@@ -52,6 +52,18 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
 
     private long exitTime = 0;
 
+    private boolean isMyCar = true;
+
+    public boolean getIsMyCar() {
+        return isMyCar;
+    }
+
+    public void setIsMyCar(boolean myCar) {
+        isMyCar = myCar;
+    }
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,8 +107,10 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
     public void onPageSelected(int position) {
         System.out.println("position" + position);
         if (position != 0){
+            setIsMyCar(false);
             mMyCarFragment.stopGetDeviceState();
         }else {
+            setIsMyCar(true);
             mMyCarFragment.startGetDeviceState();
             mMyCarFragment.setTitle();
         }
@@ -219,7 +233,6 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
         }
 
     }
-
     /**
      * 用户登出
      */
@@ -277,9 +290,7 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
             }
 
             @Override
-            public void onFinished() {
-
-            }
+            public void onFinished() {}
         });
     }
 

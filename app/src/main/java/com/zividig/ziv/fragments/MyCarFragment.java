@@ -26,6 +26,7 @@ import com.zivdigi.helloffmpeg.MyTestActivity;
 import com.zivdigi.helloffmpeg.TestDecoder;
 import com.zividig.ndk_test.weizhang.activity.ViolationActivity;
 import com.zividig.ziv.R;
+import com.zividig.ziv.bean.DeviceInfoBean;
 import com.zividig.ziv.bean.VideoInfoBean;
 import com.zividig.ziv.function.AddDevice;
 import com.zividig.ziv.function.CarInfo;
@@ -33,6 +34,7 @@ import com.zividig.ziv.function.CarLocation;
 import com.zividig.ziv.function.ElectronicFence;
 import com.zividig.ziv.function.RealTimeShow;
 import com.zividig.ziv.function.TrackQueryDateChoose;
+import com.zividig.ziv.main.MainActivity;
 import com.zividig.ziv.main.ZivApp;
 import com.zividig.ziv.service.LocationService;
 import com.zividig.ziv.utils.MyAlarmManager;
@@ -48,6 +50,7 @@ import org.xutils.http.RequestParams;
 import org.xutils.x;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 我的车
@@ -62,6 +65,10 @@ public class MyCarFragment extends Fragment {
     private static final int DEVICE_STATE_UNKNOWN = 103;
     private static final int DEVICE_STATE_DEFAULT = 104;
     private static final int ID_IS_NULL = 105;
+
+    private static final int TITLE_CAR_ID = 106;
+    private static final int TITLE_DEVICE_ID = 107;
+    private static final int TITLE_DEFAULT = 108;
 
     private View view; //布局文件
 
@@ -84,10 +91,16 @@ public class MyCarFragment extends Fragment {
             R.drawable.selector_history_back};
     private String devId;
 
+    private List<DeviceInfoBean.DevinfoBean> devinfoList;
     private TextView tvDevidState;
     private TextView deviceState;
     private SharedPreferences mSpf;
     private TextView mTitle;
+
+    private MainActivity mMainActivity;
+
+    private String titleCarid;
+    private String titleDeviceId;
 
     public static MyCarFragment instance() {
         MyCarFragment myCarView = new MyCarFragment();
@@ -116,6 +129,15 @@ public class MyCarFragment extends Fragment {
                     break;
                 case ID_IS_NULL:
                     deviceState.setText("ID为空");
+                    break;
+                case TITLE_CAR_ID:
+                    mTitle.setText(titleCarid);
+                    break;
+                case TITLE_DEVICE_ID:
+                    mTitle.setText(titleDeviceId);
+                    break;
+                case TITLE_DEFAULT:
+                    mTitle.setText("我的车");
                     break;
             }
         }
@@ -173,6 +195,7 @@ public class MyCarFragment extends Fragment {
                     }
                 });
             }
+            setTitle();
         }
     };
 
@@ -181,6 +204,7 @@ public class MyCarFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_mycar, null);
         mSpf = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
+        mMainActivity = (MainActivity) getActivity();
 
         initView();
         initAd();
@@ -188,7 +212,6 @@ public class MyCarFragment extends Fragment {
 
         return view;
     }
-
 
     private void initView() {
 
@@ -216,14 +239,46 @@ public class MyCarFragment extends Fragment {
 
     //设置我的车的标题
     public void setTitle(){
-        String devid = mSpf.getString("devid", "");;
+
+        String devid = mSpf.getString("devid","");
         if (!devid.equals("")){
-            String tmp = devid.substring(devid.length()-4,devid.length());
-            String tmp2 = "****" + tmp;
-            mTitle.setText(tmp2);
+            String carid = getCurrentCarid(devid);
+            if (!carid.equals("")){
+                titleCarid = carid;
+                mHandler.sendEmptyMessage(TITLE_CAR_ID);
+            }else {
+                String tmp = devid.substring(devid.length()-4,devid.length());
+                String tmp2 = "设备ID:*" + tmp;
+                titleDeviceId = tmp2;
+                mHandler.sendEmptyMessage(TITLE_DEVICE_ID);
+            }
         }else {
-            mTitle.setText("我的车");
+            mHandler.sendEmptyMessage(TITLE_DEFAULT);
         }
+    }
+
+    //得到与设备ID相匹配的车牌号
+    private String getCurrentCarid(String devid){
+
+        String deviceInfo = mSpf.getString("device_info","");
+        if (!deviceInfo.equals("")) {
+            Gson gson = new Gson();
+            DeviceInfoBean deviceInfoBean = gson.fromJson(deviceInfo, DeviceInfoBean.class);
+            devinfoList = deviceInfoBean.getDevinfo();
+
+            String tmp = "";
+            String carid = "";
+            for (DeviceInfoBean.DevinfoBean devinfoBean: devinfoList){
+                tmp = devinfoBean.getDevid();
+                if (devid.equals(tmp)){
+                    carid = devinfoBean.getCarid();
+                    break;
+                }
+            }
+
+            return carid;
+        }
+        return "";
     }
 
     //初始化功能按钮
@@ -378,10 +433,21 @@ public class MyCarFragment extends Fragment {
         super.onResume();
         //开始自动翻页
         convenientBanner.startTurning(3000);
-
         getDevID();
-        mHandler.postDelayed(mRunnable, DEVICE_STATE_FREQUENCY);
+        if (mMainActivity.getIsMyCar()){
+            mHandler.postDelayed(mRunnable, DEVICE_STATE_FREQUENCY);
+        }
+    }
 
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser){
+            mHandler.postDelayed(mRunnable, DEVICE_STATE_FREQUENCY);
+            System.out.println("我在这个时候可见");
+        }else {
+            mHandler.removeCallbacks(mRunnable);
+        }
     }
 
     @Override
@@ -389,13 +455,11 @@ public class MyCarFragment extends Fragment {
         super.onPause();
         //停止翻页
         convenientBanner.stopTurning();
-        System.out.println("暂停");
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        System.out.println("停止");
         mHandler.removeCallbacks(mRunnable);
     }
 

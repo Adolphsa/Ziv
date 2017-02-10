@@ -26,6 +26,7 @@ public class CarInfo extends BaseActivity {
     private  ImageView oilPoint;
     private  ImageView turnSpeedPoint;
     private  ImageView temperaturePoint;
+    private ImageView voltagePoint;
     private RotateAnimation speedRotate; //速度动画
     private int [] speedTest = {120,50,100,80,180,60,30,150,50};
     private int i;
@@ -67,8 +68,9 @@ public class CarInfo extends BaseActivity {
         });
 
         speedPoint = (ImageView) findViewById(R.id.img_speed_point);
-        oilPoint = (ImageView) findViewById(R.id.img_oil_point);
-        turnSpeedPoint = (ImageView) findViewById(R.id.img_turning_point);
+//        oilPoint = (ImageView) findViewById(R.id.img_oil_point);
+//        turnSpeedPoint = (ImageView) findViewById(R.id.img_turning_point); img_voltage_point
+        voltagePoint = (ImageView) findViewById(R.id.img_voltage_point);
         temperaturePoint = (ImageView) findViewById(R.id.img_temperature_point);
 
         initView();
@@ -98,17 +100,23 @@ public class CarInfo extends BaseActivity {
         speedPoint.setAnimation(speedRotate);
 
 
-        //油压动画
-        RotateAnimation oilRotate = new RotateAnimation(0,100, Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
-        oilRotate.setDuration(500);
-        oilRotate.setFillAfter(true);
-        oilPoint.setAnimation(oilRotate);
+//        //油压动画
+//        RotateAnimation oilRotate = new RotateAnimation(0,100, Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
+//        oilRotate.setDuration(500);
+//        oilRotate.setFillAfter(true);
+//        oilPoint.setAnimation(oilRotate);
 
-        //转速动画
-        RotateAnimation turnRotate = new RotateAnimation(0,110, Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
-        turnRotate.setDuration(1000);
-        turnRotate.setFillAfter(true);
-        turnSpeedPoint.setAnimation(turnRotate);
+//        //转速动画
+//        RotateAnimation turnRotate = new RotateAnimation(0,110, Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
+//        turnRotate.setDuration(1000);
+//        turnRotate.setFillAfter(true);
+//        turnSpeedPoint.setAnimation(turnRotate);
+
+        //电量动画
+        RotateAnimation voltageRotate = new RotateAnimation(0,60, Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
+        voltageRotate.setDuration(500);
+        voltageRotate.setFillAfter(true);
+        voltagePoint.setAnimation(voltageRotate);
 
         //水温动画
         RotateAnimation temperatureRotate = new RotateAnimation(0,60, Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
@@ -120,6 +128,8 @@ public class CarInfo extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        timer.cancel();
+        if (timer != null){
+            timer.cancel();
+        }
     }
 }

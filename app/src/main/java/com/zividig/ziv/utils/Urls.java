@@ -59,4 +59,6 @@ public class Urls {
     //地图轨迹
     public static final String MAP_DATA_URL = "http://api.zivdigi.com/v1/location/history";
 
+    //设置设备别名和车牌号
+    public static final String SETTING_CARID = "http://api.zivdigi.com/v1/device/setting";
 }

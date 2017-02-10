@@ -12,58 +12,46 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp"
+        android:padding="10dp"
         >
         <TextView
             android:id="@+id/tv_change_network"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/Style_AddDevice_text"
             android:text="1.请扫描二维码"
-            android:textSize="17sp"
-            android:padding="10dp"
-            android:clickable="true"
-            android:onClick="changeNetwork"
-            android:gravity="center_vertical"
             />
         <Button
             android:id="@+id/bt_set_two_code"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
+            style="@style/Style_AddDevice_button"
             android:text="二维码扫描"
-            android:textColor="@android:color/white"
-            android:background="@drawable/login_btn"
-            android:padding="10dp"
-            android:layout_marginTop="10dp"
             />
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/Style_AddDevice_text"
             android:text="2.请点击添加设备"
-            android:textSize="17sp"
-            android:padding="10dp"
-            android:layout_marginTop="20dp"
             />
         <Button
             android:id="@+id/bt_login"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
+            style="@style/Style_AddDevice_button"
             android:text="添加设备"
-            android:textColor="@android:color/white"
-            android:background="@drawable/login_btn"
-            android:padding="10dp"
-            android:layout_marginTop="10dp"
             android:onClick="BindDevice"
             />
 
+        <!--<TextView-->
+            <!--style="@style/Style_AddDevice_text"-->
+            <!--android:text="3.请设置车牌号或别名(可选)"-->
+            <!--/>-->
+        <!--<Button-->
+            <!--android:id="@+id/bt_carid"-->
+            <!--style="@style/Style_AddDevice_button"-->
+            <!--android:text="设置车牌号或别名"-->
+            <!--/>-->
     </LinearLayout>
 
+    <!--设备ID-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="10dp"
+        android:padding="5dp"
         >
         <TextView
             android:layout_width="wrap_content"
@@ -71,7 +59,7 @@
             android:text="设备ID: "
             android:textSize="18sp"
             android:padding="5dp"
-            />
+            android:id="@+id/textView"/>
 
         <TextView
             android:id="@+id/tv_device_id"
@@ -83,27 +71,59 @@
             />
     </LinearLayout>
 
+    <!--车牌号-->
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:orientation="horizontal"-->
+        <!--android:padding="5dp"-->
+        <!--&gt;-->
+        <!--<TextView-->
+            <!--style="@style/Style_AddDevice_text2"-->
+            <!--android:text="车牌号: "-->
+            <!--/>-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/tv_carid"-->
+            <!--style="@style/Style_AddDevice_text2"-->
+            <!--android:text="无"-->
+            <!--/>-->
+    <!--</LinearLayout>-->
+
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:orientation="horizontal"-->
+        <!--android:padding="5dp"-->
+        <!--&gt;-->
+        <!--<TextView-->
+            <!--style="@style/Style_AddDevice_text2"-->
+            <!--android:text="别    名: "-->
+            <!--/>-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/tv_alias"-->
+            <!--style="@style/Style_AddDevice_text2"-->
+            <!--android:text="无"-->
+
+            <!--/>-->
+    <!--</LinearLayout>-->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="10dp"
+        android:padding="5dp"
         >
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/Style_AddDevice_text2"
             android:text="二维码: "
-            android:textSize="18sp"
-            android:padding="5dp"
             />
 
         <TextView
             android:id="@+id/tv_two_code"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/Style_AddDevice_text2"
             android:text="无"
-            android:textSize="18sp"
-            android:padding="5dp"
             />
     </LinearLayout>
 

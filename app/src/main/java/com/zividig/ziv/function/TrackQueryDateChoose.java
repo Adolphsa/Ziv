@@ -27,6 +27,8 @@ public class TrackQueryDateChoose extends BaseActivity {
 
     TimePickerView startPv;
     TimePickerView endPv;
+    private long mL2;
+    private long mL1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,15 +57,15 @@ public class TrackQueryDateChoose extends BaseActivity {
         startDateTime = (EditText) findViewById(R.id.inputDate);
         endDateTime = (EditText) findViewById(R.id.inputDate2);
 
-        initStartDateTime = getInitialTime();
+        initStartDateTime = getTodayZero();
         initEndDateTime = getInitialTime();
 
         startDateTime.setText(initStartDateTime);
         endDateTime.setText(initEndDateTime);
 
-        //时间选择器
-        startPv = getTpvInstance(TrackQueryDateChoose.this);
-        endPv = getTpvInstance(TrackQueryDateChoose.this);
+        //时间选择
+        startPv = getTpvInstance(TrackQueryDateChoose.this,mL2);
+        endPv = getTpvInstance(TrackQueryDateChoose.this,mL1);
 
         //时间选择后回调
         startPv.setOnTimeSelectListener(new TimePickerView.OnTimeSelectListener() {
@@ -126,12 +128,12 @@ public class TrackQueryDateChoose extends BaseActivity {
         return format.format(date);
     }
 
-    private TimePickerView getTpvInstance(Context context){
+    private TimePickerView getTpvInstance(Context context,long date){
         TimePickerView timePickerView = new TimePickerView(context, TimePickerView.Type.ALL);
         //控制时间范围
 //        Calendar calendar = Calendar.getInstance();
-//        pvTime.setRange(calendar.get(Calendar.YEAR) - 20, calendar.get(Calendar.YEAR));//要在setTime 之前才有效果哦
-        timePickerView.setTime(new Date());
+//        endPv.setRange(calendar.get(Calendar.YEAR) - 20, calendar.get(Calendar.YEAR));//要在setTime 之前才有效果哦
+        timePickerView.setTime(new Date(date));
         timePickerView.setCyclic(false);
         timePickerView.setCancelable(true);
         return timePickerView;
@@ -141,5 +143,15 @@ public class TrackQueryDateChoose extends BaseActivity {
         SimpleDateFormat formatter = new    SimpleDateFormat("yyyy-MM-dd HH:mm");
         Date curDate = new Date(System.currentTimeMillis());//获取当前时间
         return formatter.format(curDate);
+    }
+
+    private String getTodayZero(){
+        Date date = new Date();
+        long l = 24*60*60*1000;
+        mL1 = date.getTime();//当前时间
+        mL2 = (date.getTime() - (date.getTime()%l) - 8* 60 * 60 *1000);//当前零点
+        SimpleDateFormat formatter2 = new    SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date zeroDate = new Date(mL2);
+        return formatter2.format(zeroDate);
     }
 }

@@ -111,7 +111,6 @@ public class MyDevice extends BaseActivity {
         @Override
         public void onItemClick(int position) {
             System.out.println(mStrings.get(position));
-//            Login.setDevid(mStrings.get(position));
             spf.edit().putString("devid",mStrings.get(position)).apply();
             devid = spf.getString("devid","");
             ToastShow.showToast(MyDevice.this,"已切换");
@@ -178,6 +177,8 @@ public class MyDevice extends BaseActivity {
             }
         }
     };
+
+
 
     /**
      * 获取设备ID列表
