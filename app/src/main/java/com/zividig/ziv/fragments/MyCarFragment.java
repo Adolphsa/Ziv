@@ -441,10 +441,10 @@ public class MyCarFragment extends Fragment {
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
+        System.out.println("我的车可见");
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser){
             mHandler.postDelayed(mRunnable, DEVICE_STATE_FREQUENCY);
-            System.out.println("我在这个时候可见");
         }else {
             mHandler.removeCallbacks(mRunnable);
         }
@@ -473,7 +473,7 @@ public class MyCarFragment extends Fragment {
 
     private String getDevID() {
         devId = mSpf.getString("devid", "");
-        System.out.println("fragment---deviceId:" + devId);
+        System.out.println("MyCarFragment---deviceId:" + devId);
         return devId;
     }
 

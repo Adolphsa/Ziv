@@ -8,9 +8,7 @@ import android.util.Log;
 
 import com.igexin.sdk.PushConsts;
 import com.igexin.sdk.PushManager;
-import com.zividig.ziv.bean.MessageBean;
 import com.zividig.ziv.fragments.MessageFragment;
-import com.zividig.ziv.utils.JsonUtils;
 
 /**
  * 个推
@@ -48,17 +46,7 @@ public class GetuiReceiver extends BroadcastReceiver {
                     String data = new String(payload);
 
                     Log.d("GetuiSdkDemo", "receiver payload : " + data);
-                    MessageBean messageBean = JsonUtils.deserialize(data, MessageBean.class);
 
-                    System.out.println("---"+ messageBean.getAlarmType() + "\n"
-                            + "---" + messageBean.getAlarmContent() + "\n"
-                            + "---" + messageBean.getAlarmTime());
-
-                    //发送广播
-                    intent=new Intent();
-                    intent.setAction(GETUI_MESSAGE_ACTION);
-                    intent.putExtra(GETUI_MESSAGE_KEY, messageBean);
-                    context.sendBroadcast(intent);
                 }
                 break;
         }

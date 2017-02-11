@@ -36,11 +36,20 @@ import java.util.List;
 public class MessageAdapter extends SwipeMenuAdapter<MessageAdapter.DefaultViewHolder> {
 
     private SharedPreferences spf;
-    private List<MessageBean> mMessageBeanList;
+
+    private List<MessageBean.DataBean> mDataBeanList;
     private OnItemClickListener mOnItemClickListener;
 
-    public MessageAdapter(List<MessageBean> list, SharedPreferences spf) {
-        this.mMessageBeanList = list;
+
+    public List<MessageBean.DataBean> getDataBeanList() {
+        return mDataBeanList;
+    }
+
+    public void setDataBeanList(List<MessageBean.DataBean> dataBeanList) {
+        mDataBeanList = dataBeanList;
+    }
+
+    public MessageAdapter( SharedPreferences spf) {
         this.spf = spf;
     }
 
@@ -50,7 +59,7 @@ public class MessageAdapter extends SwipeMenuAdapter<MessageAdapter.DefaultViewH
 
     @Override
     public int getItemCount() {
-        return mMessageBeanList == null ? 0 : mMessageBeanList.size();
+        return mDataBeanList == null ? 0 : mDataBeanList.size();
     }
 
     @Override
@@ -65,8 +74,9 @@ public class MessageAdapter extends SwipeMenuAdapter<MessageAdapter.DefaultViewH
 
     @Override
     public void onBindViewHolder(MessageAdapter.DefaultViewHolder holder, int position) {
-        MessageBean messageBean = mMessageBeanList.get(position);
-        holder.setData(messageBean.getAlarmContent(),messageBean.getAlarmTime());
+        mDataBeanList = getDataBeanList();
+        MessageBean.DataBean dataBeen = mDataBeanList.get(position);
+        holder.setData(dataBeen.getType(),dataBeen.getAddress_desc(),dataBeen.getTime());
         holder.setOnItemClickListener(mOnItemClickListener);
         boolean isShow = spf.getBoolean("red_point" + position,true);
         holder.setRedPoint(isShow);
@@ -74,27 +84,39 @@ public class MessageAdapter extends SwipeMenuAdapter<MessageAdapter.DefaultViewH
     }
 
     static class DefaultViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView tvMfTitle;  //消息内容
-        TextView tvMfTime;   //时间
+
         ImageView ivRedPoint; //红点
+
+        TextView tvAlarmType;  //报警类型
+        TextView tvAlarmAddress;   //报警地址
+        TextView tvAlarmTime;   //报警时间
 
         OnItemClickListener mOnItemClickListener;
 
         public DefaultViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
-            tvMfTitle = (TextView) itemView.findViewById(R.id.tv_title);
-            tvMfTime = (TextView) itemView.findViewById(R.id.tv_time);
+
             ivRedPoint = (ImageView) itemView.findViewById(R.id.iv_red_point);
+            tvAlarmType = (TextView) itemView.findViewById(R.id.tv_item_alarm_type);
+            tvAlarmAddress = (TextView) itemView.findViewById(R.id.tv_item_alarm_address);
+            tvAlarmTime = (TextView) itemView.findViewById(R.id.tv_item_alarm_time);
+
         }
 
         public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
             this.mOnItemClickListener = onItemClickListener;
         }
 
-        public void setData(String title,String time) {
-            this.tvMfTitle.setText(title);
-            this.tvMfTime.setText(time);
+        public void setData(String tvAlarmType,String tvAlarmAddress,String tvAlarmTime) {
+            if (tvAlarmType != null && tvAlarmType.equals("shake")){
+                this.tvAlarmType.setText("震动报警");
+            }else if (tvAlarmType != null && tvAlarmType.equals("fence")){
+                this.tvAlarmType.setText("电子围栏报警");
+            }
+
+            this.tvAlarmAddress.setText(tvAlarmAddress);
+            this.tvAlarmTime.setText(tvAlarmTime);
         }
 
         public void setRedPoint(boolean isShow){

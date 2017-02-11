@@ -108,11 +108,16 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
         System.out.println("position" + position);
         if (position != 0){
             setIsMyCar(false);
-            mMyCarFragment.stopGetDeviceState();
+            if (mMyCarFragment != null){
+                mMyCarFragment.stopGetDeviceState();
+            }
+
         }else {
             setIsMyCar(true);
-            mMyCarFragment.startGetDeviceState();
-            mMyCarFragment.setTitle();
+            if (mMyCarFragment != null){
+                mMyCarFragment.startGetDeviceState();
+                mMyCarFragment.setTitle();
+            }
         }
     }
 

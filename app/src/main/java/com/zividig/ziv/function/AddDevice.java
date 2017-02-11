@@ -16,6 +16,7 @@ import com.dtr.zxing.activity.CaptureActivity;
 import com.zividig.ziv.R;
 import com.zividig.ziv.main.BaseActivity;
 import com.zividig.ziv.main.Login;
+import com.zividig.ziv.main.MainActivity;
 import com.zividig.ziv.utils.DialogUtils;
 import com.zividig.ziv.utils.HttpParamsUtils;
 import com.zividig.ziv.utils.SignatureUtils;
@@ -36,6 +37,7 @@ public class AddDevice extends BaseActivity {
     private TextView deviceId;
     private TextView tvTwoCode;
     private SharedPreferences spf;
+    private Login mLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +45,7 @@ public class AddDevice extends BaseActivity {
         setContentView(R.layout.activity_add_device);
 
         spf = getSharedPreferences("config", MODE_PRIVATE);
-
+        mLogin = new Login();
 
         initView();
     }
@@ -220,9 +222,13 @@ public class AddDevice extends BaseActivity {
 //        startActivity(intent);
 //    }
 
-    //表单对话框
+    /**
+     * 二维码设置成功后弹出的表单对话框
+     * @param usrname   用户名
+     * @param devid     设备Id
+     */
     private void getFormDialog(final String usrname, final String devid){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(false);
         builder.setTitle("设置车牌号和别名(可选)");//设置标题
         View view = LayoutInflater.from(this).inflate(R.layout.layout_form_dialog,null);
@@ -235,8 +241,14 @@ public class AddDevice extends BaseActivity {
                 //点击确定按钮的操作
                 System.out.println("确定");
                 String carid = etCarid.getText().toString().trim();
+                if (carid == null){
+                    carid = "";
+                }
                 System.out.println("carid---" + carid);
                 String alias = etAlias.getText().toString().trim();
+                if (alias == null){
+                    alias = "";
+                }
                 setCarId(usrname,devid,carid,alias);
                 System.out.println("alias---" + alias);
             }
@@ -244,13 +256,24 @@ public class AddDevice extends BaseActivity {
         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                System.out.println("别惦记取消");
+                System.out.println("设置车牌号和别名取消");
+                //获取设备列表信息
+                mLogin.getDeviceInfo(usrname,spf);
+                startActivity(new Intent(AddDevice.this, MainActivity.class));
+
             }
         });
         builder.show();
     }
 
-    public void setCarId(String username,String devid,String carid,String alias){
+    /**
+     * 设置车牌号和别名
+     * @param username  用户名
+     * @param devid     设备ID
+     * @param carid     车牌号
+     * @param alias     别名
+     */
+    public void setCarId(final String username, final String devid, String carid, String alias){
         System.out.println("setCarId");
         //配置json数据
         final JSONObject json = new JSONObject();
@@ -286,13 +309,15 @@ public class AddDevice extends BaseActivity {
                     JSONObject json = new JSONObject(result);
                     int status = json.getInt("status");
                     if (200 == status){
-                        System.out.println("车牌号和别名设置成功");
                         if (!AddDevice.this.isFinishing()){
                             DialogUtils.showPrompt(AddDevice.this, "提示", "设置车牌号和别名成功", "确定", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
-                                    startActivity(new Intent(AddDevice.this, Login.class));
+                                    //获取设备列表信息
+                                    mLogin.getDeviceInfo(username,spf);
+                                    spf.edit().putString("devid",devid).apply();
+                                    startActivity(new Intent(AddDevice.this, MainActivity.class));
                                 }
                             });
                         }
@@ -306,7 +331,7 @@ public class AddDevice extends BaseActivity {
             public void onError(Throwable ex, boolean isOnCallback) {
                 System.out.println("设置车牌号错误");
                 if (!AddDevice.this.isFinishing()) {
-                    DialogUtils.showPrompt(AddDevice.this, "提示", "设置车牌号失败,网络错误,请检查网络", "确定", new DialogInterface.OnClickListener() {
+                    DialogUtils.showPrompt(AddDevice.this, "提示", "设置车牌号失败", "确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();

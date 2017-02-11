@@ -25,6 +25,7 @@ import android.widget.TextView;
 
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuAdapter;
 import com.zividig.ziv.R;
+import com.zividig.ziv.bean.DeviceInfoBean;
 
 import java.util.List;
 
@@ -34,14 +35,16 @@ import java.util.List;
  */
 public class MenuAdapter extends SwipeMenuAdapter<MenuAdapter.DefaultViewHolder> {
 
+    private List<DeviceInfoBean.DevinfoBean> devinfoList;
+    private DeviceInfoBean.DevinfoBean devinfoBean;
     private List<String> titles;
     private String devid;
     private SharedPreferences spf;
 
     private OnItemClickListener mOnItemClickListener;
 
-    public MenuAdapter(List<String> titles,SharedPreferences spf) {
-        this.titles = titles;
+    public MenuAdapter(List<DeviceInfoBean.DevinfoBean> devinfoList,SharedPreferences spf) {
+        this.devinfoList = devinfoList;
         this.spf = spf;
     }
 
@@ -51,7 +54,7 @@ public class MenuAdapter extends SwipeMenuAdapter<MenuAdapter.DefaultViewHolder>
 
     @Override
     public int getItemCount() {
-        return titles == null ? 0 : titles.size();
+        return devinfoList == null ? 0 : devinfoList.size();
     }
 
     @Override
@@ -68,23 +71,28 @@ public class MenuAdapter extends SwipeMenuAdapter<MenuAdapter.DefaultViewHolder>
     public void onBindViewHolder(DefaultViewHolder holder, int position) {
         devid = spf.getString("devid","");
         System.out.println("获取保存的devid" + devid);
-        holder.setData(titles.get(position));
+        devinfoBean = devinfoList.get(position);
+        holder.setData(devinfoBean.getDevid(),devinfoBean.getCarid(),devinfoBean.getAlias());
         holder.setOnItemClickListener(mOnItemClickListener);
-        if (titles.get(position).equals(devid)){
-            System.out.println("titles  id:---" + titles.get(position) + "\ndevid---" + devid);
+        if (devinfoBean.getDevid().equals(devid)){
+            System.out.println("titles  id:---" + devinfoBean.getDevid() + "\ndevid---" + devid);
             holder.setDuigouShow(true);
         }
     }
 
     static class DefaultViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView tvTitle;
+        TextView mdTvDevid;
+        TextView mdTvCarid;
+        TextView mdTvAlias;
         ImageView duiGou;
         OnItemClickListener mOnItemClickListener;
 
         public DefaultViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
-            tvTitle = (TextView) itemView.findViewById(R.id.tv_title);
+            mdTvDevid = (TextView) itemView.findViewById(R.id.md_tv_devid);
+            mdTvCarid = (TextView) itemView.findViewById(R.id.md_tv_carid);
+            mdTvAlias = (TextView) itemView.findViewById(R.id.md_tv_alias);
             duiGou = (ImageView) itemView.findViewById(R.id.iv_duigou);
         }
 
@@ -92,8 +100,10 @@ public class MenuAdapter extends SwipeMenuAdapter<MenuAdapter.DefaultViewHolder>
             this.mOnItemClickListener = onItemClickListener;
         }
 
-        public void setData(String title) {
-            this.tvTitle.setText(title);
+        public void setData(String devid,String carid,String alias) {
+            this.mdTvDevid.setText(devid);
+            this.mdTvCarid.setText(carid);
+            this.mdTvAlias.setText(alias);
         }
 
         public  void setDuigouShow(boolean isShow){

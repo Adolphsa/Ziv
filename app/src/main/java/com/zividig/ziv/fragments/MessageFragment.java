@@ -1,9 +1,6 @@
 package com.zividig.ziv.fragments;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -18,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.yanzhenjie.recyclerview.swipe.Closeable;
 import com.yanzhenjie.recyclerview.swipe.OnSwipeMenuItemClickListener;
 import com.yanzhenjie.recyclerview.swipe.SwipeMenu;
@@ -29,8 +27,12 @@ import com.zividig.ziv.adapter.ListViewDecoration;
 import com.zividig.ziv.adapter.MessageAdapter;
 import com.zividig.ziv.adapter.OnItemClickListener;
 import com.zividig.ziv.bean.MessageBean;
-import com.zividig.ziv.getui.GetuiReceiver;
 import com.zividig.ziv.main.MainActivity;
+import com.zividig.ziv.utils.Urls;
+
+import org.xutils.common.Callback;
+import org.xutils.http.RequestParams;
+import org.xutils.x;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,25 +49,12 @@ public class MessageFragment extends Fragment {
 
     private MessageAdapter mMenuAdapter;
 
-    private List<MessageBean> mMessageBeanList;
+    private List<MessageBean.DataBean> mDataBeanList;
 
     private SwipeMenuRecyclerView mSwipeMenuRecyclerView;
 
-    private int size = 5;
     private View view;
     private SharedPreferences spf;
-
-    private BroadcastReceiver getuiReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            MessageBean messageBean = intent.getParcelableExtra(GetuiReceiver.GETUI_MESSAGE_KEY);
-            System.out.println("---MF---"+ messageBean.getAlarmType() + "\n"
-                    + "---MF---" + messageBean.getAlarmContent() + "\n"
-                    + "---MF---" + messageBean.getAlarmTime());
-            mMessageBeanList.add(0,messageBean);
-            mMenuAdapter.notifyItemInserted(0);
-        }
-    };
 
     public static MessageFragment instance() {
         MessageFragment view = new MessageFragment();
@@ -78,6 +67,7 @@ public class MessageFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_message, null);
         mContext = (MainActivity) getActivity();
         spf = mContext.getSharedPreferences("config", Context.MODE_PRIVATE);
+        System.out.println("MessageFragment---onCreateView");
 
         //设置标题
         TextView title = (TextView) view.findViewById(R.id.tv_title);
@@ -90,25 +80,12 @@ public class MessageFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        //注册广播接收器
-        IntentFilter filter= new IntentFilter();
-        filter.addAction(GetuiReceiver.GETUI_MESSAGE_ACTION);
-        mContext.registerReceiver(getuiReceiver,filter);
     }
 
     private void initSwipeRecycleView(){
-
+        System.out.println("initSwipeRecycleView");
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.message_swipe_layout);
         mSwipeRefreshLayout.setOnRefreshListener(mOnRefreshListener);
-
-        mMessageBeanList = new ArrayList<>();
-        for (int i = 0; i < size; i++) {
-            MessageBean messageBean = new MessageBean();
-            messageBean.setAlarmType("震动报警");
-            messageBean.setAlarmContent("我是第" + i + "个");
-            messageBean.setAlarmTime("2016-11-04 16:24");
-            mMessageBeanList.add(messageBean);
-        }
 
         mSwipeMenuRecyclerView = (SwipeMenuRecyclerView) view.findViewById(R.id.message_recycler_view);
         mSwipeMenuRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));// 布局管理器。
@@ -118,15 +95,13 @@ public class MessageFragment extends Fragment {
         // 添加滚动监听。
 //        mSwipeMenuRecyclerView.addOnScrollListener(mOnScrollListener);
 
-        // 为SwipeRecyclerView的Item创建菜单就两句话，不错就是这么简单：
         // 设置菜单创建器。
         mSwipeMenuRecyclerView.setSwipeMenuCreator(swipeMenuCreator);
         // 设置菜单Item点击监听。
         mSwipeMenuRecyclerView.setSwipeMenuItemClickListener(menuItemClickListener);
-
-        mMenuAdapter = new MessageAdapter(mMessageBeanList,spf);
-        mMenuAdapter.setOnItemClickListener(onItemClickListener);
+        mMenuAdapter = new MessageAdapter(spf);
         mSwipeMenuRecyclerView.setAdapter(mMenuAdapter);
+        mMenuAdapter.setOnItemClickListener(onItemClickListener);
     }
 
     /**
@@ -139,6 +114,7 @@ public class MessageFragment extends Fragment {
                 @Override
                 public void run() {
                     mSwipeRefreshLayout.setRefreshing(false);
+                    getVibrationAlarmMessage();
                 }
             }, 2000);
         }
@@ -194,22 +170,72 @@ public class MessageFragment extends Fragment {
             closeable.smoothCloseMenu();// 关闭被点击的菜单。
 
             if (direction == SwipeMenuRecyclerView.RIGHT_DIRECTION) {
-                Toast.makeText(mContext, "list第" + adapterPosition + "; 右侧菜单第" + menuPosition, Toast.LENGTH_SHORT).show();
-            } else if (direction == SwipeMenuRecyclerView.LEFT_DIRECTION) {
-                Toast.makeText(mContext, "list第" + adapterPosition + "; 左侧菜单第" + menuPosition, Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "消息被删除", Toast.LENGTH_SHORT).show();
             }
 
-            // TODO 推荐调用Adapter.notifyItemRemoved(position)，也可以Adapter.notifyDataSetChanged();
             if (menuPosition == 0) {// 删除按钮被点击。
-                mMessageBeanList.remove(adapterPosition);
+                mDataBeanList.remove(adapterPosition);
                 mMenuAdapter.notifyItemRemoved(adapterPosition);
             }
         }
     };
 
     @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        System.out.println("信息可见");
+        if (isVisibleToUser){
+            getVibrationAlarmMessage();
+            System.out.println("MessageFragment可见");
+        }
+    }
+
+    /**
+     * 获取震动报警消息
+     */
+    private void getVibrationAlarmMessage(){
+
+        String devid = spf.getString("devid","");
+        RequestParams params = new RequestParams(Urls.GET_VIBRATION_ALARM);
+        params.addBodyParameter("devid", devid);
+        System.out.println("获取震动消息" + params.toString());
+
+        x.http().get(params, new Callback.CommonCallback<String>() {
+
+            @Override
+            public void onSuccess(String result) {
+                Gson gson = new Gson();
+                MessageBean mb2 = gson.fromJson(result, MessageBean.class);
+                int status = mb2.getStatus();
+                int size = mb2.getData().size();
+                mDataBeanList = new ArrayList<MessageBean.DataBean>();
+                if (200 == status && size > 0){
+                    mDataBeanList = mb2.getData();
+                    System.out.println("震動報警消息---" + mDataBeanList.toString());
+                    mMenuAdapter.setDataBeanList(mDataBeanList);
+                    mMenuAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+
+            }
+
+            @Override
+            public void onCancelled(CancelledException cex) {
+
+            }
+
+            @Override
+            public void onFinished() {
+
+            }
+        });
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
-        mContext.unregisterReceiver(getuiReceiver);
     }
 }

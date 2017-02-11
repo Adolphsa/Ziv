@@ -32,7 +32,8 @@ public class StringSortUtils {
      * @return
      * */
     private static boolean isMoreThan(String pre, String next){
-        if(null == pre || null == next || "".equals(pre) || "".equals(next)){
+        //之前的判断条件 null == pre || null == next || "".equals(pre) || "".equals(next)
+        if(null == pre || null == next){
             Log.e("StringSortUtils","字符串比较数据不能为空！");
             return false;
         }

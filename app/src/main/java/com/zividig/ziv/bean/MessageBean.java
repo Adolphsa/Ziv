@@ -1,79 +1,133 @@
 package com.zividig.ziv.bean;
 
-import android.os.Parcel;
-import android.os.Parcelable;
+import java.util.List;
 
 /**
  * Created by adolph
- * on 2016-11-04.
+ * on 2017-02-11.
  */
 
-public class MessageBean implements Parcelable {
+public class MessageBean {
 
     /**
-     * alarmType : shock
-     * alarmContent : thie is a shock alarm
-     * alarmTime : 2016-11-04 12:04
+     * status : 200
+     * data : [{"id":3,"type":"shake","lat":22.623213,"lon":114.028308,"address":"广东省深圳市宝安区民旺路","address_desc":"深圳市宝安区龙华民治街道梅龙路七星商业广场附近31米","time":"2017-02-10 18:36:05"},{"id":"2","type":"shake","lat":22.623213,"lon":114.028308,"address":"广东省深圳市宝安区民旺路","address_desc":"深圳市宝安区龙华民治街道梅龙路七星商业广场附近31米","time":"2017-02-10 18:35:56"}]
      */
 
-    private String alarmType;
-    private String alarmContent;
-    private String alarmTime;
+    private int status;
+    private List<DataBean> data;
 
-    public String getAlarmType() {
-        return alarmType;
+    public int getStatus() {
+        return status;
     }
 
-    public void setAlarmType(String alarmType) {
-        this.alarmType = alarmType;
+    public void setStatus(int status) {
+        this.status = status;
     }
 
-    public String getAlarmContent() {
-        return alarmContent;
+    public List<DataBean> getData() {
+        return data;
     }
 
-    public void setAlarmContent(String alarmContent) {
-        this.alarmContent = alarmContent;
-    }
-
-    public String getAlarmTime() {
-        return alarmTime;
-    }
-
-    public void setAlarmTime(String alarmTime) {
-        this.alarmTime = alarmTime;
+    public void setData(List<DataBean> data) {
+        this.data = data;
     }
 
     @Override
-    public int describeContents() {
-        return 0;
+    public String toString() {
+        return "MessageBean2{" +
+                "data=" + data +
+                ", status=" + status +
+                '}';
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.alarmType);
-        dest.writeString(this.alarmContent);
-        dest.writeString(this.alarmTime);
-    }
+    public static class DataBean {
+        /**
+         * id : 3
+         * type : shake
+         * lat : 22.623213
+         * lon : 114.028308
+         * address : 广东省深圳市宝安区民旺路
+         * address_desc : 深圳市宝安区龙华民治街道梅龙路七星商业广场附近31米
+         * time : 2017-02-10 18:36:05
+         */
 
-    public MessageBean() {
-    }
+        private int id;
+        private String type;
+        private double lat;
+        private double lon;
+        private String address;
+        private String address_desc;
+        private String time;
 
-    protected MessageBean(Parcel in) {
-        this.alarmType = in.readString();
-        this.alarmContent = in.readString();
-        this.alarmTime = in.readString();
-    }
-
-    public static final Parcelable.Creator<MessageBean> CREATOR = new Parcelable.Creator<MessageBean>() {
-        @Override
-        public MessageBean createFromParcel(Parcel source) {
-            return new MessageBean(source);
+        public int getId() {
+            return id;
         }
 
-        @Override
-        public MessageBean[] newArray(int size) {
-            return new MessageBean[size];
+        public void setId(int id) {
+            this.id = id;
         }
-    };
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+
+        public double getLat() {
+            return lat;
+        }
+
+        public void setLat(double lat) {
+            this.lat = lat;
+        }
+
+        public double getLon() {
+            return lon;
+        }
+
+        public void setLon(double lon) {
+            this.lon = lon;
+        }
+
+        public String getAddress() {
+            return address;
+        }
+
+        public void setAddress(String address) {
+            this.address = address;
+        }
+
+        public String getAddress_desc() {
+            return address_desc;
+        }
+
+        public void setAddress_desc(String address_desc) {
+            this.address_desc = address_desc;
+        }
+
+        public String getTime() {
+            return time;
+        }
+
+        public void setTime(String time) {
+            this.time = time;
+        }
+
+
+        @Override
+        public String toString() {
+            return "DataBean{" +
+                    "id='" + id + '\'' +
+                    ", type='" + type + '\'' +
+                    ", lat=" + lat +
+                    ", lon=" + lon +
+                    ", address='" + address + '\'' +
+                    ", address_desc='" + address_desc + '\'' +
+                    ", time='" + time + '\'' +
+                    '}';
+        }
+    }
 }

@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/item_height"
+    android:layout_height="wrap_content"
     android:background="@drawable/selector_base_pager_baseground"
-    android:padding="6dp"
-    >
+    android:padding="6dp">
 
     <ImageView
         android:id="@+id/iv_icon"
@@ -12,23 +11,73 @@
         android:layout_height="@dimen/item_height"
         android:src="@mipmap/device" />
 
-    <TextView
-        android:id="@+id/tv_item_title"
+    <!--设备ID-->
+    <LinearLayout
+        android:id="@+id/md_ll_devid"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:layout_toRightOf="@+id/iv_icon"
-        android:layout_centerInParent="true"
-        android:text="设备ID："
-        android:layout_marginLeft="@dimen/item_margin" />
+        android:padding="3dp"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="设备ID："
+            android:layout_marginLeft="@dimen/item_margin" />
 
-    <TextView
-        android:id="@+id/tv_title"
-        android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/md_tv_devid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="啦啦啦"
+            android:layout_marginLeft="@dimen/item_margin" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/md_ll_carid"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/tv_item_title"
-        android:layout_centerInParent="true"
-        android:text="啦啦啦"
-        android:layout_marginLeft="@dimen/item_margin" />
+        android:orientation="horizontal"
+        android:layout_toRightOf="@+id/iv_icon"
+        android:layout_below="@id/md_ll_devid"
+        android:padding="3dp"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="车牌号："
+            android:layout_marginLeft="@dimen/item_margin" />
+        <TextView
+            android:id="@+id/md_tv_carid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="无"
+            android:layout_marginLeft="@dimen/item_margin" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/md_ll_alias"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_toRightOf="@+id/iv_icon"
+        android:layout_below="@id/md_ll_carid"
+        android:padding="3dp"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="别    名："
+            android:layout_marginLeft="@dimen/item_margin" />
+        <TextView
+            android:id="@+id/md_tv_alias"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="无"
+            android:layout_marginLeft="@dimen/item_margin" />
+
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/iv_duigou"
@@ -38,8 +87,19 @@
         android:scaleType="fitXY"
         android:layout_alignParentRight="true"
         android:visibility="invisible"
-        android:layout_centerInParent="true"
+        android:layout_centerVertical="true"
         />
+    <!--<Button-->
+        <!--android:id="@+id/md_bt_carid"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="车牌修改"-->
+        <!--android:textColor="@drawable/select_mydevice_bt_color"-->
+        <!--android:background="@android:color/transparent"-->
 
+        <!--android:layout_below="@+id/iv_duigou"-->
+        <!--android:layout_alignParentRight="true"-->
+        <!--android:layout_marginRight="10dp"-->
+        <!--/>-->
 
 </RelativeLayout>

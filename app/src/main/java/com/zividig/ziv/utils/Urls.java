@@ -61,4 +61,13 @@ public class Urls {
 
     //设置设备别名和车牌号
     public static final String SETTING_CARID = "http://api.zivdigi.com/v1/device/setting";
+
+    //解绑设备
+    public static final String UNBIND_DEVICE = "http://api.zivdigi.com/v1/device/unbind";
+
+    //获取震动报警消息  vibration alarm
+    public static final String GET_VIBRATION_ALARM = "http://wx.zivdigi.com/api/device/alarm";
+
+    //设置震动消息免打扰
+    public static final String SETTING_ALARM_DO_NOT_DISTURB = "http://api.zivdigi.com/v1/user/alarm";
 }

@@ -200,6 +200,11 @@ public class Login extends BaseActivity {
                             SignatureUtils.token = json.getString(SignatureUtils.SIGNATURE_TOKEN);
                             System.out.println("token---" + SignatureUtils.token);
 
+                            //保存推送免打扰开关状态
+                            String alarmSwitchState = json.getString("alarm_status");
+                            config.edit().putString("alarm_status",alarmSwitchState).apply();
+
+                            //进入主界面
                             enterMainActivity();
                             System.out.println("clientId: " + getuiId);
                         }else if (status == Urls.STATUS_CODE_400){
@@ -239,7 +244,7 @@ public class Login extends BaseActivity {
                 @Override
                 public void onFinished() {
                     //获取设备信息
-                    getDeviceInfo(user);
+                    getDeviceInfo(user,config);
                 }
             });
         }else {
@@ -251,7 +256,7 @@ public class Login extends BaseActivity {
     /**
      * 获取设备信息
      */
-    public String getDeviceInfo(String user){
+    public void getDeviceInfo(String user, final SharedPreferences configs){
         System.out.println("执行获取设备信息");
 
         //配置json数据
@@ -287,19 +292,19 @@ public class Login extends BaseActivity {
 
                     if (status == Urls.STATUS_CODE_200){
                         devinfoList = deviceInfoBean.getDevinfo(); //设备列表
-                        config.edit().putString("device_info",result).apply();
+                        configs.edit().putString("device_info",result).apply();
                         System.out.println("设备列表长度" + devinfoList.size());
 
                         //如果devid为空则去获取设备列表的设备，否则读取本地缓存的devid
-                        if (config.getString("devid","").equals("")){
+                        if (configs.getString("devid","").equals("")){
                             if (devinfoList.size() > 0){
                                 devid =   deviceInfoBean.getDevinfo().get(0).getDevid(); //设备ID
-                                config.edit().putString("devid",devid).apply();
+                                configs.edit().putString("devid",devid).apply();
                                 System.out.println("列表为空的时候");
                             }
 
                         }else {
-                            devid = config.getString("devid","");
+                            devid = configs.getString("devid","");
                             String tmp;
                             int count = 0;
                             for (DeviceInfoBean.DevinfoBean devinfoBean: devinfoList){
@@ -313,9 +318,9 @@ public class Login extends BaseActivity {
                                     if (count == devinfoList.size()){
                                         if (devinfoList.size() > 0){
                                             devid =   deviceInfoBean.getDevinfo().get(0).getDevid(); //设备ID
-                                            config.edit().putString("devid",devid).apply();
+                                            configs.edit().putString("devid",devid).apply();
                                         }else {
-                                            config.edit().putString("devid","").apply();
+                                            configs.edit().putString("devid","").apply();
                                         }
 
                                     }
@@ -347,8 +352,6 @@ public class Login extends BaseActivity {
             public void onFinished() {}
         });
 
-        return devid;
-
     }
 
     /**
@@ -372,6 +375,7 @@ public class Login extends BaseActivity {
             System.out.println("换账号了");
             System.out.println("清除一些数据");
             config.edit().remove("devid").apply();
+            config.edit().remove("alarm_state").apply();
             config.edit().remove("device_info").apply();
         }
     }

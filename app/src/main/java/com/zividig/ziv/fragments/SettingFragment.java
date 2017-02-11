@@ -24,12 +24,20 @@ import com.zividig.ziv.customView.LoadingProgressDialog;
 import com.zividig.ziv.function.About;
 import com.zividig.ziv.function.LightColor;
 import com.zividig.ziv.service.DeviceStateService;
+import com.zividig.ziv.utils.HttpParamsUtils;
 import com.zividig.ziv.utils.MyAlarmManager;
+import com.zividig.ziv.utils.SignatureUtils;
+import com.zividig.ziv.utils.ToastShow;
 import com.zividig.ziv.utils.Urls;
+import com.zividig.ziv.utils.UtcTimeUtils;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
+
+import static com.zividig.ziv.utils.SignatureUtils.SIGNATURE_TOKEN;
 
 /**
  * 设置
@@ -82,7 +90,7 @@ public class SettingFragment extends Fragment {
                 br = null;
                 mHandler.removeCallbacks(mRunnable);
             }
-            if (count >= 5){
+            if (count >= 6){
                 showStateInfo("主机唤醒失败，请重试。");
                 getContext().unregisterReceiver(br);
                 count = 0;
@@ -152,7 +160,7 @@ public class SettingFragment extends Fragment {
 
 
                         //延时25s直接显示唤醒失败
-                        mHandler.postDelayed(mRunnable,25*1000);
+                        mHandler.postDelayed(mRunnable,30*1000);
                         break;
                     case 1:
                         System.out.println("灯光设置" + position);
@@ -187,16 +195,22 @@ public class SettingFragment extends Fragment {
                         break;
                     case 1:
                         System.out.println("震动免打扰" + position);
-                        boolean disturb = sp.getBoolean("no_disturb",false);
-                        if (disturb){
-                            holder.RightIcon.setImageResource(R.mipmap.switch_off); //关闭
-                            sp.edit().putBoolean("no_disturb",false).apply();
-                            System.out.println("关闭");
+                        String username = sp.getString("et_user", "");
+                        System.out.println("用户名" + username);
+                        String alarmState = sp.getString("alarm_state","open");
+                        if (alarmState.equals("open")){
+                            holder.RightIcon.setImageResource(R.mipmap.switch_on); //允许推送
+//                            sp.edit().putBoolean("no_disturb",false).apply();
+                            //设置成不推送
+                            setAlarmDoNotDisturb(username,"close");
+                            System.out.println("设置成不推送");
 
                         }else {
-                            holder.RightIcon.setImageResource(R.mipmap.switch_on); //开启
-                            sp.edit().putBoolean("no_disturb",true).apply();
-                            System.out.println("开启");
+                            holder.RightIcon.setImageResource(R.mipmap.switch_off); //不允许推送
+//                            sp.edit().putBoolean("no_disturb",true).apply();
+                            //设置成推送
+                            setAlarmDoNotDisturb(username,"open");
+                            System.out.println("设置成推送");
                         }
                         break;
                     case 2:
@@ -209,6 +223,10 @@ public class SettingFragment extends Fragment {
         return view;
     }
 
+    /**
+     * 显示唤醒状态的对话框
+     * @param smg 唤醒成功或失败
+     */
     private void showStateInfo(String smg){
 
         //关闭dialog1
@@ -227,6 +245,71 @@ public class SettingFragment extends Fragment {
 
         //停止轮询服务
         MyAlarmManager.stopPollingService(getContext(),DeviceStateService.class);
+    }
+
+    /**
+     * 设置震动消息免打扰开关
+     * @param username  用户名
+     * @param action    动作（开或关）
+     */
+    private void setAlarmDoNotDisturb(String username,String action){
+
+        //配置json数据
+        final JSONObject json = new JSONObject();
+        try {
+            json.put("username",username);
+            json.put("action", action);
+            json.put(SIGNATURE_TOKEN, SignatureUtils.token);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //计算signature
+        String timestamp = UtcTimeUtils.getTimestamp();
+        String noncestr = HttpParamsUtils.getRandomString(10);
+        String signature = SignatureUtils.getSinnature(timestamp,
+                noncestr,
+                Urls.APP_KEY,
+                username,
+                action,
+                SignatureUtils.token);
+
+        RequestParams params = HttpParamsUtils.setParams(Urls.SETTING_ALARM_DO_NOT_DISTURB,timestamp,noncestr,signature);
+        params.setBodyContent(json.toString());
+        System.out.println("params---" + params.toString());
+
+        x.http().post(params, new Callback.CommonCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                System.out.println("震动消息免设置消息返回结果---" + result);
+                try {
+                    JSONObject json = new JSONObject(result);
+                    int status = json.getInt("status");
+                    if (200 == status){
+                        System.out.println("设置震动消息免打扰成功");
+                        ToastShow.showToast(getContext(),"已设置");
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+                System.out.println("震动消息免打扰设置异常---" + ex.getMessage());
+            }
+
+            @Override
+            public void onCancelled(CancelledException cex) {
+
+            }
+
+            @Override
+            public void onFinished() {
+
+            }
+        });
     }
 
     class SettingAdapter extends BaseAdapter{
@@ -316,11 +399,11 @@ public class SettingFragment extends Fragment {
                 case 1:
                     holder.leftIcon.setImageResource(R.mipmap.restaet);
                     holder.itemText.setText("震动免打扰");
-                    Boolean autoUpdate1 = sp.getBoolean("no_disturb",false);
-                    if (autoUpdate1){
-                        holder.RightIcon.setImageResource(R.mipmap.switch_on);
-                    }else {
+                    String alarmState = sp.getString("alarm_state","open");
+                    if (alarmState.equals("open")){
                         holder.RightIcon.setImageResource(R.mipmap.switch_off);
+                    }else {
+                        holder.RightIcon.setImageResource(R.mipmap.switch_on);
                     }
                     break;
                 case 2:
