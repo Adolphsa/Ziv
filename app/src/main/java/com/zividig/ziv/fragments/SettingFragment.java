@@ -27,7 +27,6 @@ import com.zividig.ziv.service.DeviceStateService;
 import com.zividig.ziv.utils.HttpParamsUtils;
 import com.zividig.ziv.utils.MyAlarmManager;
 import com.zividig.ziv.utils.SignatureUtils;
-import com.zividig.ziv.utils.ToastShow;
 import com.zividig.ziv.utils.Urls;
 import com.zividig.ziv.utils.UtcTimeUtils;
 
@@ -58,6 +57,8 @@ public class SettingFragment extends Fragment {
     private String workModel;
     private int count;
 
+    private long secondTime = 0;
+
     private Handler mHandler = new Handler();
 
     public static SettingFragment instance() {
@@ -87,14 +88,14 @@ public class SettingFragment extends Fragment {
             if (workModel.equals("NORMAL")){
                 showStateInfo("主机已唤醒");
                 getContext().unregisterReceiver(br);
-                br = null;
+//                br = null;
                 mHandler.removeCallbacks(mRunnable);
             }
             if (count >= 20){
                 showStateInfo("主机唤醒失败，请重试。");
                 getContext().unregisterReceiver(br);
                 count = 0;
-                br = null;
+//                br = null;
                 mHandler.removeCallbacks(mRunnable);
             }
         }
@@ -126,41 +127,48 @@ public class SettingFragment extends Fragment {
                             dialog = LoadingProgressDialog.createLoadingDialog(getContext(),"正在唤醒中...",true,false,null);
                             dialog.show();
                         }
+                        //连续点击不生效
+                        if ((System.currentTimeMillis()- secondTime) > (5 * 1000)){
+                            System.out.println("进来了");
+                            secondTime = System.currentTimeMillis();
 
-                        //开启轮询服务
-                        MyAlarmManager.startPollingService(getContext(), 3, DeviceStateService.class, "");
+                            //注册广播接收器
+                            IntentFilter filter = new IntentFilter();
+                            filter.addAction(DeviceStateService.DEVICE_STATE_ACTION);
+                            filter.setPriority(Integer.MAX_VALUE);
+                            getContext().registerReceiver(br, filter);
 
-                        devID = sp.getString("devid","");
-                        RequestParams params = new RequestParams(Urls.DEVICE_WAKEUP);
-                        params.addQueryStringParameter("devid",devID);
+                            //开启轮询服务
+                            MyAlarmManager.startPollingService(getContext(), 3, DeviceStateService.class, "");
+
+                            devID = sp.getString("devid","");
+                            RequestParams params = new RequestParams(Urls.DEVICE_WAKEUP);
+                            params.addQueryStringParameter("devid",devID);
 //                        params.setConnectTimeout(20 * 1000);
-                        System.out.println("主机唤醒：" + params);
+                            System.out.println("主机唤醒：" + params);
 
-                        x.http().get(params, new Callback.CommonCallback<String>() {
-                            @Override
-                            public void onSuccess(String result) {
-                                System.out.println("主机唤醒结果：" + result);
-                            }
+                            x.http().get(params, new Callback.CommonCallback<String>() {
+                                @Override
+                                public void onSuccess(String result) {
+                                    System.out.println("主机唤醒结果：" + result);
+                                }
 
-                            @Override
-                            public void onError(Throwable ex, boolean isOnCallback) {System.out.println("主机唤醒错误：" + ex);}
+                                @Override
+                                public void onError(Throwable ex, boolean isOnCallback) {System.out.println("主机唤醒错误：" + ex);}
 
-                            @Override
-                            public void onCancelled(CancelledException cex) {}
+                                @Override
+                                public void onCancelled(CancelledException cex) {}
 
-                            @Override
-                            public void onFinished() {}
-                        });
+                                @Override
+                                public void onFinished() {}
+                            });
 
-                        //注册广播接收器
-                        IntentFilter filter = new IntentFilter();
-                        filter.addAction(DeviceStateService.DEVICE_STATE_ACTION);
-                        filter.setPriority(Integer.MAX_VALUE);
-                        getContext().registerReceiver(br, filter);
+                            //延时60s直接显示唤醒失败
+                            mHandler.postDelayed(mRunnable,60*1000);
+                        }else {
+                            break;
+                        }
 
-
-                        //延时30s直接显示唤醒失败
-                        mHandler.postDelayed(mRunnable,60*1000);
                         break;
                     case 1:
                         System.out.println("灯光设置" + position);
@@ -197,12 +205,13 @@ public class SettingFragment extends Fragment {
                         System.out.println("震动免打扰" + position);
                         String username = sp.getString("et_user", "");
                         System.out.println("用户名" + username);
-                        String alarmState = sp.getString("alarm_state","open");
+                        String alarmState = sp.getString("alarm_state","");
+                        System.out.println("");
                         if (alarmState.equals("open")){
                             holder.RightIcon.setImageResource(R.mipmap.switch_on); //允许推送
-//                            sp.edit().putBoolean("no_disturb",false).apply();
                             //设置成不推送
                             setAlarmDoNotDisturb(username,"close");
+                            sp.edit().putString("alarm_state","close").apply();
                             System.out.println("设置成不推送");
 
                         }else {
@@ -210,6 +219,7 @@ public class SettingFragment extends Fragment {
 //                            sp.edit().putBoolean("no_disturb",true).apply();
                             //设置成推送
                             setAlarmDoNotDisturb(username,"open");
+                            sp.edit().putString("alarm_state","open").apply();
                             System.out.println("设置成推送");
                         }
                         break;
@@ -287,7 +297,7 @@ public class SettingFragment extends Fragment {
                     int status = json.getInt("status");
                     if (200 == status){
                         System.out.println("设置震动消息免打扰成功");
-                        ToastShow.showToast(getContext(),"已设置");
+//                        ToastShow.showToast(getContext(),"设置成功");
 
                     }
                 } catch (JSONException e) {
@@ -399,7 +409,7 @@ public class SettingFragment extends Fragment {
                 case 1:
                     holder.leftIcon.setImageResource(R.mipmap.restaet);
                     holder.itemText.setText("震动免打扰");
-                    String alarmState = sp.getString("alarm_state","open");
+                    String alarmState = sp.getString("alarm_state","");
                     if (alarmState.equals("open")){
                         holder.RightIcon.setImageResource(R.mipmap.switch_off);
                     }else {

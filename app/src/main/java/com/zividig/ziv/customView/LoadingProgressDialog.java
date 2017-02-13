@@ -60,7 +60,7 @@ public class LoadingProgressDialog {
         // 创建自定义样式的Dialog
         Dialog loadingDialog = new Dialog(context, R.style.loading_dialog);
         // 设置返回键无效
-        loadingDialog.setCancelable(false);
+        loadingDialog.setCancelable(true);
         loadingDialog.setContentView(layout, new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT));

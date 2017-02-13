@@ -67,6 +67,7 @@ public class DeviceStateService extends Service {
                         broadcast.setAction(DEVICE_STATE_ACTION);
                         broadcast.putExtra("device_state",workMode);
                         sendBroadcast(broadcast);
+                        System.out.println("发送广播");
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

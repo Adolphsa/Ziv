@@ -71,6 +71,7 @@
             android:name=".function.AddDevice"
             android:exported="true"/>
         <activity android:name=".function.LightColor"/>
+        <activity android:name=".function.MessageMapShow"/>
 
         <!-- 百度地图服务 -->
         <service

@@ -1,5 +1,8 @@
 package com.zividig.ziv.bean;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.List;
 
 /**
@@ -41,9 +44,10 @@ public class MessageBean {
                 '}';
     }
 
-    public static class DataBean {
+    public static class DataBean implements Parcelable {
         /**
          * id : 3
+         * title: 报警类型信息
          * type : shake
          * lat : 22.623213
          * lon : 114.028308
@@ -53,6 +57,7 @@ public class MessageBean {
          */
 
         private int id;
+        private String title;
         private String type;
         private double lat;
         private double lon;
@@ -67,6 +72,10 @@ public class MessageBean {
         public void setId(int id) {
             this.id = id;
         }
+
+        public String getTitle() {return title;}
+
+        public void setTitle(String title) {title = title;}
 
         public String getType() {
             return type;
@@ -129,5 +138,48 @@ public class MessageBean {
                     ", time='" + time + '\'' +
                     '}';
         }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeInt(this.id);
+            dest.writeString(this.title);
+            dest.writeString(this.type);
+            dest.writeDouble(this.lat);
+            dest.writeDouble(this.lon);
+            dest.writeString(this.address);
+            dest.writeString(this.address_desc);
+            dest.writeString(this.time);
+        }
+
+        public DataBean() {
+        }
+
+        protected DataBean(Parcel in) {
+            this.id = in.readInt();
+            this.title = in.readString();
+            this.type = in.readString();
+            this.lat = in.readDouble();
+            this.lon = in.readDouble();
+            this.address = in.readString();
+            this.address_desc = in.readString();
+            this.time = in.readString();
+        }
+
+        public static final Parcelable.Creator<DataBean> CREATOR = new Parcelable.Creator<DataBean>() {
+            @Override
+            public DataBean createFromParcel(Parcel source) {
+                return new DataBean(source);
+            }
+
+            @Override
+            public DataBean[] newArray(int size) {
+                return new DataBean[size];
+            }
+        };
     }
 }

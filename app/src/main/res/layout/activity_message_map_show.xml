@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+    <include
+        android:id="@+id/about_include"
+        layout="@layout/layout_titlebar"/>
+    <TextView
+        android:id="@+id/mms_tv_alarm_type"
+        style="@style/Style_MessageMapShow_text"
+        android:text="震动类型 : 震动报警"
+        />
+    <TextView
+        android:id="@+id/mms_tv_address"
+        style="@style/Style_MessageMapShow_text"
+        android:text="地        址 : 震动报警"
+        />
+    <TextView
+        android:id="@+id/mms_tv_address_describe"
+        style="@style/Style_MessageMapShow_text"
+        android:text="地址详情 : 震动报警"
+        />
+    <TextView
+        android:id="@+id/mms_tv_time"
+        style="@style/Style_MessageMapShow_text"
+        android:text="时        间 : 震动报警"
+        />
+    <com.baidu.mapapi.map.MapView
+        android:id="@+id/mms_map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</LinearLayout>

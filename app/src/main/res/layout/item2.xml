@@ -19,6 +19,7 @@
         android:layout_height="wrap_content"
         android:src="@mipmap/red_point"
         android:layout_alignRight="@+id/iv_icon"
+        android:visibility="gone"
         />
     <TextView
         android:id="@+id/tv_item_alarm_type"

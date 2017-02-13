@@ -89,6 +89,7 @@ public class MyCarFragment extends Fragment {
             R.drawable.selector_electric_fence,
             R.drawable.selector_car_manage,
             R.drawable.selector_history_back};
+
     private String devId;
 
     private List<DeviceInfoBean.DevinfoBean> devinfoList;
@@ -334,7 +335,8 @@ public class MyCarFragment extends Fragment {
                             WifiDirectUtils.WifiDirect(getContext(), MyTestActivity.class);
                         } else {
                             if (!devId.equals("")) {
-                                startVideo(devId);
+//                                startVideo(devId);
+                                getDeviceState();
                             } else {
                                 ToastShow.showToast(getContext(), "请先添加设备");
                             }
@@ -487,6 +489,41 @@ public class MyCarFragment extends Fragment {
         }
 
     }
+
+    private void getDeviceState(){
+        final String devid = mSpf.getString("devid", "");
+        RequestParams params2 = new RequestParams(Urls.DEVICE_STATE);
+        params2.addBodyParameter("devid", devid);
+
+        x.http().get(params2, new Callback.CommonCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                System.out.println("结果" + result);
+                try {
+                    JSONObject json = new JSONObject(result);
+                    String workmode = json.getString("workmode");
+                    if (workmode.equals("NORMAL")){
+                        startVideo(devid);
+                    }else {
+                        ToastShow.showToast(getContext(),"主机不在线");
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {}
+
+            @Override
+            public void onCancelled(CancelledException cex) {}
+
+            @Override
+            public void onFinished() {}
+        });
+    }
+
 
     /**
      * 开启实时视频

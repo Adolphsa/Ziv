@@ -1,6 +1,7 @@
 package com.zividig.ziv.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ import com.zividig.ziv.adapter.ListViewDecoration;
 import com.zividig.ziv.adapter.MessageAdapter;
 import com.zividig.ziv.adapter.OnItemClickListener;
 import com.zividig.ziv.bean.MessageBean;
+import com.zividig.ziv.function.MessageMapShow;
 import com.zividig.ziv.main.MainActivity;
 import com.zividig.ziv.utils.Urls;
 
@@ -150,8 +152,11 @@ public class MessageFragment extends Fragment {
     private OnItemClickListener onItemClickListener = new OnItemClickListener() {
         @Override
         public void onItemClick(int position) {
-//            Toast.makeText(mContext, "我是第" + position + "条。", Toast.LENGTH_SHORT).show();
             spf.edit().putBoolean("red_point" + position,false).apply();
+            MessageBean.DataBean dataBean = mDataBeanList.get(position);
+            Intent intent = new Intent(mContext, MessageMapShow.class);
+            intent.putExtra("alarm_message_data",dataBean);
+            mContext.startActivity(intent);
         }
     };
 
@@ -219,19 +224,13 @@ public class MessageFragment extends Fragment {
             }
 
             @Override
-            public void onError(Throwable ex, boolean isOnCallback) {
-
-            }
+            public void onError(Throwable ex, boolean isOnCallback) {}
 
             @Override
-            public void onCancelled(CancelledException cex) {
-
-            }
+            public void onCancelled(CancelledException cex) {}
 
             @Override
-            public void onFinished() {
-
-            }
+            public void onFinished() {}
         });
     }
 

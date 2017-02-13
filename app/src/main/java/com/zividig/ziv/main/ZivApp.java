@@ -5,7 +5,6 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Process;
 
-import com.baidu.mapapi.SDKInitializer;
 import com.xiaomi.mipush.sdk.MiPushClient;
 
 import org.xutils.x;
@@ -29,7 +28,7 @@ public class ZivApp extends Application{
     @Override
     public void onCreate() {
         super.onCreate();
-        SDKInitializer.initialize(this); //初始化百度地图
+//        SDKInitializer.initialize(this.getApplicationContext()); //初始化百度地图
         x.Ext.init(this);
 
         //初始化push推送服务

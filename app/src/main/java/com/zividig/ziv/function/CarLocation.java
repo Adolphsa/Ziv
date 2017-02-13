@@ -37,6 +37,7 @@ public class CarLocation extends BaseActivity {
 
     private MapView mMapView;
     private BaiduMap mBaiduMap;
+    private MapStatus.Builder mBuilder;
     protected static OverlayOptions overlay;  // 覆盖物
     private boolean isFirst = true;
     private boolean once = true;
@@ -55,7 +56,6 @@ public class CarLocation extends BaseActivity {
             initMap(lat,lon);
         }
     };
-    private MapStatus.Builder mBuilder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

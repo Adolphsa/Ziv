@@ -76,7 +76,7 @@ public class MessageAdapter extends SwipeMenuAdapter<MessageAdapter.DefaultViewH
     public void onBindViewHolder(MessageAdapter.DefaultViewHolder holder, int position) {
         mDataBeanList = getDataBeanList();
         MessageBean.DataBean dataBeen = mDataBeanList.get(position);
-        holder.setData(dataBeen.getType(),dataBeen.getAddress_desc(),dataBeen.getTime());
+        holder.setData(dataBeen.getTitle(),dataBeen.getAddress_desc(),dataBeen.getTime());
         holder.setOnItemClickListener(mOnItemClickListener);
         boolean isShow = spf.getBoolean("red_point" + position,true);
         holder.setRedPoint(isShow);
@@ -108,13 +108,13 @@ public class MessageAdapter extends SwipeMenuAdapter<MessageAdapter.DefaultViewH
             this.mOnItemClickListener = onItemClickListener;
         }
 
-        public void setData(String tvAlarmType,String tvAlarmAddress,String tvAlarmTime) {
-            if (tvAlarmType != null && tvAlarmType.equals("shake")){
-                this.tvAlarmType.setText("震动报警");
-            }else if (tvAlarmType != null && tvAlarmType.equals("fence")){
-                this.tvAlarmType.setText("电子围栏报警");
-            }
-
+        public void setData(String tvAlarmTitle,String tvAlarmAddress,String tvAlarmTime) {
+//            if (tvAlarmType != null && tvAlarmType.equals("shake")){
+//                this.tvAlarmType.setText("震动报警");
+//            }else if (tvAlarmType != null && tvAlarmType.equals("fence")){
+//                this.tvAlarmType.setText("电子围栏报警");
+//            }
+            this.tvAlarmType.setText(tvAlarmTitle);
             this.tvAlarmAddress.setText(tvAlarmAddress);
             this.tvAlarmTime.setText(tvAlarmTime);
         }
