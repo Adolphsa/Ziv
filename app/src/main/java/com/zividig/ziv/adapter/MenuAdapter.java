@@ -37,14 +37,21 @@ public class MenuAdapter extends SwipeMenuAdapter<MenuAdapter.DefaultViewHolder>
 
     private List<DeviceInfoBean.DevinfoBean> devinfoList;
     private DeviceInfoBean.DevinfoBean devinfoBean;
-    private List<String> titles;
+
     private String devid;
     private SharedPreferences spf;
 
     private OnItemClickListener mOnItemClickListener;
 
-    public MenuAdapter(List<DeviceInfoBean.DevinfoBean> devinfoList,SharedPreferences spf) {
+    public List<DeviceInfoBean.DevinfoBean> getDevinfoList() {
+        return devinfoList;
+    }
+
+    public void setDevinfoList(List<DeviceInfoBean.DevinfoBean> devinfoList) {
         this.devinfoList = devinfoList;
+    }
+
+    public MenuAdapter(SharedPreferences spf) {
         this.spf = spf;
     }
 
@@ -69,6 +76,7 @@ public class MenuAdapter extends SwipeMenuAdapter<MenuAdapter.DefaultViewHolder>
 
     @Override
     public void onBindViewHolder(DefaultViewHolder holder, int position) {
+        devinfoList = getDevinfoList();
         devid = spf.getString("devid","");
         System.out.println("获取保存的devid" + devid);
         devinfoBean = devinfoList.get(position);

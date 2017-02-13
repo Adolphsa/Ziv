@@ -103,15 +103,23 @@ public class LocationService extends Service {
                 try {
                     JSONObject json = new JSONObject(result);
                     int status = json.getInt("status");
+
                     if (status == Urls.STATUS_CODE_200){
+                        if (json.get("gps") instanceof JSONObject){
 
-                        JSONObject gps = json.getJSONObject("gps");
+                            JSONObject gps = json.getJSONObject("gps");
+                            locationBean = mGson.fromJson(gps.toString(), LocationBean.class);
 
-                        locationBean = mGson.fromJson(gps.toString(), LocationBean.class);
+                            lon = locationBean.getLon();
+                            lat = locationBean.getLat();
+                            System.out.println("纬度：" + lon + "经度：" + lat);
 
-                        lon = locationBean.getLon();
-                        lat = locationBean.getLat();
-                        System.out.println("纬度：" + lon + "经度：" + lat);
+
+                        }else {
+                            locationBean = new LocationBean();
+                            locationBean.setLon(0f);
+                            locationBean.setLat(0f);
+                        }
 
                         //发送广播
                         Intent broadcast = new Intent();

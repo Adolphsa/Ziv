@@ -96,6 +96,7 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
         mTabs.setOnPageChangeListener(this);
 
         mViewPager.setCurrentItem(VIEW_FIRST); //设置默认选中的选项卡
+        mViewPager.setPagingEnabled(false);      //可以滑动
     }
 
     @Override

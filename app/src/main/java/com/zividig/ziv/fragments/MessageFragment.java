@@ -92,11 +92,12 @@ public class MessageFragment extends Fragment {
         mSwipeMenuRecyclerView.setHasFixedSize(true);// 如果Item够简单，高度是确定的，打开FixSize将提高性能。
         mSwipeMenuRecyclerView.setItemAnimator(new DefaultItemAnimator());// 设置Item默认动画，加也行，不加也行。
         mSwipeMenuRecyclerView.addItemDecoration(new ListViewDecoration());// 添加分割线。
+
         // 添加滚动监听。
 //        mSwipeMenuRecyclerView.addOnScrollListener(mOnScrollListener);
 
         // 设置菜单创建器。
-        mSwipeMenuRecyclerView.setSwipeMenuCreator(swipeMenuCreator);
+//        mSwipeMenuRecyclerView.setSwipeMenuCreator(swipeMenuCreator);
         // 设置菜单Item点击监听。
         mSwipeMenuRecyclerView.setSwipeMenuItemClickListener(menuItemClickListener);
         mMenuAdapter = new MessageAdapter(spf);
@@ -149,7 +150,7 @@ public class MessageFragment extends Fragment {
     private OnItemClickListener onItemClickListener = new OnItemClickListener() {
         @Override
         public void onItemClick(int position) {
-            Toast.makeText(mContext, "我是第" + position + "条。", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(mContext, "我是第" + position + "条。", Toast.LENGTH_SHORT).show();
             spf.edit().putBoolean("red_point" + position,false).apply();
         }
     };
@@ -183,7 +184,7 @@ public class MessageFragment extends Fragment {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        System.out.println("信息可见");
+//        System.out.println("信息可见");
         if (isVisibleToUser){
             getVibrationAlarmMessage();
             System.out.println("MessageFragment可见");
@@ -205,12 +206,12 @@ public class MessageFragment extends Fragment {
             @Override
             public void onSuccess(String result) {
                 Gson gson = new Gson();
-                MessageBean mb2 = gson.fromJson(result, MessageBean.class);
-                int status = mb2.getStatus();
-                int size = mb2.getData().size();
+                MessageBean mb = gson.fromJson(result, MessageBean.class);
+                int status = mb.getStatus();
+                int size = mb.getData().size();
                 mDataBeanList = new ArrayList<MessageBean.DataBean>();
                 if (200 == status && size > 0){
-                    mDataBeanList = mb2.getData();
+                    mDataBeanList = mb.getData();
                     System.out.println("震動報警消息---" + mDataBeanList.toString());
                     mMenuAdapter.setDataBeanList(mDataBeanList);
                     mMenuAdapter.notifyDataSetChanged();

@@ -10,22 +10,26 @@ import android.view.MotionEvent;
  * Created by linhonghong on 2015/8/10.
  */
 public class CustomsViewPager extends ViewPager {
-    private boolean mNoFocus = false; //if true, keep View don't move
+    private boolean isPagingEnabled = true;
+
+    public CustomsViewPager(Context context) {
+        super(context);
+    }
+
     public CustomsViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
-    public CustomsViewPager(Context context){
-        this(context,null);
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        return this.isPagingEnabled && super.onTouchEvent(event);
     }
 
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        if (mNoFocus) {
-            return false;
-        }
-        return super.onInterceptTouchEvent(event);
+        return this.isPagingEnabled && super.onInterceptTouchEvent(event);
     }
 
-    public void setNoFocus(boolean b){
-        mNoFocus = b;
+    public void setPagingEnabled(boolean b) {
+        this.isPagingEnabled = b;
     }
 }

@@ -2,6 +2,7 @@ package com.zividig.ziv.function;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Point;
@@ -23,10 +24,10 @@ import com.zividig.ziv.R;
 import com.zividig.ziv.bean.LocationBean;
 import com.zividig.ziv.main.BaseActivity;
 import com.zividig.ziv.service.LocationService;
+import com.zividig.ziv.utils.DialogUtils;
 import com.zividig.ziv.utils.GPSConverterUtils;
 import com.zividig.ziv.utils.MyAlarmManager;
 import com.zividig.ziv.utils.SharedPreferencesUtils;
-import com.zividig.ziv.utils.ToastShow;
 
 /**
  * 获取GPS的定位的信息的车辆定位
@@ -108,7 +109,14 @@ public class CarLocation extends BaseActivity {
 
         if (lat == 0 && lon == 0){
             if (once){
-                ToastShow.showToast(CarLocation.this,"暂无地图数据");
+                if (!CarLocation.this.isFinishing()){
+                    DialogUtils.showPrompt(CarLocation.this, "提示", "暂无数据", "确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    });
+                }
                 once = false;
             }
 

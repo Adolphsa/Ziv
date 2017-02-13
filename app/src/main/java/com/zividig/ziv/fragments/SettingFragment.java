@@ -90,7 +90,7 @@ public class SettingFragment extends Fragment {
                 br = null;
                 mHandler.removeCallbacks(mRunnable);
             }
-            if (count >= 6){
+            if (count >= 20){
                 showStateInfo("主机唤醒失败，请重试。");
                 getContext().unregisterReceiver(br);
                 count = 0;
@@ -128,7 +128,7 @@ public class SettingFragment extends Fragment {
                         }
 
                         //开启轮询服务
-                        MyAlarmManager.startPollingService(getContext(), 5, DeviceStateService.class, "");
+                        MyAlarmManager.startPollingService(getContext(), 3, DeviceStateService.class, "");
 
                         devID = sp.getString("devid","");
                         RequestParams params = new RequestParams(Urls.DEVICE_WAKEUP);
@@ -159,8 +159,8 @@ public class SettingFragment extends Fragment {
                         getContext().registerReceiver(br, filter);
 
 
-                        //延时25s直接显示唤醒失败
-                        mHandler.postDelayed(mRunnable,30*1000);
+                        //延时30s直接显示唤醒失败
+                        mHandler.postDelayed(mRunnable,60*1000);
                         break;
                     case 1:
                         System.out.println("灯光设置" + position);
