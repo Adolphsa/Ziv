@@ -20,7 +20,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.yanzhenjie.recyclerview.swipe.SwipeMenuAdapter;
@@ -78,14 +77,14 @@ public class MessageAdapter extends SwipeMenuAdapter<MessageAdapter.DefaultViewH
         MessageBean.DataBean dataBeen = mDataBeanList.get(position);
         holder.setData(dataBeen.getTitle(),dataBeen.getAddress_desc(),dataBeen.getTime());
         holder.setOnItemClickListener(mOnItemClickListener);
-        boolean isShow = spf.getBoolean("red_point" + position,true);
-        holder.setRedPoint(isShow);
+//        boolean isShow = spf.getBoolean("red_point" + position,true);
+//        holder.setRedPoint(isShow);
 
     }
 
     static class DefaultViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        ImageView ivRedPoint; //红点
+//        ImageView ivRedPoint; //红点
 
         TextView tvAlarmType;  //报警类型
         TextView tvAlarmAddress;   //报警地址
@@ -97,7 +96,7 @@ public class MessageAdapter extends SwipeMenuAdapter<MessageAdapter.DefaultViewH
             super(itemView);
             itemView.setOnClickListener(this);
 
-            ivRedPoint = (ImageView) itemView.findViewById(R.id.iv_red_point);
+//            ivRedPoint = (ImageView) itemView.findViewById(R.id.iv_red_point);
             tvAlarmType = (TextView) itemView.findViewById(R.id.tv_item_alarm_type);
             tvAlarmAddress = (TextView) itemView.findViewById(R.id.tv_item_alarm_address);
             tvAlarmTime = (TextView) itemView.findViewById(R.id.tv_item_alarm_time);
@@ -119,18 +118,18 @@ public class MessageAdapter extends SwipeMenuAdapter<MessageAdapter.DefaultViewH
             this.tvAlarmTime.setText(tvAlarmTime);
         }
 
-        public void setRedPoint(boolean isShow){
-            if (isShow)
-                this.ivRedPoint.setVisibility(View.VISIBLE);
-            else
-                this.ivRedPoint.setVisibility(View.INVISIBLE);
-        }
+//        public void setRedPoint(boolean isShow){
+//            if (isShow)
+////                this.ivRedPoint.setVisibility(View.VISIBLE);
+//            else
+//                this.ivRedPoint.setVisibility(View.INVISIBLE);
+//        }
 
         @Override
         public void onClick(View v) {
             if (mOnItemClickListener != null) {
                 mOnItemClickListener.onItemClick(getAdapterPosition());
-                setRedPoint(false);
+//                setRedPoint(false);
             }
         }
     }

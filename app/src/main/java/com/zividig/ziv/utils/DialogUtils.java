@@ -77,4 +77,9 @@ public class DialogUtils {
         return showAlert(context, title, message, confirmButton, confirmButtonClickListener, null,
                 null, null, null, null, false, null, null);
     }
+
+    public static AlertDialog showPrompt2(Context context,String title, String message, String confirmButton,DialogInterface.OnClickListener confirmButtonClickListener,String cancelButton,DialogInterface.OnClickListener cancelButtonClickListener) {
+        return showAlert(context, title, message, confirmButton, confirmButtonClickListener, null,
+                null, cancelButton, cancelButtonClickListener, null, false, null, null);
+    }
 }

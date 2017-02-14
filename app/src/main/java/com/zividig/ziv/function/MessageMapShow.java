@@ -90,4 +90,23 @@ public class MessageMapShow extends BaseActivity {
         mBuilder.target(convertLatLon).zoom(16.0f);
         mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(mBuilder.build()));
     }
+
+    protected void onResume() {
+        super.onResume();
+        baiduMapView.onResume();
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        baiduMapView.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        baiduMapView.onDestroy();
+        if (mBaiduMap != null){
+            mBaiduMap = null;
+        }
+    }
 }

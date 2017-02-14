@@ -27,6 +27,7 @@ import com.zividig.ziv.service.DeviceStateService;
 import com.zividig.ziv.utils.HttpParamsUtils;
 import com.zividig.ziv.utils.MyAlarmManager;
 import com.zividig.ziv.utils.SignatureUtils;
+import com.zividig.ziv.utils.ToastShow;
 import com.zividig.ziv.utils.Urls;
 import com.zividig.ziv.utils.UtcTimeUtils;
 
@@ -88,14 +89,12 @@ public class SettingFragment extends Fragment {
             if (workModel.equals("NORMAL")){
                 showStateInfo("主机已唤醒");
                 getContext().unregisterReceiver(br);
-//                br = null;
                 mHandler.removeCallbacks(mRunnable);
             }
             if (count >= 20){
                 showStateInfo("主机唤醒失败，请重试。");
                 getContext().unregisterReceiver(br);
                 count = 0;
-//                br = null;
                 mHandler.removeCallbacks(mRunnable);
             }
         }
@@ -123,13 +122,13 @@ public class SettingFragment extends Fragment {
                 switch (position){
                     case 0:
                         System.out.println("主机唤醒" + position);
-                        if (!SettingFragment.this.isHidden()){
-                            dialog = LoadingProgressDialog.createLoadingDialog(getContext(),"正在唤醒中...",true,false,null);
-                            dialog.show();
-                        }
                         //连续点击不生效
-                        if ((System.currentTimeMillis()- secondTime) > (5 * 1000)){
+                        if ((System.currentTimeMillis()- secondTime) > (8 * 1000)){
                             System.out.println("进来了");
+                            if (!SettingFragment.this.isHidden()){
+                                dialog = LoadingProgressDialog.createLoadingDialog(getContext(),"正在唤醒中...",true,false,null);
+                                dialog.show();
+                            }
                             secondTime = System.currentTimeMillis();
 
                             //注册广播接收器
@@ -144,9 +143,10 @@ public class SettingFragment extends Fragment {
                             devID = sp.getString("devid","");
                             RequestParams params = new RequestParams(Urls.DEVICE_WAKEUP);
                             params.addQueryStringParameter("devid",devID);
-//                        params.setConnectTimeout(20 * 1000);
+                            params.setConnectTimeout(20 * 1000);
                             System.out.println("主机唤醒：" + params);
 
+                            //只发唤醒命令
                             x.http().get(params, new Callback.CommonCallback<String>() {
                                 @Override
                                 public void onSuccess(String result) {
@@ -164,8 +164,9 @@ public class SettingFragment extends Fragment {
                             });
 
                             //延时60s直接显示唤醒失败
-                            mHandler.postDelayed(mRunnable,60*1000);
+//                            mHandler.postDelayed(mRunnable,60*1000);
                         }else {
+                           ToastShow.showToast(getContext(),"正在唤醒中，请不要重复点击。");
                             break;
                         }
 

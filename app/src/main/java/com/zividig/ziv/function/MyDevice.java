@@ -124,7 +124,7 @@ public class MyDevice extends BaseActivity {
             //设置车牌号和别名菜单
             SwipeMenuItem caridAndAliasItem = new SwipeMenuItem(MyDevice.this)
                     .setBackgroundDrawable(R.drawable.selector_blue)
-                    .setImage(R.mipmap.ic_action_close) // 图标。
+                    .setImage(R.mipmap.ic_set_carid) // 图标。
                     .setText("设置车牌号") // 文字。
                     .setTextColor(Color.WHITE) // 文字颜色。
                     .setTextSize(15) // 文字大小。
@@ -411,6 +411,8 @@ public class MyDevice extends BaseActivity {
 
                 if (status == Urls.STATUS_CODE_200){
                     devinfoList = deviceInfoBean.getDevinfo(); //设备列表
+                    //保存设备列表信息
+                    spf.edit().putString("device_info",result).apply();
                     mMenuAdapter.setDevinfoList(devinfoList);
                     mMenuAdapter.notifyDataSetChanged();
                 }

@@ -155,9 +155,25 @@ public class CarLocation extends BaseActivity {
         }
     }
 
+    protected void onResume() {
+        super.onResume();
+        mMapView.onResume();
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mMapView.onPause();
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        mMapView.onDestroy();
+        if (mBaiduMap != null){
+            mBaiduMap = null;
+        }
+
         MyAlarmManager.stopPollingService(CarLocation.this, LocationService.class);
         unregisterReceiver(locationBroadcast);
 

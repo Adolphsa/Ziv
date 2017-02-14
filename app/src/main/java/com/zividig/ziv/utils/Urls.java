@@ -70,4 +70,10 @@ public class Urls {
 
     //设置震动消息免打扰
     public static final String SETTING_ALARM_DO_NOT_DISTURB = "http://api.zivdigi.com/v1/user/alarm";
+
+    //获取电子围栏信息 http://wx.zivdigi.com/api/device/fence/?devid=ZIV3C00010000AE0808
+    public static final String GETTING_FENCE_MESSAGE = "http://wx.zivdigi.com/api/device/fence";
+
+    //设置电子围栏信息http://wx.zivdigi.com/api/device/fence/setting?devid=ZIV3C00010000AD0849
+    public static final String SETTING_FENCE_MESSAGE = "http://wx.zivdigi.com/api/device/fence/setting";
 }

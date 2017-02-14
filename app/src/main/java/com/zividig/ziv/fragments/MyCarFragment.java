@@ -240,7 +240,7 @@ public class MyCarFragment extends Fragment {
 
     //设置我的车的标题
     public void setTitle(){
-
+        System.out.println("设置车的标题");
         String devid = mSpf.getString("devid","");
         if (!devid.equals("")){
             String carid = getCurrentCarid(devid);
