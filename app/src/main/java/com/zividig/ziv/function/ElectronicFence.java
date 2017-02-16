@@ -56,14 +56,13 @@ public class ElectronicFence extends BaseActivity {
     private MapView mMapView;
     private BaiduMap mBaiduMap;
     private Marker marker;
-    protected  MapStatusUpdate msUpdate = null;
 
     BitmapDescriptor realtimeBitmap = BitmapDescriptorFactory
             .fromResource(R.mipmap.icon_gcoding);
     BitmapDescriptor fenceCentrePointBitmap = BitmapDescriptorFactory
             .fromResource(R.mipmap.fence_centre_point);
     protected static OverlayOptions overlay;  // 覆盖物
-    private boolean isFirst = true;
+
     private boolean once = true;
 
     private SharedPreferences spf;
@@ -115,6 +114,7 @@ public class ElectronicFence extends BaseActivity {
                 .zoom(16.0f);
         mBaiduMap.setMapStatus(MapStatusUpdateFactory.newMapStatus(mBuilder.build()));
 
+        //注册广播
         IntentFilter filter = new IntentFilter();
         filter.addAction(LocationService.LOCATION_ACTION);
         filter.setPriority(Integer.MAX_VALUE);
@@ -155,10 +155,13 @@ public class ElectronicFence extends BaseActivity {
         }
     }
 
+    /**
+     * 设置围栏按钮点击事件
+     * @param view v
+     */
    public void setFence(View view){
         System.out.println("设置围栏");
-//        showFenceDialog();
-       setFenceCentrePoint();
+         setFenceCentrePoint();
     }
 
     /**
@@ -227,8 +230,7 @@ public class ElectronicFence extends BaseActivity {
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                //点击确定按钮的操作
-                System.out.println("确定");
+
                 //获取围栏半径和名称
                 String fenceRadius = etFenceRadius.getText().toString().trim();
                 String fenceName = etFenceName.getText().toString().trim();

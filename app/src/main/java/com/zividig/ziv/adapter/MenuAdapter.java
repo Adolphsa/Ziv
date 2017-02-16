@@ -127,7 +127,6 @@ public class MenuAdapter extends SwipeMenuAdapter<MenuAdapter.DefaultViewHolder>
         public void onClick(View v) {
             if (mOnItemClickListener != null) {
                 mOnItemClickListener.onItemClick(getAdapterPosition());
-
             }
         }
     }

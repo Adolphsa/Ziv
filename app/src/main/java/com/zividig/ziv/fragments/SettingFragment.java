@@ -163,8 +163,6 @@ public class SettingFragment extends Fragment {
                                 public void onFinished() {}
                             });
 
-                            //延时60s直接显示唤醒失败
-//                            mHandler.postDelayed(mRunnable,60*1000);
                         }else {
                            ToastShow.showToast(getContext(),"正在唤醒中，请不要重复点击。");
                             break;

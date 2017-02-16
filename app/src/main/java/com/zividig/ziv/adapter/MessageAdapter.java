@@ -15,7 +15,6 @@
  */
 package com.zividig.ziv.adapter;
 
-import android.content.SharedPreferences;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,8 +33,6 @@ import java.util.List;
  */
 public class MessageAdapter extends SwipeMenuAdapter<MessageAdapter.DefaultViewHolder> {
 
-    private SharedPreferences spf;
-
     private List<MessageBean.DataBean> mDataBeanList;
     private OnItemClickListener mOnItemClickListener;
 
@@ -48,9 +45,7 @@ public class MessageAdapter extends SwipeMenuAdapter<MessageAdapter.DefaultViewH
         mDataBeanList = dataBeanList;
     }
 
-    public MessageAdapter( SharedPreferences spf) {
-        this.spf = spf;
-    }
+    public MessageAdapter() {}
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         this.mOnItemClickListener = onItemClickListener;
@@ -77,14 +72,9 @@ public class MessageAdapter extends SwipeMenuAdapter<MessageAdapter.DefaultViewH
         MessageBean.DataBean dataBeen = mDataBeanList.get(position);
         holder.setData(dataBeen.getTitle(),dataBeen.getAddress_desc(),dataBeen.getTime());
         holder.setOnItemClickListener(mOnItemClickListener);
-//        boolean isShow = spf.getBoolean("red_point" + position,true);
-//        holder.setRedPoint(isShow);
-
     }
 
     static class DefaultViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
-//        ImageView ivRedPoint; //红点
 
         TextView tvAlarmType;  //报警类型
         TextView tvAlarmAddress;   //报警地址
@@ -96,7 +86,6 @@ public class MessageAdapter extends SwipeMenuAdapter<MessageAdapter.DefaultViewH
             super(itemView);
             itemView.setOnClickListener(this);
 
-//            ivRedPoint = (ImageView) itemView.findViewById(R.id.iv_red_point);
             tvAlarmType = (TextView) itemView.findViewById(R.id.tv_item_alarm_type);
             tvAlarmAddress = (TextView) itemView.findViewById(R.id.tv_item_alarm_address);
             tvAlarmTime = (TextView) itemView.findViewById(R.id.tv_item_alarm_time);
@@ -108,28 +97,16 @@ public class MessageAdapter extends SwipeMenuAdapter<MessageAdapter.DefaultViewH
         }
 
         public void setData(String tvAlarmTitle,String tvAlarmAddress,String tvAlarmTime) {
-//            if (tvAlarmType != null && tvAlarmType.equals("shake")){
-//                this.tvAlarmType.setText("震动报警");
-//            }else if (tvAlarmType != null && tvAlarmType.equals("fence")){
-//                this.tvAlarmType.setText("电子围栏报警");
-//            }
+
             this.tvAlarmType.setText(tvAlarmTitle);
             this.tvAlarmAddress.setText(tvAlarmAddress);
             this.tvAlarmTime.setText(tvAlarmTime);
         }
 
-//        public void setRedPoint(boolean isShow){
-//            if (isShow)
-////                this.ivRedPoint.setVisibility(View.VISIBLE);
-//            else
-//                this.ivRedPoint.setVisibility(View.INVISIBLE);
-//        }
-
         @Override
         public void onClick(View v) {
             if (mOnItemClickListener != null) {
                 mOnItemClickListener.onItemClick(getAdapterPosition());
-//                setRedPoint(false);
             }
         }
     }

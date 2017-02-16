@@ -102,7 +102,7 @@ public class MessageFragment extends Fragment {
 //        mSwipeMenuRecyclerView.setSwipeMenuCreator(swipeMenuCreator);
         // 设置菜单Item点击监听。
         mSwipeMenuRecyclerView.setSwipeMenuItemClickListener(menuItemClickListener);
-        mMenuAdapter = new MessageAdapter(spf);
+        mMenuAdapter = new MessageAdapter();
         mSwipeMenuRecyclerView.setAdapter(mMenuAdapter);
         mMenuAdapter.setOnItemClickListener(onItemClickListener);
     }
