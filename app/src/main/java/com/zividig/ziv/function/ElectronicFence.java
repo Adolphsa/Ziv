@@ -108,6 +108,10 @@ public class ElectronicFence extends BaseActivity {
         mMapView = (MapView) findViewById(R.id.electronic_map);
         mBaiduMap = mMapView.getMap();
 
+        //坐标转换
+        mConverter = new CoordinateConverter();
+        mConverter.from(CoordinateConverter.CoordType.GPS);
+
         //设定地图的初始中心
         mBuilder = new MapStatus.Builder();
         mBuilder.target(GPSConverterUtils.gpsToBaidu(new LatLng(22.549467,113.920565)))
@@ -119,6 +123,9 @@ public class ElectronicFence extends BaseActivity {
         filter.addAction(LocationService.LOCATION_ACTION);
         filter.setPriority(Integer.MAX_VALUE);
         registerReceiver(locationBroadcast, filter);
+
+        String devid = spf.getString("devid","");
+        getFenceMessage(devid );
     }
 
 
@@ -134,9 +141,6 @@ public class ElectronicFence extends BaseActivity {
 
         }else {
             LatLng sourceLatLng = new LatLng(lat,lon);
-            //坐标转换
-            mConverter = new CoordinateConverter();
-            mConverter.from(CoordinateConverter.CoordType.GPS);
             mConverter.coord(sourceLatLng);
             LatLng desLatLng = mConverter.convert();
 
@@ -338,7 +342,7 @@ public class ElectronicFence extends BaseActivity {
      */
     private void showCircleOverlay(LatLng latLng,int radius){
         overlay = new CircleOptions()
-                .center(mConverter.coord(latLng).convert())
+                .center(latLng)
                 .radius(radius)
                 .fillColor(0xAA446EF6);
         mBaiduMap.addOverlay(overlay);
@@ -360,6 +364,55 @@ public class ElectronicFence extends BaseActivity {
                 .include(new LatLng(latitude,longitude)).build();
         MapStatusUpdate u = MapStatusUpdateFactory.newLatLngBounds(lngBounds);
         mBaiduMap.setMapStatus(u);
+    }
+
+    /**
+     *获取设备ID的电子围栏信息
+     * @param devid 设备ID
+     */
+    private void getFenceMessage(String devid){
+        RequestParams params = new RequestParams(Urls.GETTING_FENCE_MESSAGE);
+        params.addBodyParameter("devid", devid);
+        x.http().get(params, new Callback.CommonCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                System.out.println("获取设备围栏信息---" + result);
+                if (!TextUtils.isEmpty(result)){
+                    try {
+                        JSONObject json = new JSONObject(result);
+                        int status = json.getInt("status");
+                        if (200 == status){
+                            JSONObject fence = json.getJSONObject("fence");
+                            double latTemp = fence.getDouble("lat");
+                            double lonTemp = fence.getDouble("lon");
+                            int radius = fence.getInt("radius");
+                            showCircleOverlay(new LatLng(latTemp,lonTemp),radius);
+                        }else {
+                            ToastShow.showToast(ElectronicFence.this,"还没有设置围栏");
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+                System.out.println("获取设备围栏信息解析错误---" + ex.getMessage());
+            }
+
+            @Override
+            public void onCancelled(CancelledException cex) {
+
+            }
+
+            @Override
+            public void onFinished() {
+
+            }
+        });
+
     }
 
     @Override
