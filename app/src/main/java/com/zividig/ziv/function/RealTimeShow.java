@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.view.Display;
 import android.view.View;
 import android.widget.Button;
@@ -59,6 +60,14 @@ public class RealTimeShow extends BaseActivity {
     private int errorCode; //错误码
     private String devid;
 
+    Handler mHandler = new Handler();
+    Runnable mRunnable = new Runnable() {
+        @Override
+        public void run() {
+            getImageUrl();
+            mHandler.postDelayed(this,1000);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,25 +114,24 @@ public class RealTimeShow extends BaseActivity {
         btRefresh.setOnClickListener(listener);
         btDownImage.setOnClickListener(listener);
 
-        showImage(); //显示图片
+        getImageUrl(); //显示图片
 
     }
 
     /**
      * 显示图片
      */
-    private void showImage() {
+    private void getImageUrl() {
 
         progressBar.setVisibility(View.VISIBLE);
         btRefresh.setClickable(false);
 
-        System.out.println("获取图片");
         //获取图片链接
         RequestParams params = new RequestParams(Urls.URL_PIC_SNAP);
 //        params.setConnectTimeout(120*1000); //超时120s
         params.addBodyParameter("devid", devid);
         System.out.println("实时预览" + devid);
-        System.out.println("请求连接" + params);
+        System.out.println("获取图片URL" + params);
         x.http().get(params, new Callback.CommonCallback<String>() {
 
             @Override
@@ -143,7 +151,12 @@ public class RealTimeShow extends BaseActivity {
                 switch (errorCode) {
                     case 200: //返回正常
                         if (!url.isEmpty()) {
+                            System.out.println("url返回值正常");
                             getImageFromInternet();
+                            mHandler.removeCallbacks(mRunnable);
+                        }else{
+                            System.out.println("url返回值为空");
+                            mHandler.postDelayed(mRunnable,1000); //每秒请求一次图片链接
                         }
                         break;
                     case 400:
@@ -340,7 +353,7 @@ public class RealTimeShow extends BaseActivity {
                 case R.id.bt_refresh:
                     photoView.setImageResource(R.mipmap.default_white);
                     photoView.setBackgroundColor(Color.WHITE);
-                    showImage();
+                    getImageUrl();
                     break;
                 case R.id.bt_downImage:
                     downImage();
