@@ -238,4 +238,10 @@ public class MessageFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        System.out.println("Message的Resume");
+    }
 }

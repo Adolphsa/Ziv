@@ -51,13 +51,13 @@ import org.xutils.x;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * 我的车
  */
 public class MyCarFragment extends Fragment {
-
-    private static final int DEVICE_STATE_FREQUENCY = 3000;
 
     private static final int DEVICE_STATE_NORMAL = 100;
     private static final int DEVICE_STATE_STDBY = 101;
@@ -103,6 +103,8 @@ public class MyCarFragment extends Fragment {
     private String titleCarid;
     private String titleDeviceId;
 
+    private static Timer mTimer;
+
     public static MyCarFragment instance() {
         MyCarFragment myCarView = new MyCarFragment();
         return myCarView;
@@ -144,61 +146,75 @@ public class MyCarFragment extends Fragment {
         }
     };
 
-    Runnable mRunnable = new Runnable() {
-        @Override
-        public void run() {
-            String devid = mSpf.getString("devid", "");
-            if (devid.equals("")){
-                mHandler.sendEmptyMessage(ID_IS_NULL);
-                mHandler.postDelayed(mRunnable, DEVICE_STATE_FREQUENCY);
-            }else {
-                RequestParams params = new RequestParams(Urls.DEVICE_STATE);
-                params.addBodyParameter("devid", devid);
-                System.out.println("获取设备状态---" + params.toString());
-                x.http().get(params, new Callback.CommonCallback<String>() {
-                    @Override
-                    public void onSuccess(String result) {
-                        try {
-                            JSONObject json = new JSONObject(result);
-                            String workMode = json.getString("workmode");
-                            if (workMode.equals("NORMAL")) {
-                                mHandler.sendEmptyMessage(DEVICE_STATE_NORMAL);
-                            } else if (workMode.equals("STDBY")) {
-                                mHandler.sendEmptyMessage(DEVICE_STATE_STDBY);
-                            } else if (workMode.equals("OFF")) {
-                                mHandler.sendEmptyMessage(DEVICE_STATE_OFF);
-                            } else if (workMode.equals("UNKNOWN")) {
-                                mHandler.sendEmptyMessage(DEVICE_STATE_UNKNOWN);
-                            }
-                            mHandler.postDelayed(mRunnable, DEVICE_STATE_FREQUENCY);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            System.out.println("解析失败");
-                            mHandler.sendEmptyMessage(DEVICE_STATE_DEFAULT);
-                            mHandler.removeCallbacks(mRunnable);
-                        }
-                    }
+    //定时器开始轮询设备状态
+    public void startTimer(){
 
-                    @Override
-                    public void onError(Throwable ex, boolean isOnCallback) {
-                        mHandler.sendEmptyMessage(DEVICE_STATE_DEFAULT);
-                        mHandler.removeCallbacks(mRunnable);
-                    }
+        mTimer = new Timer();
 
-                    @Override
-                    public void onCancelled(CancelledException cex) {
-
-                    }
-
-                    @Override
-                    public void onFinished() {
-
-                    }
-                });
+        mTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                loopGetDeviceState();
             }
-            setTitle();
+        },0,2000);
+
+    }
+
+    public void stopTimer(){
+        if (mTimer != null){
+            mTimer.cancel();
         }
-    };
+
+    }
+
+    private void loopGetDeviceState(){
+        String devid = mSpf.getString("devid", "");
+        if (devid.equals("")){
+            mHandler.sendEmptyMessage(ID_IS_NULL);
+        }else {
+            RequestParams params = new RequestParams(Urls.DEVICE_STATE);
+            params.addBodyParameter("devid", devid);
+            System.out.println("获取设备状态---" + params.toString());
+            x.http().get(params, new Callback.CommonCallback<String>() {
+                @Override
+                public void onSuccess(String result) {
+                    try {
+                        JSONObject json = new JSONObject(result);
+                        String workMode = json.getString("workmode");
+                        if (workMode.equals("NORMAL")) {
+                            mHandler.sendEmptyMessage(DEVICE_STATE_NORMAL);
+                        } else if (workMode.equals("STDBY")) {
+                            mHandler.sendEmptyMessage(DEVICE_STATE_STDBY);
+                        } else if (workMode.equals("OFF")) {
+                            mHandler.sendEmptyMessage(DEVICE_STATE_OFF);
+                        } else if (workMode.equals("UNKNOWN")) {
+                            mHandler.sendEmptyMessage(DEVICE_STATE_UNKNOWN);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        System.out.println("解析失败");
+                        mHandler.sendEmptyMessage(DEVICE_STATE_DEFAULT);
+                    }
+                }
+
+                @Override
+                public void onError(Throwable ex, boolean isOnCallback) {
+                    mHandler.sendEmptyMessage(DEVICE_STATE_DEFAULT);
+                }
+
+                @Override
+                public void onCancelled(CancelledException cex) {
+
+                }
+
+                @Override
+                public void onFinished() {
+
+                }
+            });
+        }
+        setTitle();
+    }
 
     @Nullable
     @Override
@@ -206,11 +222,13 @@ public class MyCarFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_mycar, null);
         mSpf = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
         mMainActivity = (MainActivity) getActivity();
+        mSpf.edit().putBoolean("is_keeping_get_device_state",false).apply();
 
         initView();
         initAd();
         initFunctionButton();
 
+        startTimer();
         return view;
     }
 
@@ -322,6 +340,7 @@ public class MyCarFragment extends Fragment {
                     case 0:
                         System.out.println("图片抓拍" + position);
                         if (!devId.equals("")) {
+                            stopTimer();//取消设备状态轮询
                             startActivity(new Intent(getContext(), RealTimeShow.class));
 
                         } else {
@@ -345,6 +364,7 @@ public class MyCarFragment extends Fragment {
                         break;
                     case 2:
                         System.out.println("车辆信息" + position);
+                        stopTimer();//取消设备状态轮询
                         startActivity(new Intent(getContext(), CarInfo.class));
                         break;
                     case 3:
@@ -352,9 +372,11 @@ public class MyCarFragment extends Fragment {
                         if (!devId.equals("")) {
                             //开启轮询服务获取GPS信息
                             if (NetworkTypeUtils.getConnectWifiSsid(ZivApp.getInstance()).contains("car_")) {
+                                stopTimer();//取消设备状态轮询
                                 startActivity(new Intent(getContext(), CarLocation.class));
                             } else {
                                 MyAlarmManager.startPollingService(getContext(), 1, LocationService.class, devId);
+                                stopTimer();//取消设备状态轮询
                                 startActivity(new Intent(getContext(), CarLocation.class));
                             }
 
@@ -367,9 +389,11 @@ public class MyCarFragment extends Fragment {
                         if (!devId.equals("")) {
                             //开启轮询服务获取GPS信息
                             if (NetworkTypeUtils.getConnectWifiSsid(ZivApp.getInstance()).contains("car_")) {
+                                stopTimer();//取消设备状态轮询
                                 startActivity(new Intent(getContext(), ElectronicFence.class));
                             } else {
                                 MyAlarmManager.startPollingService(getContext(), 1, LocationService.class, devId);
+                                stopTimer();//取消设备状态轮询
                                 startActivity(new Intent(getContext(), ElectronicFence.class));
                             }
                         } else {
@@ -378,11 +402,13 @@ public class MyCarFragment extends Fragment {
                         break;
                     case 5:
                         System.out.println("违章查询" + position);
+                        stopTimer();//取消设备状态轮询
                         startActivity(new Intent(getContext(), ViolationActivity.class));
                         break;
                     case 6:
                         System.out.println("轨迹查询" + position);
                         if (!devId.equals("")) {
+                            stopTimer();//取消设备状态轮询
                             startActivity(new Intent(getContext(), TrackQueryDateChoose.class));
                         } else {
                             ToastShow.showToast(getContext(), "请先添加设备");
@@ -436,20 +462,20 @@ public class MyCarFragment extends Fragment {
         //开始自动翻页
         convenientBanner.startTurning(3000);
         getDevID();
-        if (mMainActivity.getIsMyCar()){
-            mHandler.postDelayed(mRunnable, DEVICE_STATE_FREQUENCY);
+        System.out.println("MyCarFragment的Resume");
+        boolean isKeepingGetDeviceState = mSpf.getBoolean("is_keeping_get_device_state",false);
+        System.out.println("是否继续获取设备状态---" + isKeepingGetDeviceState);
+
+        if (isKeepingGetDeviceState){
+            mSpf.edit().putBoolean("is_keeping_get_device_state",false).apply();
+            startTimer();
         }
     }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
-        System.out.println("我的车可见");
         super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser){
-            mHandler.postDelayed(mRunnable, DEVICE_STATE_FREQUENCY);
-        }else {
-            mHandler.removeCallbacks(mRunnable);
-        }
+        System.out.println("我的车可见");
     }
 
     @Override
@@ -462,13 +488,13 @@ public class MyCarFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        mHandler.removeCallbacks(mRunnable);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
 //        countDownTimer.cancel();
+        stopTimer();
     }
 
 
@@ -477,17 +503,6 @@ public class MyCarFragment extends Fragment {
         devId = mSpf.getString("devid", "");
         System.out.println("MyCarFragment---deviceId:" + devId);
         return devId;
-    }
-
-    public void startGetDeviceState() {
-        mHandler.postDelayed(mRunnable, DEVICE_STATE_FREQUENCY);
-    }
-
-    public void stopGetDeviceState() {
-        if (mRunnable != null) {
-            mHandler.removeCallbacks(mRunnable);
-        }
-
     }
 
     private void getDeviceState(){
@@ -546,6 +561,7 @@ public class MyCarFragment extends Fragment {
                 if (code == 200) {
                     System.out.println("视频URL:" + videoInfoBean.getUrl());
                     TestDecoder.setUrl(videoInfoBean.getUrl());
+                    stopTimer();//取消设备状态轮询
                     getActivity().startActivity(new Intent(getContext(), MyTestActivity.class));
                 } else {
                     System.out.println("非200");

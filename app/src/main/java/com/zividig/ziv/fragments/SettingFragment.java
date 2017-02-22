@@ -188,7 +188,7 @@ public class SettingFragment extends Fragment {
                 holder = (ViewHolder) view.getTag();
                 switch (position){
                     case 0:
-                        boolean autoUpdate = sp.getBoolean("auto_update",false);
+                        boolean autoUpdate = sp.getBoolean("auto_update",true);
                         if (autoUpdate){
                             holder.RightIcon.setImageResource(R.mipmap.switch_off); //关闭自动更新
                             sp.edit().putBoolean("auto_update",false).apply();
@@ -397,7 +397,7 @@ public class SettingFragment extends Fragment {
                 case 0:
                     holder.leftIcon.setImageResource(R.mipmap.update);
                     holder.itemText.setText("自动更新");
-                    Boolean autoUpdate = sp.getBoolean("auto_update",false);
+                    Boolean autoUpdate = sp.getBoolean("auto_update",true);
                     if (autoUpdate){
                         holder.RightIcon.setImageResource(R.mipmap.switch_on);
                     }else {

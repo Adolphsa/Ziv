@@ -52,19 +52,6 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
 
     private long exitTime = 0;
 
-    private boolean isMyCar = true;
-
-    public boolean getIsMyCar() {
-        return isMyCar;
-    }
-
-    public void setIsMyCar(boolean myCar) {
-        isMyCar = myCar;
-    }
-
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,16 +95,14 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
     public void onPageSelected(int position) {
         System.out.println("position" + position);
         if (position != 0){
-            setIsMyCar(false);
             if (mMyCarFragment != null){
-                mMyCarFragment.stopGetDeviceState();
+                mMyCarFragment.stopTimer();
             }
 
         }else {
-            setIsMyCar(true);
             if (mMyCarFragment != null){
-                mMyCarFragment.startGetDeviceState();
-                mMyCarFragment.setTitle();
+                mMyCarFragment.startTimer();
+
             }
         }
     }

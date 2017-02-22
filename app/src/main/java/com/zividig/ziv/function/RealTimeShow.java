@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Message;
 import android.view.Display;
 import android.view.View;
 import android.widget.Button;
@@ -41,12 +42,21 @@ import org.xutils.image.ImageOptions;
 import org.xutils.x;
 
 import java.io.File;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * 实时预览
  * Created by Administrator on 2016-05-30.
  */
 public class RealTimeShow extends BaseActivity {
+
+    private static final int SNAP_FAIL = 30;
+    private static final int DEVICE_NOT_ONLINE = 31;
+    private static final int GET_IMAGE_URL_ERROR = 32;
+    private static final int GET_IMAGE_SUCCESS = 33;
+    private static final int GET_IMAGE_FAIL = 34;
+    private static final int BEFORE_GET_IMAGE_URL = 35;
 
     private Context mContext;
     private PhotoView photoView;
@@ -59,13 +69,70 @@ public class RealTimeShow extends BaseActivity {
     private Button btDownImage;
     private int errorCode; //错误码
     private String devid;
+    private int getImageCount = 0;
 
-    Handler mHandler = new Handler();
-    Runnable mRunnable = new Runnable() {
+    private Timer mTimer;
+
+     Handler mHandler = new Handler(){
         @Override
-        public void run() {
-            getImageUrl();
-            mHandler.postDelayed(this,1000);
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case SNAP_FAIL:     //抓图失败
+                    if (!RealTimeShow.this.isFinishing()){
+                        DialogUtils.showPrompt(RealTimeShow.this, "提示", "抓图失败", "确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                finish();
+                            }
+                        });
+                    }
+                    break;
+
+                case DEVICE_NOT_ONLINE:     //设备不在线
+                    if (!RealTimeShow.this.isFinishing()){
+                        DialogUtils.showPrompt(RealTimeShow.this, "提示", "设备不在线", "确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                finish();
+                            }
+                        });
+                    }
+                  break;
+
+                case GET_IMAGE_URL_ERROR:       //获取图片URL失败
+                    btRefresh.setClickable(true);
+                    progressBar.setVisibility(View.INVISIBLE);
+//                ToastShow.showToast(RealTimeShow.this,"图片访问错误");
+                    if (!RealTimeShow.this.isFinishing()){
+                        DialogUtils.showPrompt(RealTimeShow.this, "提示", "返回json错误", "确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                finish();
+                            }
+                        });
+                    }
+                    break;
+
+                case GET_IMAGE_SUCCESS:     //获取图片成功
+                    progressBar.setVisibility(View.INVISIBLE);
+                    btRefresh.setClickable(true);
+                    getImageCount = 0;
+
+                    break;
+
+                case GET_IMAGE_FAIL:        //获取图片失败
+                    btRefresh.setClickable(true);
+                    getImageCount = 0;
+                    break;
+
+                case BEFORE_GET_IMAGE_URL:
+                    progressBar.setVisibility(View.VISIBLE);
+                    btRefresh.setClickable(false);
+                    break;
+            }
+
         }
     };
 
@@ -75,6 +142,7 @@ public class RealTimeShow extends BaseActivity {
         SDKInitializer.initialize(ZivApp.getInstance());
         setContentView(R.layout.acticity_real_time_show);
 
+
         mContext = RealTimeShow.this;
         // 标题
         TextView txtTitle = (TextView) findViewById(R.id.tv_title);
@@ -82,7 +150,7 @@ public class RealTimeShow extends BaseActivity {
 
         SharedPreferences spf = getSharedPreferences("config",MODE_PRIVATE);
         devid = spf.getString("devid","");
-
+        spf.edit().putBoolean("is_keeping_get_device_state",true).apply();
 
         //返回按钮
         Button btnBack = (Button) findViewById(R.id.btn_back);
@@ -114,17 +182,34 @@ public class RealTimeShow extends BaseActivity {
         btRefresh.setOnClickListener(listener);
         btDownImage.setOnClickListener(listener);
 
-        getImageUrl(); //显示图片
+        starTimer();
+    }
+
+    private void starTimer(){
+        mTimer = new Timer();
+        //定时获取图片URL
+        mTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                getImageUrl(); //显示图片
+            }
+        },0,1000);
 
     }
 
+    private void stopTimer(){
+        if (mTimer != null){
+            mTimer.cancel();
+        }
+    }
+
     /**
-     * 显示图片
+     * 发送抓图指令，获取图片链接
      */
     private void getImageUrl() {
 
-        progressBar.setVisibility(View.VISIBLE);
-        btRefresh.setClickable(false);
+        mHandler.sendEmptyMessage(BEFORE_GET_IMAGE_URL);
+        getImageCount++;
 
         //获取图片链接
         RequestParams params = new RequestParams(Urls.URL_PIC_SNAP);
@@ -152,11 +237,10 @@ public class RealTimeShow extends BaseActivity {
                     case 200: //返回正常
                         if (!url.isEmpty()) {
                             System.out.println("url返回值正常");
+                            mTimer.cancel();
                             getImageFromInternet();
-                            mHandler.removeCallbacks(mRunnable);
                         }else{
                             System.out.println("url返回值为空");
-                            mHandler.postDelayed(mRunnable,1000); //每秒请求一次图片链接
                         }
                         break;
                     case 400:
@@ -167,15 +251,7 @@ public class RealTimeShow extends BaseActivity {
                         break;
                     case 501:
                         System.out.println("可以执行唤醒主机的工作");
-                        if (!RealTimeShow.this.isFinishing()){
-                            DialogUtils.showPrompt(RealTimeShow.this, "提示", "设备不在线", "确定", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    finish();
-                                }
-                            });
-                        }
-
+                        mHandler.sendEmptyMessage(DEVICE_NOT_ONLINE);
                         break;
                     case 502:
                         ToastShow.showToast(RealTimeShow.this,"服务器内部出错");
@@ -189,33 +265,23 @@ public class RealTimeShow extends BaseActivity {
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
-
-                btRefresh.setClickable(true);
                 System.out.println("返回json错误" + ex);
-                progressBar.setVisibility(View.INVISIBLE);
-//                ToastShow.showToast(RealTimeShow.this,"图片访问错误");
-                if (!RealTimeShow.this.isFinishing()){
-                    DialogUtils.showPrompt(RealTimeShow.this, "提示", "返回json错误", "确定", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            finish();
-                        }
-                    });
-                }
-
+                mHandler.sendEmptyMessage(GET_IMAGE_URL_ERROR);
             }
 
             @Override
-            public void onCancelled(CancelledException cex) {
-
-            }
+            public void onCancelled(CancelledException cex) {}
 
             @Override
-            public void onFinished() {
-            }
+            public void onFinished() {}
         });
 
-
+        if (getImageCount > 9){
+            System.out.println("大于九了");
+            getImageCount = 0;
+            mTimer.cancel();
+            mHandler.sendEmptyMessage(SNAP_FAIL);
+        }
     }
 
     /**
@@ -231,21 +297,18 @@ public class RealTimeShow extends BaseActivity {
 
             @Override
             public void onSuccess(Drawable result) {
-                progressBar.setVisibility(View.INVISIBLE);
-                System.out.println("图片URL加载成功");
-
+                mHandler.sendEmptyMessage(GET_IMAGE_SUCCESS);
                 int intrinsicWidth = result.getIntrinsicWidth();
                 int intrinsicHeight = result.getIntrinsicHeight();
                 System.out.println("图片的宽度：" + intrinsicWidth + "，图片的高度：" + intrinsicHeight);
-
-                btRefresh.setClickable(true);
             }
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
 
                 System.out.println("加载错误" + ex);
-                btRefresh.setClickable(true);
+                mHandler.sendEmptyMessage(GET_IMAGE_FAIL);
+
             }
 
             @Override
@@ -255,7 +318,7 @@ public class RealTimeShow extends BaseActivity {
 
             @Override
             public void onFinished() {
-                btRefresh.setClickable(true);
+//                btRefresh.setClickable(true);
             }
         });
 
@@ -343,8 +406,6 @@ public class RealTimeShow extends BaseActivity {
     }
 
 
-
-
     class BtnListener implements View.OnClickListener {
 
         @Override
@@ -353,7 +414,10 @@ public class RealTimeShow extends BaseActivity {
                 case R.id.bt_refresh:
                     photoView.setImageResource(R.mipmap.default_white);
                     photoView.setBackgroundColor(Color.WHITE);
-                    getImageUrl();
+                    if (mTimer != null){
+                        starTimer();
+                    }
+
                     break;
                 case R.id.bt_downImage:
                     downImage();
@@ -363,6 +427,12 @@ public class RealTimeShow extends BaseActivity {
     }
 
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopTimer();
+        mTimer = null;
+    }
 
     /**
      * 主机唤醒
