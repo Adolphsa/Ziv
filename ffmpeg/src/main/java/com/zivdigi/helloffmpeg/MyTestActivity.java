@@ -3,6 +3,7 @@ package com.zivdigi.helloffmpeg;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -136,6 +137,10 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_fragment_sssp_play);
+
+        SharedPreferences spf = getSharedPreferences("config",MODE_PRIVATE);
+        //设置获取设备状态为真，以便在Activity销毁时能重新获取设备状态
+        spf.edit().putBoolean("is_keeping_get_device_state",true).apply();
 
         mContext = MyTestActivity.this;
 

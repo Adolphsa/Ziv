@@ -70,6 +70,10 @@ public class TrackQuery extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_track_query);
 
+//        SharedPreferences spf = getSharedPreferences("config",MODE_PRIVATE);
+//        //设置获取设备状态为真，以便在Activity销毁时能重新获取设备状态
+//        spf.edit().putBoolean("is_keeping_get_device_state",true).apply();
+
         mGson = new Gson();
         Bundle bundle = getIntent().getExtras();
         mStartTime = bundle.getLong("start_time");

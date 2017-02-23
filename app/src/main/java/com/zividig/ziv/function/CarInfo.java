@@ -1,5 +1,6 @@
 package com.zividig.ziv.function;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -52,6 +53,10 @@ public class CarInfo extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_carinfo);
+
+        SharedPreferences spf = getSharedPreferences("config",MODE_PRIVATE);
+        //设置获取设备状态为真，以便在Activity销毁时能重新获取设备状态
+        spf.edit().putBoolean("is_keeping_get_device_state",true).apply();
 
         // 标题
         TextView txtTitle = (TextView) findViewById(R.id.tv_title);

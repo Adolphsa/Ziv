@@ -2,6 +2,7 @@ package com.zividig.ziv.function;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -34,6 +35,10 @@ public class TrackQueryDateChoose extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_track_query_date_choose);
+
+        SharedPreferences spf = getSharedPreferences("config",MODE_PRIVATE);
+        //设置获取设备状态为真，以便在Activity销毁时能重新获取设备状态
+        spf.edit().putBoolean("is_keeping_get_device_state",true).apply();
 
        initView();
     }

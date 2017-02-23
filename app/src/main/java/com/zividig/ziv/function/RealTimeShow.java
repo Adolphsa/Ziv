@@ -150,6 +150,8 @@ public class RealTimeShow extends BaseActivity {
 
         SharedPreferences spf = getSharedPreferences("config",MODE_PRIVATE);
         devid = spf.getString("devid","");
+
+        //设置获取设备状态为真，以便在Activity销毁时能重新获取设备状态
         spf.edit().putBoolean("is_keeping_get_device_state",true).apply();
 
         //返回按钮

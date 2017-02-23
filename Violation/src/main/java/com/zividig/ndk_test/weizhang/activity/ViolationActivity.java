@@ -1,6 +1,7 @@
 package com.zividig.ndk_test.weizhang.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
@@ -35,6 +36,10 @@ public class ViolationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_violation_avtivity);
         VStatusBarUtils.setColor(this, getResources().getColor(R.color.myColorPrimaryDark));
+
+        SharedPreferences spf = getSharedPreferences("config",MODE_PRIVATE);
+        //设置获取设备状态为真，以便在Activity销毁时能重新获取设备状态
+        spf.edit().putBoolean("is_keeping_get_device_state",true).apply();
 
         initTitle();
         initView();
