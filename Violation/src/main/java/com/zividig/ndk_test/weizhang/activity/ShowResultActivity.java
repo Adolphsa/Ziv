@@ -15,7 +15,7 @@ public class ShowResultActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_result);
-        VStatusBarUtils.setColor(this, getResources().getColor(R.color.myColorPrimaryDark));
+        VStatusBarUtils.setColor(this, getResources().getColor(R.color.violation_black_russian));
 
         Bundle bundle = getIntent().getExtras();
         ViolationResultBean.ResultBean.ListsBean listsBean = bundle.getParcelable("list_bean");

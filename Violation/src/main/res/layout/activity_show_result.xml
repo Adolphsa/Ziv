@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/violation_activity_background"
     tools:context="com.zividig.ndk_test.weizhang.activity.ShowResultActivity">
 
     <include android:id="@+id/titbar" layout="@layout/layout_title_bar" />
@@ -21,6 +22,7 @@
             android:layout_height="wrap_content"
             android:text="时间:"
             android:textSize="20sp"
+            android:textColor="@android:color/white"
             />
         <TextView
             style="@style/violation_show_result"
@@ -41,6 +43,7 @@
             android:layout_height="wrap_content"
             android:text="地点:"
             android:textSize="20sp"
+            android:textColor="@android:color/white"
             />
         <TextView
             style="@style/violation_show_result"
@@ -61,6 +64,7 @@
             android:layout_height="wrap_content"
             android:text="内容:"
             android:textSize="20sp"
+            android:textColor="@android:color/white"
             />
         <TextView
             style="@style/violation_show_result"
@@ -81,6 +85,7 @@
             android:layout_height="wrap_content"
             android:text="罚金:"
             android:textSize="20sp"
+            android:textColor="@android:color/white"
             />
         <TextView
             style="@style/violation_show_result"
@@ -101,6 +106,7 @@
             android:layout_height="wrap_content"
             android:text="扣分:"
             android:textSize="20sp"
+            android:textColor="@android:color/white"
             />
         <TextView
             style="@style/violation_show_result"
@@ -120,6 +126,7 @@
             android:layout_height="wrap_content"
             android:text="处理:"
             android:textSize="20sp"
+            android:textColor="@android:color/white"
             />
         <TextView
             style="@style/violation_show_result"

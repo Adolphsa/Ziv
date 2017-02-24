@@ -96,7 +96,7 @@ public class ProvinceListActivity extends AppCompatActivity implements IProvince
 
     @Override
     public void setStatusBar() {
-        VStatusBarUtils.setColor(this, getResources().getColor(R.color.myColorPrimaryDark));
+        VStatusBarUtils.setColor(this, getResources().getColor(R.color.violation_black_russian));
     }
 
     @Override

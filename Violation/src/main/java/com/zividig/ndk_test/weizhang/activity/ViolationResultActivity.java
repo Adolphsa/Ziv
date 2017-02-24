@@ -45,7 +45,7 @@ public class ViolationResultActivity extends AppCompatActivity implements IViola
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vialation_result);
-        VStatusBarUtils.setColor(this, getResources().getColor(R.color.myColorPrimaryDark));
+        VStatusBarUtils.setColor(this, getResources().getColor(R.color.violation_black_russian));
 
         Bundle bundle = getIntent().getExtras();
         Map<String, String> options = setQueryResultParam(bundle);

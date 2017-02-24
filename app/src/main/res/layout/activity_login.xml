@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:background="#ffffff"
+    android:background="@color/activity_background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:background="#00c8ff"
+        android:layout_height="180dp"
         >
         <TextView
             android:layout_width="match_parent"
@@ -39,20 +38,27 @@
             android:id="@+id/et_user"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@mipmap/edittext_background"
+            android:background="@drawable/shape_login_edit"
             android:drawableLeft="@mipmap/user"
             android:hint="请输入账号"
             android:padding="10dp"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            android:drawablePadding="70dp"
             />
         <EditText
             android:id="@+id/et_pwd"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@mipmap/edittext_background"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/shape_login_edit"
             android:drawableLeft="@mipmap/pwd"
             android:hint="请输入密码"
             android:padding="10dp"
             android:inputType="textPassword"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            android:drawablePadding="70dp"
             />
         <RelativeLayout
             android:layout_width="match_parent"
@@ -66,7 +72,7 @@
                 android:layout_height="wrap_content"
                 android:text="记住用户名"
                 android:layout_alignParentLeft="true"
-                android:textColor="@android:color/darker_gray"
+                android:textColor="@android:color/white"
                 />
             <CheckBox
                 android:id="@+id/cb_password"
@@ -74,7 +80,7 @@
                 android:layout_height="wrap_content"
                 android:text="记住密码"
                 android:layout_alignParentRight="true"
-                android:textColor="@android:color/darker_gray"
+                android:textColor="@android:color/white"
                 />
         </RelativeLayout>
 
@@ -84,7 +90,7 @@
             android:layout_height="wrap_content"
             android:text="登录"
             android:textColor="@android:color/white"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="80dp"
             android:background="@drawable/login_btn"
             />
 

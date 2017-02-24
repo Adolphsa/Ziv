@@ -135,7 +135,7 @@ public class CityListActivity extends AppCompatActivity implements ICityListActi
 
     @Override
     public void setStatusBar() {
-        VStatusBarUtils.setColor(this, getResources().getColor(R.color.myColorPrimaryDark));
+        VStatusBarUtils.setColor(this, getResources().getColor(R.color.violation_black_russian));
     }
 
     @Override

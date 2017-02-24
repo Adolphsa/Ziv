@@ -57,7 +57,7 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        StatusBarUtils.setColor(this, getResources().getColor(R.color.myColorPrimaryDark));
+        StatusBarUtils.setColor(this, getResources().getColor(R.color.black_russian));
 
         findViews();
         init();

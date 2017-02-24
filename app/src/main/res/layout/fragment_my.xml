@@ -9,7 +9,14 @@
     <ListView
         android:id="@+id/lv_my"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
+        android:layout_height="wrap_content"
+        android:divider="@color/btn_default"
+        android:dividerHeight="0.5dp"
+        >
     </ListView>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/divider_color"
+        />
 </LinearLayout>

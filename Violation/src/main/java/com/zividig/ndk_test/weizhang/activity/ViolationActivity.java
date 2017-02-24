@@ -35,7 +35,7 @@ public class ViolationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_violation_avtivity);
-        VStatusBarUtils.setColor(this, getResources().getColor(R.color.myColorPrimaryDark));
+        VStatusBarUtils.setColor(this, getResources().getColor(R.color.violation_black_russian));
 
         SharedPreferences spf = getSharedPreferences("config",MODE_PRIVATE);
         //设置获取设备状态为真，以便在Activity销毁时能重新获取设备状态

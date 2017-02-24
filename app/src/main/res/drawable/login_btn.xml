@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_pressed="true">
-        <shape>
-            <solid android:color="@color/csy_blue2" />
+        <shape>btn_press_new
+            <solid android:color="@color/btn_press_new" />
             <corners android:radius="4.0dip" />
         </shape>
     </item>
     <item>
         <shape>
-            <solid android:color="@color/csy_green" />
+            <solid android:color="@color/btn_default" />
             <corners android:radius="4.0dip" />
         </shape>
     </item>

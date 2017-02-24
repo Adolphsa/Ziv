@@ -2,7 +2,7 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/csy_bg_body">
+                android:background="@color/violation_activity_background">
 
     <include android:id="@+id/titbar" layout="@layout/layout_title_bar" />
     <!-- 查询表单 -->
@@ -30,7 +30,8 @@
                 <TextView
                     android:id="@+id/cx_city"
                     style="@style/csy_textbox1"
-                    android:hint="@string/csy_cxdz_tip" />
+                    android:hint="@string/csy_cxdz_tip"
+                    />
 
                 <ImageView
                     style="@style/csy_row_icon"
@@ -57,8 +58,9 @@
                     android:layout_height="fill_parent"
                     android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
-                    android:background="@drawable/csy_select"
-                    android:orientation="horizontal" >
+                    android:orientation="horizontal"
+                    android:background="@drawable/violation_shape_edit"
+                    >
 
                     <TextView
                         android:id="@+id/chepai_sz"
@@ -66,7 +68,7 @@
                         android:layout_height="fill_parent"
                         android:layout_marginLeft="@dimen/csy_pd"
                         android:gravity="center_vertical"
-                        android:textColor="@color/csy_text"
+                        android:textColor="@android:color/white"
                         android:textSize="@dimen/csy_text_ts" />
                 </LinearLayout>
 

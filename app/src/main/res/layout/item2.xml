@@ -29,6 +29,7 @@
         android:text="报警类型"
         android:layout_marginLeft="@dimen/item_margin"
         android:textSize="17sp"
+        android:textColor="@android:color/white"
         />
 
     <TextView
@@ -40,6 +41,7 @@
         android:text="报警地址"
         android:layout_marginLeft="@dimen/item_margin"
         android:textSize="16sp"
+        android:textColor="@android:color/white"
         />
 
     <TextView

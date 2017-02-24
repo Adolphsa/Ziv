@@ -28,21 +28,22 @@
         <item name="android:layout_width">@dimen/csy_label_w</item>
         <item name="android:layout_gravity">center_vertical</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:textColor">@color/csy_label</item>
+        <item name="android:textColor">@android:color/white</item>
     </style>
 
     <style name="csy_textbox">
         <item name="android:layout_height">fill_parent</item>
         <item name="android:layout_width">fill_parent</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:textColor">@color/csy_text</item>
+        <item name="android:textColor">@android:color/white</item>
         <item name="android:textColorHint">@color/csy_hint</item>
-        <item name="android:background">@drawable/csy_textbox</item>
+        <item name="android:background">@color/violation_activity_background</item>
         <item name="android:textSize">@dimen/csy_text_ts</item>
     </style>
 
     <style name="csy_textbox1" parent="csy_textbox">
         <item name="android:layout_marginRight">@dimen/csy_icon_w</item>
+        <item name="android:background">@color/violation_activity_background</item>
     </style>
 
     <style name="csy_row_icon">
@@ -59,6 +60,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">18sp</item>
         <item name="android:padding">8dp</item>
+        <item name="android:textColor">@android:color/white</item>
     </style>
 
     <!--违章内容-->
@@ -77,6 +79,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">18sp</item>
         <item name="android:padding">5dp</item>
+        <item name="android:textColor">@android:color/white</item>
     </style>
 
     <!--违章结果展示-->
@@ -85,5 +88,6 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">20sp</item>
         <item name="android:layout_marginLeft">8dp</item>
+        <item name="android:textColor">@android:color/white</item>
     </style>
 </resources>

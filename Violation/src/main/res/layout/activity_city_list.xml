@@ -5,6 +5,7 @@
     android:id="@+id/activity_city_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/violation_activity_background"
     tools:context="com.zividig.ndk_test.weizhang.activity.CityListActivity">
 
     <include android:id="@+id/titbar" layout="@layout/layout_title_bar" />
@@ -16,6 +17,8 @@
         android:layout_below="@id/titbar"
         android:padding="8dp"
         android:scrollbars="none"
+        android:divider="@color/violation_btn_default"
+        android:dividerHeight="0.5dp"
         >
 
     </ListView>

@@ -20,6 +20,6 @@ public class BaseActivity extends Activity {
     }
 
     protected void setStatusBar() {
-        StatusBarUtils.setColor(this, getResources().getColor(R.color.myColorPrimaryDark));
+        StatusBarUtils.setColor(this, getResources().getColor(R.color.black_russian));
     }
 }

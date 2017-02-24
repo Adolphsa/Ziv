@@ -5,7 +5,9 @@
     android:id="@+id/activity_light_color"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.zividig.ziv.function.LightColor">
+    tools:context="com.zividig.ziv.function.LightColor"
+    style="@style/AllActivityBackground"
+    >
 
     <include
         android:id="@+id/light_color_title"

@@ -24,14 +24,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="设备ID："
-            android:layout_marginLeft="@dimen/item_margin" />
+            android:layout_marginLeft="@dimen/item_margin"
+            android:textColor="@color/white"
+            />
 
         <TextView
             android:id="@+id/md_tv_devid"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="啦啦啦"
-            android:layout_marginLeft="@dimen/item_margin" />
+            android:layout_marginLeft="@dimen/item_margin"
+            android:textColor="@color/white"
+            />
     </LinearLayout>
 
     <LinearLayout
@@ -47,13 +51,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="车牌号："
-            android:layout_marginLeft="@dimen/item_margin" />
+            android:layout_marginLeft="@dimen/item_margin"
+            android:textColor="@color/white"
+            />
         <TextView
             android:id="@+id/md_tv_carid"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="无"
-            android:layout_marginLeft="@dimen/item_margin" />
+            android:layout_marginLeft="@dimen/item_margin"
+            android:textColor="@color/white"
+            />
     </LinearLayout>
 
     <LinearLayout
@@ -69,13 +77,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="别    名："
-            android:layout_marginLeft="@dimen/item_margin" />
+            android:layout_marginLeft="@dimen/item_margin"
+            android:textColor="@color/white"
+            />
         <TextView
             android:id="@+id/md_tv_alias"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="无"
-            android:layout_marginLeft="@dimen/item_margin" />
+            android:layout_marginLeft="@dimen/item_margin"
+            android:textColor="@color/white"
+            />
 
     </LinearLayout>
 

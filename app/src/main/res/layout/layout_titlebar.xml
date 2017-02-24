@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/ll_title"
-    android:background="#00c8ff"
+    android:background="@color/title_bar_background"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 

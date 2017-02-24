@@ -3,7 +3,8 @@
     android:orientation="vertical"
     android:background="@drawable/selector_base_pager_baseground"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    >
 
     <ImageView
         android:id="@+id/item_left_icon"
@@ -19,10 +20,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="GPS定位"
-        android:textColor="@android:color/black"
+        android:textColor="@android:color/white"
         android:layout_toRightOf="@id/item_left_icon"
         android:layout_centerVertical="true"
         android:layout_marginLeft="10dp"
+
         />
     <ImageView
         android:id="@+id/item_right_icon"

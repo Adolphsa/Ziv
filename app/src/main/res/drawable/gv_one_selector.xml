@@ -4,7 +4,7 @@
         android:state_selected="true" >
         <shape android:shape="rectangle">
             <solid
-                android:color="#CCCCCC"
+                android:color="#312c34"
                 />
         </shape>
     </item>
@@ -12,14 +12,14 @@
         android:state_pressed="true" >
         <shape android:shape="rectangle">
             <solid
-                android:color="#CCCCCC"
+                android:color="#312c34"
                 />
         </shape>
     </item>
     <item>
         <shape android:shape="rectangle">
             <solid
-                android:color="#FFFFFF"
+                android:color="#212C34"
                 />
         </shape>
     </item>

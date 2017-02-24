@@ -12,6 +12,7 @@
         android:padding="5dp"
         android:textSize="18sp"
         android:text="2016/05/03"
+        android:textColor="@color/white"
         />
     <com.zividig.ziv.customView.NoScrollGridView
         android:id="@+id/gv_picture"

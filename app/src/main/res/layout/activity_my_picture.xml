@@ -11,6 +11,8 @@
         android:id="@+id/lv_picture"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
+        android:dividerHeight="0.5dp"
+        android:divider="@color/btn_default"
+        android:background="@color/activity_background"
         />
 </LinearLayout>

@@ -4,7 +4,13 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#00c8ff</color>
 
+    <!--新的配色-->
     <color name="myColorPrimaryDark">#0fcfff</color>
+    <color name="black_russian">#0D0D0D</color>
+    <color name="btn_default">#888A96</color>
+    <color name="btn_press_new">#A0A2A6</color>
+    <color name="activity_background">#212c34</color>
+    <color name="title_bar_background">#1E212A</color>
 
     <color name="textnormal">#adadad</color>
     <color name="home_bar_text_normal">#6a6c6f</color>
@@ -22,11 +28,11 @@
     <color name="csy_hint">#ffc6c6c6</color>
     <color name="csy_blue2">#00ccff</color>
 
-    <drawable name="pressTrue">#e7e7e7</drawable>
-    <drawable name="pressFalse">#ffffff</drawable>
+    <drawable name="pressTrue">#24292c</drawable>
+    <drawable name="pressFalse">#212c34</drawable>
 
-    <color name="loginTrueBlack">#ff555555</color>
-    <color name="loginFalseGray">#ff000000</color>
+    <color name="loginTrueBlack">#e7e7e7</color>
+    <color name="loginFalseGray">#ffffff</color>
 
     <color name="red_normal">#FF0000</color>
     <color name="red_pressed">#FF6666</color>

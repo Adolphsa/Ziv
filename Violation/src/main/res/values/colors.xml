@@ -16,4 +16,11 @@
     <color name="csy_blue">#ff0a7dd2</color>
     <color name="csy_blue_on">#ff0a64aa</color>
     <color name="csy_row_on">#fff0f0f0</color>
+
+    <!--新的配色-->
+    <color name="violation_black_russian">#0D0D0D</color>
+    <color name="violation_btn_default">#888A96</color>
+    <color name="violation_btn_press_new">#A0A2A6</color>
+    <color name="violation_activity_background">#212c34</color>
+    <color name="violation_title_bar_background">#1E212A</color>
 </resources>
