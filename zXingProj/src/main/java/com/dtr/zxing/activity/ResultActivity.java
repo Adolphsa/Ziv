@@ -21,7 +21,7 @@ public class ResultActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
-        ToastShow.setColor(ResultActivity.this,getResources().getColor(R.color.chenjinshi));
+        ToastShow.setColor(ResultActivity.this,getResources().getColor(R.color.zXing_black_russian));
 
         spf = getSharedPreferences("config", MODE_PRIVATE);
 

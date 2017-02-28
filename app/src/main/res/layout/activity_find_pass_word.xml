@@ -3,23 +3,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+              android:background="@color/activity_background"
     >
     <include layout="@layout/layout_titlebar"/>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="@android:color/white"
-        android:padding="5dp"
+        style="@style/RegisterLinearLayoutStyle"
         >
         <TextView
             android:id="@+id/findPwd_tv_user"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/RegisterTextStyle"
             android:text="用户名        "
-            android:textSize="18sp"
-            android:padding="8dp"
             />
         <EditText
             android:id="@+id/findPwd_et_user"
@@ -30,63 +24,40 @@
             android:textStyle="normal"
             android:padding="8dp"
             android:inputType="number"
+            android:textColorHint="@color/white"
+            android:textColor="@color/white"
             />
 
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="1dp"
-        android:background="@android:color/white"
-        android:padding="5dp"
+        style="@style/RegisterLinearLayoutStyle"
         >
         <TextView
             android:id="@+id/findPwd_tv_pwd"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/RegisterTextStyle"
             android:text="密码            "
-            android:textSize="18sp"
-            android:padding="8dp"
             />
         <EditText
             android:id="@+id/findPwd_et_pwd"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/RegisterEditTextStyle"
             android:hint="请输入新密码"
-            android:background="@null"
-            android:textStyle="normal"
-            android:padding="8dp"
             />
 
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="1dp"
-        android:background="@android:color/white"
-        android:padding="5dp"
+        style="@style/RegisterLinearLayoutStyle"
         >
         <TextView
             android:id="@+id/findPwd_tv_yzm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/RegisterTextStyle"
             android:text="验证码        "
-            android:textSize="18sp"
-            android:padding="8dp"
             />
         <EditText
             android:id="@+id/findPwd_et_yzm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/RegisterEditTextStyle"
             android:hint="请输入验证码"
-            android:background="@null"
-            android:textStyle="normal"
-            android:padding="8dp"
-            android:inputType="number"
             />
 
         <Button

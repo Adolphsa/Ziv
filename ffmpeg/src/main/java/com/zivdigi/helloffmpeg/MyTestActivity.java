@@ -90,7 +90,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
             switch (msg.what){
                 case PLAY:
                     mCycleProgressBar.setVisibility(View.INVISIBLE);
-                    mPlay.setBackgroundResource(R.mipmap.pause);
+                    mPlay.setText("暂停");
                     break;
 
                 case SHOW_TOOLS:
@@ -304,11 +304,11 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
         if (id == R.id.mta_play){ //播放
             Log.i(TAG, "onClick: play按钮被点击了");
             if (isPlaying){
-                mPlay.setBackgroundResource(R.mipmap.play);
+                mPlay.setText("播放");
                 isPlaying = false;
                 mVideoPlayTask.setSuspend(true);    //线程暂停
             }else {
-                mPlay.setBackgroundResource(R.mipmap.pause);
+                mPlay.setText("暂停");
                 isPlaying = true;
                 mVideoPlayTask.setSuspend(false);   //线程恢复
 

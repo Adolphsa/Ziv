@@ -2,13 +2,13 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_pressed="true">
         <shape>
-            <solid android:color="@color/csy_blue2" />
+            <solid android:color="@color/zXing_btn_press_new" />
             <corners android:radius="4.0dip" />
         </shape>
     </item>
     <item>
         <shape>
-            <solid android:color="@color/csy_green" />
+            <solid android:color="@color/zXing_btn_default" />
             <corners android:radius="4.0dip" />
         </shape>
     </item>

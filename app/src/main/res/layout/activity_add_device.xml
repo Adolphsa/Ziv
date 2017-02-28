@@ -4,7 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.zividig.ziv.function.AddDevice">
+    tools:context="com.zividig.ziv.function.AddDevice"
+    android:background="@color/zXing_activity_background"
+    >
 
     <include layout="@layout/layout_titlebar"/>
 
@@ -35,15 +37,6 @@
             android:onClick="BindDevice"
             />
 
-        <!--<TextView-->
-            <!--style="@style/Style_AddDevice_text"-->
-            <!--android:text="3.请设置车牌号或别名(可选)"-->
-            <!--/>-->
-        <!--<Button-->
-            <!--android:id="@+id/bt_carid"-->
-            <!--style="@style/Style_AddDevice_button"-->
-            <!--android:text="设置车牌号或别名"-->
-            <!--/>-->
     </LinearLayout>
 
     <!--设备ID-->
@@ -58,6 +51,7 @@
             android:layout_height="wrap_content"
             android:text="设备ID: "
             android:textSize="18sp"
+            android:textColor="@color/white"
             android:padding="5dp"
             android:id="@+id/textView"/>
 
@@ -67,47 +61,10 @@
             android:layout_height="wrap_content"
             android:text="无"
             android:textSize="18sp"
+            android:textColor="@color/white"
             android:padding="5dp"
             />
     </LinearLayout>
-
-    <!--车牌号-->
-    <!--<LinearLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:orientation="horizontal"-->
-        <!--android:padding="5dp"-->
-        <!--&gt;-->
-        <!--<TextView-->
-            <!--style="@style/Style_AddDevice_text2"-->
-            <!--android:text="车牌号: "-->
-            <!--/>-->
-
-        <!--<TextView-->
-            <!--android:id="@+id/tv_carid"-->
-            <!--style="@style/Style_AddDevice_text2"-->
-            <!--android:text="无"-->
-            <!--/>-->
-    <!--</LinearLayout>-->
-
-    <!--<LinearLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:orientation="horizontal"-->
-        <!--android:padding="5dp"-->
-        <!--&gt;-->
-        <!--<TextView-->
-            <!--style="@style/Style_AddDevice_text2"-->
-            <!--android:text="别    名: "-->
-            <!--/>-->
-
-        <!--<TextView-->
-            <!--android:id="@+id/tv_alias"-->
-            <!--style="@style/Style_AddDevice_text2"-->
-            <!--android:text="无"-->
-
-            <!--/>-->
-    <!--</LinearLayout>-->
 
     <LinearLayout
         android:layout_width="match_parent"

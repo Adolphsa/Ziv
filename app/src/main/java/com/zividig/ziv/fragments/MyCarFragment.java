@@ -105,6 +105,8 @@ public class MyCarFragment extends Fragment {
 
     private static Timer mTimer;
 
+    private long secondTime = 0;
+
     public static MyCarFragment instance() {
         MyCarFragment myCarView = new MyCarFragment();
         return myCarView;
@@ -167,6 +169,9 @@ public class MyCarFragment extends Fragment {
 
     }
 
+    /**
+     * 轮询获取设备状态
+     */
     private void loopGetDeviceState(){
         String devid = mSpf.getString("devid", "");
         if (devid.equals("")){
@@ -355,7 +360,11 @@ public class MyCarFragment extends Fragment {
                         } else {
                             if (!devId.equals("")) {
 //                                startVideo(devId);
-                                getDeviceState();
+                                if ((System.currentTimeMillis()- secondTime) > (3 * 1000)){
+                                    System.out.println("大于3秒");
+                                    getDeviceState();
+                                }
+                                secondTime = System.currentTimeMillis();
                             } else {
                                 ToastShow.showToast(getContext(), "请先添加设备");
                             }
@@ -506,6 +515,7 @@ public class MyCarFragment extends Fragment {
     }
 
     private void getDeviceState(){
+
         final String devid = mSpf.getString("devid", "");
         RequestParams params2 = new RequestParams(Urls.DEVICE_STATE);
         params2.addBodyParameter("devid", devid);
