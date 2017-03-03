@@ -77,7 +77,6 @@ public class TestDecoder{
     }
 
     public void startRequest(){
-//        final String rtspUrlPi02 = "rtsp://120.25.80.80:8554/live_ZIV3C00010000ac16b2.sdp";
         if(isPlaying()){
             return;
         }

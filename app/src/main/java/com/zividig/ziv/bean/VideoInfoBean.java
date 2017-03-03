@@ -7,39 +7,21 @@ package com.zividig.ziv.bean;
 public class VideoInfoBean {
 
     /**
-     * cmd : requestRtsp
-     * error : 200
-     * errorStr : OK
-     * url : rtsp://120.25.80.80:8554/live_1234567890123456789.sdp
+     * status : 200
+     * url : aaa
+     * message : bbb
      */
 
-    private String cmd;
-    private int error;
-    private String errorStr;
+    private int status;
     private String url;
+    private String message;
 
-    public String getCmd() {
-        return cmd;
+    public int getStatus() {
+        return status;
     }
 
-    public void setCmd(String cmd) {
-        this.cmd = cmd;
-    }
-
-    public int getError() {
-        return error;
-    }
-
-    public void setError(int error) {
-        this.error = error;
-    }
-
-    public String getErrorStr() {
-        return errorStr;
-    }
-
-    public void setErrorStr(String errorStr) {
-        this.errorStr = errorStr;
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     public String getUrl() {
@@ -48,5 +30,13 @@ public class VideoInfoBean {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

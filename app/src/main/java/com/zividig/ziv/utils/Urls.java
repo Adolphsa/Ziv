@@ -39,19 +39,19 @@ public class Urls {
     public static final String GET_DEVICE_LIST = "http://api.zivdigi.com/v1/device/mine";
 
     //图片抓拍
-    public static final String URL_PIC_SNAP = "http://120.25.80.80:9501/api/snap";
+    public static final String URL_PIC_SNAP = "http://api.zivdigi.com/v1/device/snap";
 
     //在设备wifi下获取设备信息
     public static final String GET_DEVICE_INFO_WIFI = "http://192.168.1.1/api/getdevinfo";
 
     //请求视频
-    public static final String REQUEST_VIDEO = "http://120.25.80.80:9501/api/requestrtspstream";
+    public static final String REQUEST_VIDEO = "http://api.zivdigi.com/v1/device/rtsp";
 
     //主机唤醒
-    public static final String DEVICE_WAKEUP = "http://120.25.80.80:9501/api/wakeupdevice";
+    public static final String DEVICE_WAKEUP = "http://api.zivdigi.com/v1/device/wake ";
 
     //获取设备状态
-    public static final String DEVICE_STATE = "http://120.25.80.80:9501/api/getdeviceinfo";
+    public static final String DEVICE_STATE = "http://api.zivdigi.com/v1/device/info";
 
     //实时位置
     public static final String REAL_LOCATION = "http://api.zivdigi.com/v1/location/realtime";

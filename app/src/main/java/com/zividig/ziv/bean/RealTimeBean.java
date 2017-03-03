@@ -1,7 +1,5 @@
 package com.zividig.ziv.bean;
 
-import java.util.List;
-
 /**
  * 实时预览从服务器上获取的Json
  * Created by Administrator on 2016-06-04.
@@ -10,72 +8,36 @@ public class RealTimeBean {
 
 
     /**
-     * cmd : snap
-     * error : 200
-     * errorStr : OK
-     * picnum : 1
-     * picinfo : [{"url":"http://dev.caowei.name/mytest/uploadtest/upload_dir/1234567890123456789/snap_ch0_20160629162441967310.jpg"}]
+     * status : 200
+     * url : aaa
+     * message : bbb
      */
 
-    private String cmd;
-    private int error;
-    private String errorStr;
-    private int picnum;
-    /**
-     * url : http://dev.caowei.name/mytest/uploadtest/upload_dir/1234567890123456789/snap_ch0_20160629162441967310.jpg
-     */
+    private int status;
+    private String url;
+    private String message;
 
-    private List<PicinfoBean> picinfo;
-
-    public String getCmd() {
-        return cmd;
+    public int getStatus() {
+        return status;
     }
 
-    public void setCmd(String cmd) {
-        this.cmd = cmd;
+    public void setStatus(int status) {
+        this.status = status;
     }
 
-    public int getError() {
-        return error;
+    public String getUrl() {
+        return url;
     }
 
-    public void setError(int error) {
-        this.error = error;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
-    public String getErrorStr() {
-        return errorStr;
+    public String getMessage() {
+        return message;
     }
 
-    public void setErrorStr(String errorStr) {
-        this.errorStr = errorStr;
-    }
-
-    public int getPicnum() {
-        return picnum;
-    }
-
-    public void setPicnum(int picnum) {
-        this.picnum = picnum;
-    }
-
-    public List<PicinfoBean> getPicinfo() {
-        return picinfo;
-    }
-
-    public void setPicinfo(List<PicinfoBean> picinfo) {
-        this.picinfo = picinfo;
-    }
-
-    public static class PicinfoBean {
-        private String url;
-
-        public String getUrl() {
-            return url;
-        }
-
-        public void setUrl(String url) {
-            this.url = url;
-        }
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

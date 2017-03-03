@@ -76,7 +76,6 @@ public class LocationService extends Service {
             e.printStackTrace();
         }
 
-
         //计算signature
         String timestamp = UtcTimeUtils.getTimestamp();
         String noncestr = HttpParamsUtils.getRandomString(10);
@@ -120,12 +119,12 @@ public class LocationService extends Service {
                             locationBean.setLon(0f);
                             locationBean.setLat(0f);
                         }
-
                         //发送广播
                         Intent broadcast = new Intent();
                         broadcast.setAction(LOCATION_ACTION);
                         broadcast.putExtra(PAR_KEY,locationBean);
                         sendBroadcast(broadcast);
+                        System.out.println("发送广播");
                     }else {
                         System.out.println("获取实时位置返回码不为200");
                     }

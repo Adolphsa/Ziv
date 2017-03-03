@@ -198,6 +198,7 @@ public class Login extends BaseActivity {
 
                             //保存token
                             SignatureUtils.token = json.getString(SignatureUtils.SIGNATURE_TOKEN);
+                            config.edit().putString("token",SignatureUtils.token).apply();
                             System.out.println("token---" + SignatureUtils.token);
 
                             //保存推送免打扰开关状态

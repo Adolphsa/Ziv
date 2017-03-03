@@ -71,17 +71,20 @@ public class ElectronicFence extends BaseActivity {
     private double lat;
     private double lon;
 
+    private MapStatus.Builder mBuilder;
+    private CoordinateConverter mConverter;
+
     //动态注册的广播
     private BroadcastReceiver locationBroadcast = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+
             LocationBean locationBean = intent.getParcelableExtra(LocationService.PAR_KEY);
-            initMap(locationBean.getLat(),locationBean.getLon());
+            initMap(locationBean.getLon(),locationBean.getLat());
+
+            MyAlarmManager.stopPollingService(ElectronicFence.this, LocationService.class);
         }
     };
-    private MapStatus.Builder mBuilder;
-    private CoordinateConverter mConverter;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,8 +157,6 @@ public class ElectronicFence extends BaseActivity {
             mBuilder.target(desLatLng).zoom(18.0f);
             mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(mBuilder.build()));
 
-            MyAlarmManager.stopPollingService(ElectronicFence.this, LocationService.class);
-            unregisterReceiver(locationBroadcast);
             System.out.println("获取到定位信息");
 
         }
@@ -383,12 +384,14 @@ public class ElectronicFence extends BaseActivity {
                     try {
                         JSONObject json = new JSONObject(result);
                         int status = json.getInt("status");
-                        if (200 == status){
+                        if (200 == status && json.get("fence") instanceof JSONObject){
+
                             JSONObject fence = json.getJSONObject("fence");
                             double latTemp = fence.getDouble("lat");
                             double lonTemp = fence.getDouble("lon");
                             int radius = fence.getInt("radius");
                             showCircleOverlay(new LatLng(latTemp,lonTemp),radius);
+
                         }else {
                             ToastShow.showToast(ElectronicFence.this,"还没有设置围栏");
                         }
@@ -405,14 +408,10 @@ public class ElectronicFence extends BaseActivity {
             }
 
             @Override
-            public void onCancelled(CancelledException cex) {
-
-            }
+            public void onCancelled(CancelledException cex) {}
 
             @Override
-            public void onFinished() {
-
-            }
+            public void onFinished() {}
         });
 
     }
@@ -433,5 +432,8 @@ public class ElectronicFence extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         mMapView.onDestroy();
+
+        unregisterReceiver(locationBroadcast);
+        MyAlarmManager.stopPollingService(ElectronicFence.this, LocationService.class);
     }
 }

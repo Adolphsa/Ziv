@@ -23,18 +23,19 @@ import android.widget.Toast;
 
 import com.baidu.mapapi.SDKInitializer;
 import com.bm.library.PhotoView;
-import com.google.gson.Gson;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.RealTimeBean;
 import com.zividig.ziv.main.BaseActivity;
 import com.zividig.ziv.main.ZivApp;
 import com.zividig.ziv.utils.DialogUtils;
+import com.zividig.ziv.utils.HttpParamsUtils;
+import com.zividig.ziv.utils.JsonUtils;
 import com.zividig.ziv.utils.Others;
+import com.zividig.ziv.utils.SignatureUtils;
 import com.zividig.ziv.utils.ToastShow;
 import com.zividig.ziv.utils.Urls;
 import com.zividig.ziv.utils.UtcTimeUtils;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
@@ -44,6 +45,8 @@ import org.xutils.x;
 import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import static com.zividig.ziv.utils.SignatureUtils.SIGNATURE_TOKEN;
 
 /**
  * 实时预览
@@ -71,6 +74,8 @@ public class RealTimeShow extends BaseActivity {
     private String devid;
     private int getImageCount = 0;
 
+    private long secondTime = 0;
+
     private Timer mTimer;
 
      Handler mHandler = new Handler(){
@@ -95,6 +100,7 @@ public class RealTimeShow extends BaseActivity {
                         DialogUtils.showPrompt(RealTimeShow.this, "提示", "设备不在线", "确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
                                 finish();
                             }
                         });
@@ -213,31 +219,47 @@ public class RealTimeShow extends BaseActivity {
         mHandler.sendEmptyMessage(BEFORE_GET_IMAGE_URL);
         getImageCount++;
 
-        //获取图片链接
-        RequestParams params = new RequestParams(Urls.URL_PIC_SNAP);
+        //配置json数据
+        JSONObject json = new JSONObject();
+        try {
+            json.put("devid",devid);
+            json.put(SIGNATURE_TOKEN, SignatureUtils.token);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //计算signature
+        String timestamp = UtcTimeUtils.getTimestamp();
+        String noncestr = HttpParamsUtils.getRandomString(10);
+        String signature = SignatureUtils.getSinnature(timestamp,
+                noncestr,
+                Urls.APP_KEY,
+                devid,
+                SignatureUtils.token);
+        //发起请求
+        RequestParams params = HttpParamsUtils.setParams(Urls.URL_PIC_SNAP,timestamp,noncestr,signature);
+        params.setBodyContent(json.toString());
+
 //        params.setConnectTimeout(120*1000); //超时120s
-        params.addBodyParameter("devid", devid);
         System.out.println("实时预览" + devid);
         System.out.println("获取图片URL" + params);
-        x.http().get(params, new Callback.CommonCallback<String>() {
+        x.http().post(params, new Callback.CommonCallback<String>() {
 
             @Override
             public void onSuccess(String result) {
-                System.out.println("返回的数组是：" + result.toString());
-                Gson gson = new Gson();
-                RealTimeBean realTimeBean = gson.fromJson(result, RealTimeBean.class);
+                System.out.println("返回的数组是：" + result);
+                RealTimeBean realTimeBean = JsonUtils.deserialize(result,RealTimeBean.class);
 
-                if (realTimeBean.getPicinfo().size() > 0) {
-                    url = realTimeBean.getPicinfo().get(0).getUrl();
-                    System.out.println("url的值---" + url);
-                }
+                url = realTimeBean.getUrl();
+                System.out.println("url的值---" + url);
 
-                errorCode = realTimeBean.getError();
+                errorCode = realTimeBean.getStatus();
                 System.out.println("error的值：---" + errorCode);
 
                 switch (errorCode) {
                     case 200: //返回正常
-                        if (!url.isEmpty()) {
+                        if (!url.isEmpty() && !url.equals("")) {
                             System.out.println("url返回值正常");
                             mTimer.cancel();
                             getImageFromInternet();
@@ -245,21 +267,18 @@ public class RealTimeShow extends BaseActivity {
                             System.out.println("url返回值为空");
                         }
                         break;
-                    case 400:
-                        ToastShow.showToast(RealTimeShow.this,"错误请求-请求中有语法问题");
+                    case 404:
+                        ToastShow.showToast(RealTimeShow.this,"设备不存在");
+                        mTimer.cancel();
                         break;
-                    case 401:
-                        ToastShow.showToast(RealTimeShow.this,"未授权");
+                    case 403:
+                        ToastShow.showToast(RealTimeShow.this,"token错误或者设备不在该用户名下");
+                        mTimer.cancel();
                         break;
-                    case 501:
-                        System.out.println("可以执行唤醒主机的工作");
+                    case 402:
+                        System.out.println("设备不在线，无法抓取");
+                        mTimer.cancel();
                         mHandler.sendEmptyMessage(DEVICE_NOT_ONLINE);
-                        break;
-                    case 502:
-                        ToastShow.showToast(RealTimeShow.this,"服务器内部出错");
-                        break;
-                    case 503:
-                        ToastShow.showToast(RealTimeShow.this,"不支持此操作");
                         break;
                 }
 
@@ -414,12 +433,14 @@ public class RealTimeShow extends BaseActivity {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.bt_refresh:
-                    photoView.setImageResource(R.mipmap.default_white);
-                    photoView.setBackgroundColor(Color.WHITE);
-                    if (mTimer != null){
-                        starTimer();
+                    if ((System.currentTimeMillis()- secondTime) > (2 * 1000)){
+                        photoView.setImageResource(R.mipmap.default_white);
+                        photoView.setBackgroundColor(Color.WHITE);
+                        if (mTimer != null){
+                            starTimer();
+                        }
                     }
-
+                    secondTime = System.currentTimeMillis();
                     break;
                 case R.id.bt_downImage:
                     downImage();
@@ -435,46 +456,5 @@ public class RealTimeShow extends BaseActivity {
         stopTimer();
         mTimer = null;
     }
-
-    /**
-     * 主机唤醒
-     */
-    private void wakeupDevice(){
-        RequestParams params = new RequestParams(Urls.DEVICE_WAKEUP);
-        params.addQueryStringParameter("devid",devid);
-        System.out.println("主机唤醒：" + params);
-        x.http().get(params, new Callback.CommonCallback<String>() {
-            @Override
-            public void onSuccess(String result) {
-                System.out.println("主机唤醒结果：" + result);
-                try {
-                    JSONObject json = new JSONObject(result);
-                    int errorCode = json.getInt("error");
-                    System.out.println("错误码是：" + errorCode);
-                    if (errorCode == 200){
-                        ToastShow.showToast(RealTimeShow.this,"主机正在唤醒中...");
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onError(Throwable ex, boolean isOnCallback) {
-                System.out.println("主机唤醒错误：" + ex);
-            }
-
-            @Override
-            public void onCancelled(CancelledException cex) {
-
-            }
-
-            @Override
-            public void onFinished() {
-
-            }
-        });
-    }
-
 
 }

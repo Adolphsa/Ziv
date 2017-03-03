@@ -141,13 +141,33 @@ public class SettingFragment extends Fragment {
                             MyAlarmManager.startPollingService(getContext(), 3, DeviceStateService.class, "");
 
                             devID = sp.getString("devid","");
-                            RequestParams params = new RequestParams(Urls.DEVICE_WAKEUP);
-                            params.addQueryStringParameter("devid",devID);
+
+                            //配置json数据
+                            JSONObject json = new JSONObject();
+                            try {
+                                json.put("devid",devID);
+                                json.put(SIGNATURE_TOKEN, SignatureUtils.token);
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+                            //计算signature
+                            String timestamp = UtcTimeUtils.getTimestamp();
+                            String noncestr = HttpParamsUtils.getRandomString(10);
+                            String signature = SignatureUtils.getSinnature(timestamp,
+                                    noncestr,
+                                    Urls.APP_KEY,
+                                    devID,
+                                    SignatureUtils.token);
+                            //发起请求
+                            RequestParams params = HttpParamsUtils.setParams(Urls.DEVICE_WAKEUP,timestamp,noncestr,signature);
+                            params.setBodyContent(json.toString());
                             params.setConnectTimeout(20 * 1000);
                             System.out.println("主机唤醒：" + params);
 
                             //只发唤醒命令
-                            x.http().get(params, new Callback.CommonCallback<String>() {
+                            x.http().post(params, new Callback.CommonCallback<String>() {
                                 @Override
                                 public void onSuccess(String result) {
                                     System.out.println("主机唤醒结果：" + result);

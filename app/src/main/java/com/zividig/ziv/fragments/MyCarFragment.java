@@ -27,6 +27,7 @@ import com.zivdigi.helloffmpeg.TestDecoder;
 import com.zividig.ndk_test.weizhang.activity.ViolationActivity;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.DeviceInfoBean;
+import com.zividig.ziv.bean.DeviceStateInfoBean;
 import com.zividig.ziv.bean.VideoInfoBean;
 import com.zividig.ziv.function.AddDevice;
 import com.zividig.ziv.function.CarInfo;
@@ -36,14 +37,18 @@ import com.zividig.ziv.function.RealTimeShow;
 import com.zividig.ziv.function.TrackQueryDateChoose;
 import com.zividig.ziv.main.MainActivity;
 import com.zividig.ziv.main.ZivApp;
+import com.zividig.ziv.service.DeviceStateService;
 import com.zividig.ziv.service.LocationService;
+import com.zividig.ziv.utils.HttpParamsUtils;
+import com.zividig.ziv.utils.JsonUtils;
 import com.zividig.ziv.utils.MyAlarmManager;
 import com.zividig.ziv.utils.NetworkTypeUtils;
+import com.zividig.ziv.utils.SignatureUtils;
 import com.zividig.ziv.utils.ToastShow;
 import com.zividig.ziv.utils.Urls;
+import com.zividig.ziv.utils.UtcTimeUtils;
 import com.zividig.ziv.utils.WifiDirectUtils;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
@@ -53,6 +58,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import static com.zividig.ziv.utils.SignatureUtils.SIGNATURE_TOKEN;
 
 /**
  * 我的车
@@ -177,15 +184,39 @@ public class MyCarFragment extends Fragment {
         if (devid.equals("")){
             mHandler.sendEmptyMessage(ID_IS_NULL);
         }else {
-            RequestParams params = new RequestParams(Urls.DEVICE_STATE);
-            params.addBodyParameter("devid", devid);
-            System.out.println("获取设备状态---" + params.toString());
-            x.http().get(params, new Callback.CommonCallback<String>() {
+            //配置json数据
+            JSONObject json = new JSONObject();
+            try {
+                json.put("devid",devid);
+                json.put(SIGNATURE_TOKEN, SignatureUtils.token);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            //计算signature
+            String timestamp = UtcTimeUtils.getTimestamp();
+            String noncestr = HttpParamsUtils.getRandomString(10);
+            String signature = SignatureUtils.getSinnature(timestamp,
+                    noncestr,
+                    Urls.APP_KEY,
+                    devid,
+                    SignatureUtils.token);
+            //发起请求
+            RequestParams params = HttpParamsUtils.setParams(Urls.DEVICE_STATE,timestamp,noncestr,signature);
+            params.setBodyContent(json.toString());
+
+//            System.out.println("获取设备状态---" + params.toString());
+            x.http().post(params, new Callback.CommonCallback<String>() {
                 @Override
                 public void onSuccess(String result) {
-                    try {
-                        JSONObject json = new JSONObject(result);
-                        String workMode = json.getString("workmode");
+
+                    DeviceStateInfoBean stateInfoBean = JsonUtils.deserialize(result, DeviceStateInfoBean.class);
+                    int status = stateInfoBean.getStatus();
+                    System.out.println("获取设备状态结果---" + result);
+                    if (200 == status){
+                        DeviceStateInfoBean.InfoBean infoBean = stateInfoBean.getInfo();
+                        String workMode = infoBean.getWorkmode();
                         if (workMode.equals("NORMAL")) {
                             mHandler.sendEmptyMessage(DEVICE_STATE_NORMAL);
                         } else if (workMode.equals("STDBY")) {
@@ -195,11 +226,12 @@ public class MyCarFragment extends Fragment {
                         } else if (workMode.equals("UNKNOWN")) {
                             mHandler.sendEmptyMessage(DEVICE_STATE_UNKNOWN);
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                    }else {
                         System.out.println("解析失败");
                         mHandler.sendEmptyMessage(DEVICE_STATE_DEFAULT);
                     }
+
+
                 }
 
                 @Override
@@ -359,7 +391,6 @@ public class MyCarFragment extends Fragment {
                             WifiDirectUtils.WifiDirect(getContext(), MyTestActivity.class);
                         } else {
                             if (!devId.equals("")) {
-//                                startVideo(devId);
                                 if ((System.currentTimeMillis()- secondTime) > (3 * 1000)){
                                     System.out.println("大于3秒");
                                     getDeviceState();
@@ -374,6 +405,8 @@ public class MyCarFragment extends Fragment {
                     case 2:
                         System.out.println("车辆信息" + position);
                         stopTimer();//取消设备状态轮询
+                        //开启轮询服务获取设备状态
+                        MyAlarmManager.startPollingService(getContext(), 10, DeviceStateService.class, "");
                         startActivity(new Intent(getContext(), CarInfo.class));
                         break;
                     case 3:
@@ -517,23 +550,43 @@ public class MyCarFragment extends Fragment {
     private void getDeviceState(){
 
         final String devid = mSpf.getString("devid", "");
-        RequestParams params2 = new RequestParams(Urls.DEVICE_STATE);
-        params2.addBodyParameter("devid", devid);
 
-        x.http().get(params2, new Callback.CommonCallback<String>() {
+        //配置json数据
+        JSONObject json = new JSONObject();
+        try {
+            json.put("devid",devid);
+            json.put(SIGNATURE_TOKEN, SignatureUtils.token);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //计算signature
+        String timestamp = UtcTimeUtils.getTimestamp();
+        String noncestr = HttpParamsUtils.getRandomString(10);
+        String signature = SignatureUtils.getSinnature(timestamp,
+                noncestr,
+                Urls.APP_KEY,
+                devid,
+                SignatureUtils.token);
+        //发起请求
+        RequestParams params = HttpParamsUtils.setParams(Urls.DEVICE_STATE,timestamp,noncestr,signature);
+        params.setBodyContent(json.toString());
+
+        x.http().post(params, new Callback.CommonCallback<String>() {
             @Override
             public void onSuccess(String result) {
                 System.out.println("结果" + result);
-                try {
-                    JSONObject json = new JSONObject(result);
-                    String workmode = json.getString("workmode");
-                    if (workmode.equals("NORMAL")){
+                DeviceStateInfoBean stateInfoBean = JsonUtils.deserialize(result, DeviceStateInfoBean.class);
+                int status = stateInfoBean.getStatus();
+                if (200 == status){
+                    DeviceStateInfoBean.InfoBean infoBean = stateInfoBean.getInfo();
+                    String workMode = infoBean.getWorkmode();
+                    if (workMode.equals("NORMAL")){
                         startVideo(devid);
                     }else {
                         ToastShow.showToast(getContext(),"主机不在线");
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
                 }
 
             }
@@ -557,17 +610,35 @@ public class MyCarFragment extends Fragment {
      */
     public void startVideo(String deviceId) {
         System.out.println("点击了开启实时视频1");
-        RequestParams params = new RequestParams(Urls.REQUEST_VIDEO);
-        params.addQueryStringParameter("devid", deviceId);
-        params.addParameter("channel", "0");
 
-        x.http().get(params, new Callback.CommonCallback<String>() {
+        //配置json数据
+        JSONObject json = new JSONObject();
+        try {
+            json.put("devid",deviceId);
+            json.put(SIGNATURE_TOKEN, SignatureUtils.token);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //计算signature
+        String timestamp = UtcTimeUtils.getTimestamp();
+        String noncestr = HttpParamsUtils.getRandomString(10);
+        String signature = SignatureUtils.getSinnature(timestamp,
+                noncestr,
+                Urls.APP_KEY,
+                deviceId,
+                SignatureUtils.token);
+        //发起请求
+        RequestParams params = HttpParamsUtils.setParams(Urls.REQUEST_VIDEO,timestamp,noncestr,signature);
+        params.setBodyContent(json.toString());
+
+        x.http().post(params, new Callback.CommonCallback<String>() {
             @Override
             public void onSuccess(String result) {
                 System.out.println(result);
-                Gson gson = new Gson();
-                VideoInfoBean videoInfoBean = gson.fromJson(result, VideoInfoBean.class);
-                int code = videoInfoBean.getError();
+
+                VideoInfoBean videoInfoBean = JsonUtils.deserialize(result, VideoInfoBean.class);
+                int code = videoInfoBean.getStatus();
                 if (code == 200) {
                     System.out.println("视频URL:" + videoInfoBean.getUrl());
                     TestDecoder.setUrl(videoInfoBean.getUrl());

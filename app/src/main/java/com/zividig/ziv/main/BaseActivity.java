@@ -14,7 +14,6 @@ public class BaseActivity extends Activity {
 
     @Override
     public void setContentView(int layoutResID) {
-//        SDKInitializer.initialize(this.getApplicationContext()); //初始化百度地图
         super.setContentView(layoutResID);
         setStatusBar();
     }

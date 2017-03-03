@@ -54,7 +54,7 @@ public class CarLocation extends BaseActivity {
             LocationBean locationBean = intent.getParcelableExtra(LocationService.PAR_KEY);
             lat = locationBean.getLat();
             lon = locationBean.getLon();
-            initMap(lat,lon);
+            initMap(lon,lat);
         }
     };
 
@@ -130,6 +130,7 @@ public class CarLocation extends BaseActivity {
             LatLng sourceLatLng = new LatLng(lat,lon);
             //坐标转换
             LatLng desLatLng = GPSConverterUtils.gpsToBaidu(sourceLatLng);
+            System.out.println("转换后的经纬度---" + "lat---" + desLatLng.latitude + "lon---" + desLatLng.longitude);
 
             //标注
             overlay = new MarkerOptions().position(desLatLng).icon(carIcon).zIndex(9).draggable(true);
@@ -142,7 +143,7 @@ public class CarLocation extends BaseActivity {
                 mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(mBuilder.build()));
 
             }else {
-//                System.out.println("增加点");
+                System.out.println("增加点");
                 mBaiduMap.addOverlay(overlay);
 
                 Point pt= mBaiduMap.getMapStatus().targetScreen;

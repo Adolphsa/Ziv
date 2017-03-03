@@ -32,11 +32,18 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONObject;
+import org.xutils.common.Callback;
+import org.xutils.http.RequestParams;
+import org.xutils.x;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.nio.Buffer;
 import java.text.SimpleDateFormat;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.Vector;
 
 import static com.zivdigi.helloffmpeg.R.id.mta_fullScreen;
@@ -44,6 +51,8 @@ import static com.zivdigi.helloffmpeg.R.id.mta_fullScreen;
 public class MyTestActivity extends FragmentActivity implements View.OnClickListener{
 
     private static String TAG = "MyTestActivity";
+
+    public static final String FF_REQUEST_VIDEO = "http://api.zivdigi.com/v1/device/rtsp";
 
     private static final int PLAY = 0;
     private static final int ERROR_CONNECT = 12;
@@ -80,6 +89,8 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
     private Button mPlay;                   //播放按钮
     private VideoPlayTask mVideoPlayTask;
     private Context mContext;
+
+    private Timer mVideoTimer;
 
     private boolean isScreenshot = false;
 
@@ -132,15 +143,16 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
             }
         }
     };
+    private SharedPreferences mSpf;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_fragment_sssp_play);
 
-        SharedPreferences spf = getSharedPreferences("config",MODE_PRIVATE);
+        mSpf = getSharedPreferences("config",MODE_PRIVATE);
         //设置获取设备状态为真，以便在Activity销毁时能重新获取设备状态
-        spf.edit().putBoolean("is_keeping_get_device_state",true).apply();
+        mSpf.edit().putBoolean("is_keeping_get_device_state",true).apply();
 
         mContext = MyTestActivity.this;
 
@@ -218,6 +230,9 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
         }
 
 
+        //发送继续推流命令
+        startTimer();
+
         glSurfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
@@ -258,6 +273,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
         td.setCancelInterface(true);
         td.startRequest();
         isProgressShow = true;
+        startTimer();
     }
 
     @Override
@@ -266,12 +282,14 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
         System.out.println("视频onStop");
         td.setCancelInterface(false);
         td.stopRequest();
+        stopTimer();
 
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        stopTimer();
         System.out.println("视频onDestroy");
         isKeepPlay = false;
         td.setCancelInterface(false);
@@ -625,6 +643,76 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
         Uri uri = Uri.fromFile(new File(path));
         intent.setData(uri);
         this.sendBroadcast(intent);
+    }
+
+    //定时器开始轮询设备状态
+    public void startTimer(){
+        System.out.println("开始轮询");
+        mVideoTimer = new Timer();
+
+        mVideoTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                startVideo();
+            }
+        },20 * 1000,40 * 1000);
+
+    }
+
+    public void stopTimer(){
+        System.out.println("停止轮询");
+        if (mVideoTimer != null){
+            mVideoTimer.cancel();
+        }
+    }
+
+    /**
+     * 开启实时视频
+     *
+     * @param
+     */
+    public void startVideo() {
+        String token = mSpf.getString("token","");
+        String deviceId = mSpf.getString("devid","");
+
+        //配置json数据
+        JSONObject json = new JSONObject();
+        try {
+            json.put("devid",deviceId);
+            json.put("token", token);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //计算signature
+        String timestamp = ArrayUtil.getTimestamp();
+        String noncestr = ArrayUtil.getRandomString(10);
+        String signature = ArrayUtil.getSinnature(timestamp,
+                noncestr,
+                ArrayUtil.FF_APP_KEY,
+                deviceId,
+                token);
+        //发起请求
+        RequestParams params = ArrayUtil.setParams(FF_REQUEST_VIDEO,timestamp,noncestr,signature);
+        params.setBodyContent(json.toString());
+        x.http().post(params, new Callback.CommonCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                System.out.println("继续请求推流结果" + result);
+
+            }
+
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+                System.out.println("访问错误" + ex);
+            }
+
+            @Override
+            public void onCancelled(CancelledException cex) {}
+
+            @Override
+            public void onFinished() {}
+        });
     }
 
 }
