@@ -73,4 +73,15 @@
         android:layout_below="@+id/about_include"
         android:layout_centerHorizontal="true"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="深圳市智威视讯科技有限公司"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="2dp"
+        />
+
 </RelativeLayout>

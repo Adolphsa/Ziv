@@ -82,21 +82,33 @@ public class SettingFragment extends Fragment {
     private BroadcastReceiver br = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            System.out.println("收到设备状态广播");
             count++;
             System.out.println("count---" + count);
             workModel = intent.getStringExtra("device_state");
             System.out.println("工作模式---" +workModel);
-            if (workModel.equals("NORMAL")){
+
+            if (workModel.equals("BOOTING")){   //主机启动中
+                if (!SettingFragment.this.isHidden()){
+                    LoadingProgressDialog.setTipText("主机正在启动中……");
+                }
+            }
+            if (workModel.equals("NORMAL")){        //主机已唤醒
                 showStateInfo("主机已唤醒");
                 getContext().unregisterReceiver(br);
                 mHandler.removeCallbacks(mRunnable);
             }
-            if (count >= 20){
-                showStateInfo("主机唤醒失败，请重试。");
+            if (workModel.equals("WAKEFAIL")){
+                showStateInfo("主机唤醒失败");
                 getContext().unregisterReceiver(br);
-                count = 0;
                 mHandler.removeCallbacks(mRunnable);
             }
+//            if (count >= 30){
+//                showStateInfo("主机唤醒失败");
+//                getContext().unregisterReceiver(br);
+//                count = 0;
+//                mHandler.removeCallbacks(mRunnable);
+//            }
         }
     };
 
@@ -123,7 +135,7 @@ public class SettingFragment extends Fragment {
                     case 0:
                         System.out.println("主机唤醒" + position);
                         //连续点击不生效
-                        if ((System.currentTimeMillis()- secondTime) > (8 * 1000)){
+                        if ((System.currentTimeMillis()- secondTime) > (3 * 1000)){
                             System.out.println("进来了");
                             if (!SettingFragment.this.isHidden()){
                                 dialog = LoadingProgressDialog.createLoadingDialog(getContext(),"正在唤醒中...",true,false,null);

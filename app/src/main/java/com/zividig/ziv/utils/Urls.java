@@ -23,6 +23,9 @@ public class Urls {
     //注册
     public static final String REGISTER_URL = "http://api.zivdigi.com/v1/user/register";
 
+    //修改密码
+    public static final String RESET_PASSWORD_URL = "http://api.zivdigi.com/v1/user/resetpwd";
+
     //获取验证码GET_YZM_URL + "/" + fdUser
     public static final String GET_YZM_URL = "http://api.zivdigi.com/v1/sms/send";
 

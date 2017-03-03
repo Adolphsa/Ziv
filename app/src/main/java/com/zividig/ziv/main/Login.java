@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -14,6 +16,9 @@ import com.google.gson.Gson;
 import com.igexin.sdk.PushManager;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.DeviceInfoBean;
+import com.zividig.ziv.bean.Users;
+import com.zividig.ziv.bean.UsersDao;
+import com.zividig.ziv.customView.DropEditText;
 import com.zividig.ziv.customView.LoadingProgressDialog;
 import com.zividig.ziv.utils.HttpParamsUtils;
 import com.zividig.ziv.utils.MD5;
@@ -30,6 +35,7 @@ import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.zividig.ziv.utils.SignatureUtils.SIGNATURE_TOKEN;
@@ -45,7 +51,7 @@ public class Login extends BaseActivity {
     private static final String CB_USER = "cb_user";
     private static final String CB_PWD = "cb_pwd";
 
-    private EditText etUser;
+    private DropEditText etUser;
     private EditText etPassword;
     private Button btLogin;
     private SharedPreferences config;
@@ -60,6 +66,10 @@ public class Login extends BaseActivity {
 
     private Dialog mDialog;
 
+    private UsersDao mUsersDao;
+    private ArrayAdapter<String> adapter;
+    private List<Users> mUsersList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +77,9 @@ public class Login extends BaseActivity {
 
         pushManager = PushManager.getInstance(); //获取个推Manager
         config = getSharedPreferences("config", MODE_PRIVATE);
+
+        mUsersDao = ZivApp.getInstance().getDaoSession().getUsersDao();
+
         initView();
     }
 
@@ -75,7 +88,7 @@ public class Login extends BaseActivity {
      */
     private void initView(){
 
-        etUser = (EditText) findViewById(R.id.et_user);
+        etUser = (DropEditText) findViewById(R.id.et_user);
         etPassword = (EditText) findViewById(R.id.et_pwd);
         cbUser = (CheckBox) findViewById(R.id.cb_user);
         cbPwd = (CheckBox) findViewById(R.id.cb_password);
@@ -143,6 +156,28 @@ public class Login extends BaseActivity {
                 }
             }
         });
+
+
+        List<String> strings = new ArrayList<>();
+        mUsersList = mUsersDao.loadAll();
+        if (mUsersList.size() > 0){
+            for (Users user : mUsersList){
+                strings.add(user.getUsername());
+            }
+        }
+        //从数据库查询数据填充
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, strings);
+        etUser.setAdapter(adapter);
+        etUser.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                System.out.println("被点击了");
+                Users dbUser = mUsersList.get(position);
+                etUser.setText(dbUser.getUsername());
+                etPassword.setText(dbUser.getPassword());
+                etUser.setDismiss();
+            }
+        });
     }
 
     /**
@@ -195,6 +230,21 @@ public class Login extends BaseActivity {
                             //保存账号密码
                             config.edit().putString(ET_USER,user).apply();
                             config.edit().putString(ET_PWD,password).apply();
+
+                            //保存在数据库，如果查询不到用户名就添加，否则值修改密码
+                            Users users = mUsersDao.queryBuilder()
+                                    .where(UsersDao.Properties.Username.eq(user))
+                                    .build().unique();
+                            if (users == null){
+                                Users users1 = new Users(null,user,password);
+                                mUsersDao.insert(users1);
+                                System.out.println("添加账号密码到数据库");
+                            }else {
+                                users.setPassword(password);
+                                mUsersDao.update(users);
+                                System.out.println("只修改密码");
+                            }
+
 
                             //保存token
                             SignatureUtils.token = json.getString(SignatureUtils.SIGNATURE_TOKEN);

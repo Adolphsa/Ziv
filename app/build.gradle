@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.antfortune.freeline'
+apply plugin: 'org.greenrobot.greendao'
 
 android {
     signingConfigs {
@@ -44,6 +45,11 @@ android {
     }
     productFlavors {
     }
+
+    greendao{
+        schemaVersion 1
+        targetGenDir 'src/main/java'
+    }
 }
 
 dependencies {
@@ -67,4 +73,6 @@ dependencies {
     //百度地图相关
     compile files('libs/MiPush_SDK_Client_3_2_1.jar')
     compile files('libs/BaiduLBS_Android.jar')
+    //数据库
+    compile 'org.greenrobot:greendao:3.1.0'
 }

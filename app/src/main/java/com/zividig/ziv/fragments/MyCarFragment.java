@@ -66,6 +66,7 @@ import static com.zividig.ziv.utils.SignatureUtils.SIGNATURE_TOKEN;
  */
 public class MyCarFragment extends Fragment {
 
+    private static final int DEVICE_STATE_BOOTING = 90;
     private static final int DEVICE_STATE_NORMAL = 100;
     private static final int DEVICE_STATE_STDBY = 101;
     private static final int DEVICE_STATE_OFF = 102;
@@ -129,6 +130,9 @@ public class MyCarFragment extends Fragment {
                     break;
                 case DEVICE_STATE_STDBY:
                     deviceState.setText("休眠");
+                    break;
+                case DEVICE_STATE_BOOTING:
+                    deviceState.setText("启动中");
                     break;
                 case DEVICE_STATE_OFF:
                     deviceState.setText("离线");
@@ -225,6 +229,8 @@ public class MyCarFragment extends Fragment {
                             mHandler.sendEmptyMessage(DEVICE_STATE_OFF);
                         } else if (workMode.equals("UNKNOWN")) {
                             mHandler.sendEmptyMessage(DEVICE_STATE_UNKNOWN);
+                        }else if (workMode.equals("BOOTING")){
+                            mHandler.sendEmptyMessage(DEVICE_STATE_BOOTING);
                         }
                     }else {
                         System.out.println("解析失败");
@@ -304,7 +310,7 @@ public class MyCarFragment extends Fragment {
                 mHandler.sendEmptyMessage(TITLE_CAR_ID);
             }else {
                 String tmp = devid.substring(devid.length()-4,devid.length());
-                String tmp2 = "设备ID:*" + tmp;
+                String tmp2 = "设备ID : *" + tmp;
                 titleDeviceId = tmp2;
                 mHandler.sendEmptyMessage(TITLE_DEVICE_ID);
             }

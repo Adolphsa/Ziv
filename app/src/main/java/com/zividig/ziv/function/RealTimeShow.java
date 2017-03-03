@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -434,8 +433,8 @@ public class RealTimeShow extends BaseActivity {
             switch (v.getId()) {
                 case R.id.bt_refresh:
                     if ((System.currentTimeMillis()- secondTime) > (2 * 1000)){
-                        photoView.setImageResource(R.mipmap.default_white);
-                        photoView.setBackgroundColor(Color.WHITE);
+//                        photoView.setImageResource(R.mipmap.default_white);
+//                        photoView.setBackgroundColor(Color.WHITE);
                         if (mTimer != null){
                             starTimer();
                         }

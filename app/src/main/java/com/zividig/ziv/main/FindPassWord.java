@@ -9,17 +9,19 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.RegisterMd5Bean;
 import com.zividig.ziv.customView.CountDownTimer;
+import com.zividig.ziv.utils.HttpParamsUtils;
 import com.zividig.ziv.utils.MD5;
+import com.zividig.ziv.utils.SignatureUtils;
+import com.zividig.ziv.utils.ToastShow;
 import com.zividig.ziv.utils.Urls;
+import com.zividig.ziv.utils.UtcTimeUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.xutils.common.Callback;
-import org.xutils.http.HttpMethod;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
 
@@ -98,15 +100,43 @@ public class FindPassWord extends BaseActivity {
     //获取验证码
     public void getFindPwdYzm(View view){
         if (checkValidity()){
-            RequestParams params = new RequestParams(Urls.GET_YZM_URL + "/" + fdUser);
+
+            JSONObject json = new JSONObject();
+            try {
+                json.put("phonenum",fdUser);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            //计算signature
+            String timestamp = UtcTimeUtils.getTimestamp();
+            String noncestr = HttpParamsUtils.getRandomString(10);
+            String signature = SignatureUtils.getSinnature(timestamp,
+                    noncestr,
+                    Urls.APP_KEY,
+                    fdUser);
+
+            RequestParams params = HttpParamsUtils.setParams(Urls.GET_YZM_URL,timestamp,noncestr,signature);
+            params.setBodyContent(json.toString());
             System.out.println("获取注册验证码params:" + params);
-            x.http().get(params, new Callback.CommonCallback<String>() {
+            x.http().post(params, new Callback.CommonCallback<String>() {
                 @Override
                 public void onSuccess(String result) {
                     System.out.println("获取注册验证码成功" + result);
-                    Gson gson = new Gson();
-                    registerMd5Bean = gson.fromJson(result,RegisterMd5Bean.class);
-                    md5Yzm = registerMd5Bean.getCode(); //获取加密的验证码
+                    try {
+                        JSONObject json = new JSONObject(result);
+                        int status = json.getInt("status");
+                        if (status == Urls.STATUS_CODE_200){
+                            System.out.println("获取注册验证码成功" + result);
+                            md5Yzm = json.getString("code");
+                        }else {
+                            ToastShow.showToast(FindPassWord.this,"获取验证码失败");
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+
                 }
 
                 @Override
@@ -139,28 +169,43 @@ public class FindPassWord extends BaseActivity {
                 Toast.makeText(FindPassWord.this,"请输入验证码",Toast.LENGTH_SHORT).show();
                 return;
             }
-            String tempYzm = fdYzm + "#$";
+            String tempYzm = fdYzm + "#$" + fdUser;
             System.out.println(tempYzm);
             try {
                 if (md5Yzm.equals(MD5.getMD5(tempYzm))){
                     System.out.println("相等");
-                    //放入请求的json数据
+
                     JSONObject json = new JSONObject();
-                    json.put("username",fdUser);
-                    json.put("password",MD5.getMD5(fdPwd));
-                    //配置请求参数
-                    RequestParams params = new RequestParams(Urls.REGISTER_URL + "/" + fdUser);
-                    params.setAsJsonContent(true);
+                    try {
+                        json.put("username",fdUser);
+                        json.put("password",MD5.getMD5(fdPwd));
+                        json.put("code",fdYzm);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    //计算signature
+                    String timestamp = UtcTimeUtils.getTimestamp();
+                    String noncestr = HttpParamsUtils.getRandomString(10);
+                    String signature = SignatureUtils.getSinnature(timestamp,
+                            noncestr,
+                            Urls.APP_KEY,
+                            fdUser,
+                            MD5.getMD5(fdPwd),
+                            fdYzm);
+
+                    RequestParams params = HttpParamsUtils.setParams(Urls.RESET_PASSWORD_URL,timestamp,noncestr,signature);
                     params.setBodyContent(json.toString());
                     //开始请求
-                    x.http().request(HttpMethod.PUT, params, new Callback.CommonCallback<String>() {
+                    x.http().post(params, new Callback.CommonCallback<String>() {
                         @Override
                         public void onSuccess(String result) {
-                            System.out.println("重置密码成功");
+                            System.out.println("重置密码---" + result);
+
                             try {
                                 JSONObject json = new JSONObject(result);
-                                boolean isSuccess = json.getBoolean("issuccess");
-                                if (isSuccess){
+                                int status = json.getInt("status");
+                                if (status == Urls.STATUS_CODE_200){
                                     Toast.makeText(FindPassWord.this,"重置密码成功",Toast.LENGTH_SHORT).show();
                                     startActivity(new Intent(FindPassWord.this,Login.class));
                                     finish();
@@ -178,14 +223,10 @@ public class FindPassWord extends BaseActivity {
                         }
 
                         @Override
-                        public void onCancelled(CancelledException cex) {
-
-                        }
+                        public void onCancelled(CancelledException cex) {}
 
                         @Override
-                        public void onFinished() {
-
-                        }
+                        public void onFinished() {}
                     });
                 }else {
                     System.out.println("不相等");

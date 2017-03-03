@@ -34,7 +34,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         >
-        <EditText
+        <com.zividig.ziv.customView.DropEditText
             android:id="@+id/et_user"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

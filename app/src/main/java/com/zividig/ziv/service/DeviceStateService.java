@@ -97,7 +97,7 @@ public class DeviceStateService extends Service {
                         broadcast.putExtra("device_state",workMode);
                         broadcast.putExtra("voltage",voltage);
                         sendBroadcast(broadcast);
-                        System.out.println("发送广播");
+                        System.out.println("发送设备状态广播");
                     }
                 }
             }

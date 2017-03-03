@@ -20,6 +20,8 @@ import com.zividig.ziv.R;
 
 public class LoadingProgressDialog {
 
+    private static TextView sTipText;
+
     public static Dialog createLoadingDialog(Context context, String msg, boolean progress, boolean button, View.OnClickListener listener){
         // 首先得到整个View
         View view = LayoutInflater.from(context).inflate(
@@ -38,7 +40,7 @@ public class LoadingProgressDialog {
         }
 
         // 页面中显示文本
-        TextView tipText = (TextView) view.findViewById(R.id.pd_text);
+        sTipText = (TextView) view.findViewById(R.id.pd_text);
 
         //页面中显示按钮
         Button btn = (Button) view.findViewById(R.id.pd_btn);
@@ -55,7 +57,7 @@ public class LoadingProgressDialog {
         // 显示动画
         img.startAnimation(animation);
         // 显示文本
-        tipText.setText(msg);
+        sTipText.setText(msg);
 
         // 创建自定义样式的Dialog
         Dialog loadingDialog = new Dialog(context, R.style.loading_dialog);
@@ -67,5 +69,9 @@ public class LoadingProgressDialog {
 
         return loadingDialog;
 
+    }
+
+    public static void setTipText(String msg){
+        sTipText.setText(msg);
     }
 }

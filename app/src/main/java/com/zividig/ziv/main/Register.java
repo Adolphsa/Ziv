@@ -167,7 +167,7 @@ public class Register extends BaseActivity {
                 ToastShow.showToast(Register.this,"请输入验证码");
                 return;
             }
-            String tempYzm = yzm + "#$";
+            String tempYzm = yzm + "#$" + user;
             System.out.println(tempYzm);
 
             try {
@@ -179,6 +179,7 @@ public class Register extends BaseActivity {
                     try {
                         json.put("username",user);
                         json.put("password",MD5.getMD5(pwd));
+                        json.put("code",yzm);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -190,7 +191,8 @@ public class Register extends BaseActivity {
                                                                     noncestr,
                                                                     Urls.APP_KEY,
                                                                     user,
-                                                                    MD5.getMD5(pwd));
+                                                                    MD5.getMD5(pwd),
+                                                                    yzm);
 
                     RequestParams params = HttpParamsUtils.setParams(Urls.REGISTER_URL,timestamp,noncestr,signature);
                     params.setBodyContent(json.toString());
