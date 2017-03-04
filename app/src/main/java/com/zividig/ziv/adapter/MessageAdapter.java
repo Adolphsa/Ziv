@@ -53,7 +53,7 @@ public class MessageAdapter extends SwipeMenuAdapter<MessageAdapter.DefaultViewH
 
     @Override
     public int getItemCount() {
-        return mDataBeanList == null ? 0 : mDataBeanList.size();
+        return mDataBeanList == null ? 0 : 20;
     }
 
     @Override

@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -60,23 +59,10 @@ public class SettingFragment extends Fragment {
 
     private long secondTime = 0;
 
-    private Handler mHandler = new Handler();
-
     public static SettingFragment instance() {
         SettingFragment view = new SettingFragment();
         return view;
     }
-
-    Runnable mRunnable = new Runnable() {
-        @Override
-        public void run() {
-            showStateInfo("主机唤醒失败，请重试。");
-            if (br != null){
-                getContext().unregisterReceiver(br);
-                System.out.println("哈下");
-            }
-        }
-    };
 
     //广播接收
     private BroadcastReceiver br = new BroadcastReceiver() {
@@ -96,19 +82,15 @@ public class SettingFragment extends Fragment {
             if (workModel.equals("NORMAL")){        //主机已唤醒
                 showStateInfo("主机已唤醒");
                 getContext().unregisterReceiver(br);
-                mHandler.removeCallbacks(mRunnable);
             }
             if (workModel.equals("WAKEFAIL")){
                 showStateInfo("主机唤醒失败");
                 getContext().unregisterReceiver(br);
-                mHandler.removeCallbacks(mRunnable);
             }
-//            if (count >= 30){
-//                showStateInfo("主机唤醒失败");
-//                getContext().unregisterReceiver(br);
-//                count = 0;
-//                mHandler.removeCallbacks(mRunnable);
-//            }
+            if (count >= 60){
+                showStateInfo("主机唤醒失败");
+                getContext().unregisterReceiver(br);
+            }
         }
     };
 
@@ -137,25 +119,17 @@ public class SettingFragment extends Fragment {
                         //连续点击不生效
                         if ((System.currentTimeMillis()- secondTime) > (3 * 1000)){
                             System.out.println("进来了");
+                            count = 0;
                             if (!SettingFragment.this.isHidden()){
                                 dialog = LoadingProgressDialog.createLoadingDialog(getContext(),"正在唤醒中...",true,false,null);
                                 dialog.show();
                             }
                             secondTime = System.currentTimeMillis();
 
-                            //注册广播接收器
-                            IntentFilter filter = new IntentFilter();
-                            filter.addAction(DeviceStateService.DEVICE_STATE_ACTION);
-                            filter.setPriority(Integer.MAX_VALUE);
-                            getContext().registerReceiver(br, filter);
-
-                            //开启轮询服务
-                            MyAlarmManager.startPollingService(getContext(), 3, DeviceStateService.class, "");
-
                             devID = sp.getString("devid","");
 
                             //配置json数据
-                            JSONObject json = new JSONObject();
+                            final JSONObject json = new JSONObject();
                             try {
                                 json.put("devid",devID);
                                 json.put(SIGNATURE_TOKEN, SignatureUtils.token);
@@ -175,14 +149,32 @@ public class SettingFragment extends Fragment {
                             //发起请求
                             RequestParams params = HttpParamsUtils.setParams(Urls.DEVICE_WAKEUP,timestamp,noncestr,signature);
                             params.setBodyContent(json.toString());
-                            params.setConnectTimeout(20 * 1000);
-                            System.out.println("主机唤醒：" + params);
 
                             //只发唤醒命令
                             x.http().post(params, new Callback.CommonCallback<String>() {
                                 @Override
                                 public void onSuccess(String result) {
                                     System.out.println("主机唤醒结果：" + result);
+                                    try {
+                                        JSONObject json = new JSONObject(result);
+                                        int status = json.getInt("status");
+                                        if (200 == status){
+
+                                            //注册广播接收器
+                                            IntentFilter filter = new IntentFilter();
+                                            filter.addAction(DeviceStateService.DEVICE_STATE_ACTION);
+                                            filter.setPriority(Integer.MAX_VALUE);
+                                            getContext().registerReceiver(br, filter);
+
+                                            //开启轮询服务
+                                            MyAlarmManager.startPollingService(getContext(), 3, DeviceStateService.class, "");
+                                        }else {
+                                            ToastShow.showToast(getContext(),"唤醒指令发送失败");
+                                        }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
                                 }
 
                                 @Override
@@ -236,21 +228,21 @@ public class SettingFragment extends Fragment {
                         System.out.println("震动免打扰" + position);
                         String username = sp.getString("et_user", "");
                         System.out.println("用户名" + username);
-                        String alarmState = sp.getString("alarm_state","");
+                        String alarmState = sp.getString("alarm_status","");
                         System.out.println("");
                         if (alarmState.equals("open")){
-                            holder.RightIcon.setImageResource(R.mipmap.switch_on); //允许推送
+                            holder.RightIcon.setImageResource(R.mipmap.switch_on); //不允许推送
                             //设置成不推送
                             setAlarmDoNotDisturb(username,"close");
-                            sp.edit().putString("alarm_state","close").apply();
+                            sp.edit().putString("alarm_status","close").apply();
                             System.out.println("设置成不推送");
 
                         }else {
-                            holder.RightIcon.setImageResource(R.mipmap.switch_off); //不允许推送
+                            holder.RightIcon.setImageResource(R.mipmap.switch_off); //允许推送
 //                            sp.edit().putBoolean("no_disturb",true).apply();
                             //设置成推送
                             setAlarmDoNotDisturb(username,"open");
-                            sp.edit().putString("alarm_state","open").apply();
+                            sp.edit().putString("alarm_status","open").apply();
                             System.out.println("设置成推送");
                         }
                         break;
@@ -269,6 +261,8 @@ public class SettingFragment extends Fragment {
      * @param smg 唤醒成功或失败
      */
     private void showStateInfo(String smg){
+
+        count = 0;
 
         //关闭dialog1
         if (dialog != null){
@@ -440,7 +434,7 @@ public class SettingFragment extends Fragment {
                 case 1:
                     holder.leftIcon.setImageResource(R.mipmap.restaet);
                     holder.itemText.setText("震动免打扰");
-                    String alarmState = sp.getString("alarm_state","");
+                    String alarmState = sp.getString("alarm_status","");
                     if (alarmState.equals("open")){
                         holder.RightIcon.setImageResource(R.mipmap.switch_off);
                     }else {

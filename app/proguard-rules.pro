@@ -81,6 +81,14 @@
 -dontwarn com.zividig.ndk_test.**
 -keep class com.zividig.ndk_test.**{*;}
 
+#greedao
+-dontwarn org.greenrobot.greendao.database.**
+-keep class org.greenrobot.greendao.**{*;}
+-keepclassmembers class * extends org.greenrobot.greendao.AbstractDao {
+    public static java.lang.String TABLENAME;
+}
+-keep class **$Properties
+
 # OkHttp3
 -dontwarn okhttp3.logging.**
 -keep class okhttp3.internal.**{*;}

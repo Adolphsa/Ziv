@@ -258,6 +258,7 @@ public class Login extends BaseActivity {
                             //进入主界面
                             enterMainActivity();
                             System.out.println("clientId: " + getuiId);
+
                         }else if (status == Urls.STATUS_CODE_400){
                             System.out.println("登录失败");
                             closeDialog();

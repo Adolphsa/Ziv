@@ -82,7 +82,7 @@ public class MessageMapShow extends BaseActivity {
         mmsTvAddressDescribe.setText("地址详情 : " + dataBean.getAddress_desc());
         mmsTvAlarmTime.setText("时        间 : " + dataBean.getTime());
 
-        LatLng latLng = new LatLng(dataBean.getLat(),dataBean.getLon());
+        LatLng latLng = new LatLng(dataBean.getLon(),dataBean.getLat());
         LatLng convertLatLon =  GPSConverterUtils.gpsToBaidu(latLng);
 
         MarkerOptions markerOptions = new MarkerOptions().icon(realtimeBitmap).position(convertLatLon);
