@@ -114,6 +114,7 @@ public class MyCarFragment extends Fragment {
     private static Timer mTimer;
 
     private long secondTime = 0;
+    private int loopTime = 5;
 
     public static MyCarFragment instance() {
         MyCarFragment myCarView = new MyCarFragment();
@@ -167,10 +168,10 @@ public class MyCarFragment extends Fragment {
         mTimer.schedule(new TimerTask() {
             @Override
             public void run() {
+                System.out.println("开始定时器");
                 loopGetDeviceState();
             }
-        },0,2000);
-
+        },0,loopTime*1000);
     }
 
     public void stopTimer(){
@@ -185,6 +186,7 @@ public class MyCarFragment extends Fragment {
      */
     private void loopGetDeviceState(){
         String devid = mSpf.getString("devid", "");
+        System.out.println("token---" + SignatureUtils.token);
         if (devid.equals("")){
             mHandler.sendEmptyMessage(ID_IS_NULL);
         }else {
@@ -192,7 +194,7 @@ public class MyCarFragment extends Fragment {
             JSONObject json = new JSONObject();
             try {
                 json.put("devid",devid);
-                json.put(SIGNATURE_TOKEN, SignatureUtils.token);
+                json.put(SignatureUtils.SIGNATURE_TOKEN, SignatureUtils.token);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -223,9 +225,11 @@ public class MyCarFragment extends Fragment {
                         String workMode = infoBean.getWorkmode();
                         if (workMode.equals("NORMAL")) {
                             mHandler.sendEmptyMessage(DEVICE_STATE_NORMAL);
+                            loopTime = 30;
                         } else if (workMode.equals("STDBY")) {
                             mHandler.sendEmptyMessage(DEVICE_STATE_STDBY);
                         } else if (workMode.equals("OFF")) {
+                            loopTime = 2;
                             mHandler.sendEmptyMessage(DEVICE_STATE_OFF);
                         } else if (workMode.equals("UNKNOWN")) {
                             mHandler.sendEmptyMessage(DEVICE_STATE_UNKNOWN);
@@ -265,13 +269,13 @@ public class MyCarFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_mycar, null);
         mSpf = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
         mMainActivity = (MainActivity) getActivity();
-        mSpf.edit().putBoolean("is_keeping_get_device_state",false).apply();
+        mSpf.edit().putBoolean("is_keeping_get_device_state",true).apply();
 
         initView();
         initAd();
         initFunctionButton();
 
-        startTimer();
+//        startTimer();
         return view;
     }
 
@@ -384,8 +388,7 @@ public class MyCarFragment extends Fragment {
                         System.out.println("图片抓拍" + position);
                         if (!devId.equals("")) {
                             stopTimer();//取消设备状态轮询
-                            startActivity(new Intent(getContext(), RealTimeShow.class));
-
+                            getDeviceState(position);
                         } else {
                             ToastShow.showToast(getContext(), "请先添加设备");
                         }
@@ -399,7 +402,7 @@ public class MyCarFragment extends Fragment {
                             if (!devId.equals("")) {
                                 if ((System.currentTimeMillis()- secondTime) > (3 * 1000)){
                                     System.out.println("大于3秒");
-                                    getDeviceState();
+                                    getDeviceState(position);
                                 }
                                 secondTime = System.currentTimeMillis();
                             } else {
@@ -509,13 +512,14 @@ public class MyCarFragment extends Fragment {
         super.onResume();
         //开始自动翻页
         convenientBanner.startTurning(3000);
+        loopGetDeviceState();
         getDevID();
         System.out.println("MyCarFragment的Resume");
-        boolean isKeepingGetDeviceState = mSpf.getBoolean("is_keeping_get_device_state",false);
+        boolean isKeepingGetDeviceState = mSpf.getBoolean("is_keeping_get_device_state",true);
         System.out.println("是否继续获取设备状态---" + isKeepingGetDeviceState);
 
         if (isKeepingGetDeviceState){
-            mSpf.edit().putBoolean("is_keeping_get_device_state",false).apply();
+//            mSpf.edit().putBoolean("is_keeping_get_device_state",false).apply();
             startTimer();
         }
     }
@@ -531,6 +535,7 @@ public class MyCarFragment extends Fragment {
         super.onPause();
         //停止翻页
         convenientBanner.stopTurning();
+        stopTimer();
     }
 
     @Override
@@ -553,7 +558,10 @@ public class MyCarFragment extends Fragment {
         return devId;
     }
 
-    private void getDeviceState(){
+    /**
+     * 获取
+     */
+    private void getDeviceState(final int postion){
 
         final String devid = mSpf.getString("devid", "");
 
@@ -589,7 +597,12 @@ public class MyCarFragment extends Fragment {
                     DeviceStateInfoBean.InfoBean infoBean = stateInfoBean.getInfo();
                     String workMode = infoBean.getWorkmode();
                     if (workMode.equals("NORMAL")){
-                        startVideo(devid);
+                        if (0 == postion){
+                            startActivity(new Intent(getContext(), RealTimeShow.class));
+                        }else if (1 == postion){
+                            startVideo(devid);
+                        }
+
                     }else {
                         ToastShow.showToast(getContext(),"主机不在线");
                     }

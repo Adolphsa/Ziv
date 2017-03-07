@@ -352,7 +352,7 @@ public class Login extends BaseActivity {
                             if (devinfoList.size() > 0){
                                 devid =   deviceInfoBean.getDevinfo().get(0).getDevid(); //设备ID
                                 configs.edit().putString("devid",devid).apply();
-                                System.out.println("列表为空的时候");
+                                System.out.println("devid为空的时候");
                             }
 
                         }else {

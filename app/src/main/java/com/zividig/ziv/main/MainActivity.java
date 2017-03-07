@@ -51,6 +51,7 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
     private MyFragment mMyFragment = null; //我
 
     private long exitTime = 0;
+    private SharedPreferences mSpf;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +59,8 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
         setContentView(R.layout.activity_main);
 
         StatusBarUtils.setColor(this, getResources().getColor(R.color.black_russian));
+
+        mSpf = getSharedPreferences("config", MODE_PRIVATE);
 
         findViews();
         init();
@@ -97,11 +100,13 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
         if (position != 0){
             if (mMyCarFragment != null){
                 mMyCarFragment.stopTimer();
+                mSpf.edit().putBoolean("is_keeping_get_device_state",false).apply();
             }
 
         }else {
             if (mMyCarFragment != null){
                 mMyCarFragment.startTimer();
+                mSpf.edit().putBoolean("is_keeping_get_device_state",true).apply();
 
             }
         }
@@ -294,6 +299,9 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
                 exitTime = System.currentTimeMillis();
             } else {
 //                logout();
+                SharedPreferences sp = getSharedPreferences("config", MODE_PRIVATE);
+                sp.edit().remove("token").apply();
+                sp.edit().remove("is_keeping_get_device_state").apply();
                 finish();
                 System.exit(0);
             }

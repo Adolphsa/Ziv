@@ -1,10 +1,8 @@
 package com.zividig.ziv.fragments;
 
 import android.app.Dialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -19,12 +17,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.zividig.ziv.R;
+import com.zividig.ziv.bean.DeviceStateInfoBean;
 import com.zividig.ziv.customView.LoadingProgressDialog;
 import com.zividig.ziv.function.About;
 import com.zividig.ziv.function.LightColor;
-import com.zividig.ziv.service.DeviceStateService;
 import com.zividig.ziv.utils.HttpParamsUtils;
-import com.zividig.ziv.utils.MyAlarmManager;
+import com.zividig.ziv.utils.JsonUtils;
 import com.zividig.ziv.utils.SignatureUtils;
 import com.zividig.ziv.utils.ToastShow;
 import com.zividig.ziv.utils.Urls;
@@ -35,6 +33,9 @@ import org.json.JSONObject;
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static com.zividig.ziv.utils.SignatureUtils.SIGNATURE_TOKEN;
 
@@ -59,40 +60,33 @@ public class SettingFragment extends Fragment {
 
     private long secondTime = 0;
 
+    private  Timer mTimer;
+
     public static SettingFragment instance() {
         SettingFragment view = new SettingFragment();
         return view;
     }
 
-    //广播接收
-    private BroadcastReceiver br = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            System.out.println("收到设备状态广播");
-            count++;
-            System.out.println("count---" + count);
-            workModel = intent.getStringExtra("device_state");
-            System.out.println("工作模式---" +workModel);
+    //定时器开始轮询设备状态
+    public void startTimer(){
 
-            if (workModel.equals("BOOTING")){   //主机启动中
-                if (!SettingFragment.this.isHidden()){
-                    LoadingProgressDialog.setTipText("主机正在启动中……");
-                }
+        mTimer = new Timer();
+
+        mTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                getDeviceState();
             }
-            if (workModel.equals("NORMAL")){        //主机已唤醒
-                showStateInfo("主机已唤醒");
-                getContext().unregisterReceiver(br);
-            }
-            if (workModel.equals("WAKEFAIL")){
-                showStateInfo("主机唤醒失败");
-                getContext().unregisterReceiver(br);
-            }
-            if (count >= 60){
-                showStateInfo("主机唤醒失败");
-                getContext().unregisterReceiver(br);
-            }
+        },0,2000);
+
+    }
+
+    public void stopTimer(){
+        if (mTimer != null){
+            mTimer.cancel();
         }
-    };
+
+    }
 
     @Nullable
     @Override
@@ -117,13 +111,13 @@ public class SettingFragment extends Fragment {
                     case 0:
                         System.out.println("主机唤醒" + position);
                         //连续点击不生效
-                        if ((System.currentTimeMillis()- secondTime) > (3 * 1000)){
+                        if ((System.currentTimeMillis()- secondTime) > (2 * 1000)){
                             System.out.println("进来了");
                             count = 0;
-                            if (!SettingFragment.this.isHidden()){
-                                dialog = LoadingProgressDialog.createLoadingDialog(getContext(),"正在唤醒中...",true,false,null);
-                                dialog.show();
-                            }
+
+                            //开启轮询服务
+                            startTimer();
+
                             secondTime = System.currentTimeMillis();
 
                             devID = sp.getString("devid","");
@@ -160,16 +154,15 @@ public class SettingFragment extends Fragment {
                                         int status = json.getInt("status");
                                         if (200 == status){
 
-                                            //注册广播接收器
-                                            IntentFilter filter = new IntentFilter();
-                                            filter.addAction(DeviceStateService.DEVICE_STATE_ACTION);
-                                            filter.setPriority(Integer.MAX_VALUE);
-                                            getContext().registerReceiver(br, filter);
+                                            if (!SettingFragment.this.isHidden()){
+                                                dialog = LoadingProgressDialog.createLoadingDialog(getContext(),"正在唤醒中...",true,false,null);
+                                                dialog.show();
+                                            }
 
-                                            //开启轮询服务
-                                            MyAlarmManager.startPollingService(getContext(), 3, DeviceStateService.class, "");
                                         }else {
                                             ToastShow.showToast(getContext(),"唤醒指令发送失败");
+                                            dialog.dismiss();
+                                            stopTimer();
                                         }
                                     } catch (JSONException e) {
                                         e.printStackTrace();
@@ -188,7 +181,7 @@ public class SettingFragment extends Fragment {
                             });
 
                         }else {
-                           ToastShow.showToast(getContext(),"正在唤醒中，请不要重复点击。");
+                           ToastShow.showToast(getContext(),"请不要重复点击。");
                             break;
                         }
 
@@ -257,10 +250,86 @@ public class SettingFragment extends Fragment {
     }
 
     /**
+     * 获取设备状态
+     */
+    private void getDeviceState(){
+         devID = sp.getString("devid","");
+        //配置json数据
+        JSONObject json = new JSONObject();
+        try {
+            json.put("devid",devID);
+            json.put(SIGNATURE_TOKEN, SignatureUtils.token);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //计算signature
+        String timestamp = UtcTimeUtils.getTimestamp();
+        String noncestr = HttpParamsUtils.getRandomString(10);
+        String signature = SignatureUtils.getSinnature(timestamp,
+                noncestr,
+                Urls.APP_KEY,
+                devID,
+                SignatureUtils.token);
+        //发起请求
+        RequestParams params = HttpParamsUtils.setParams(Urls.DEVICE_STATE,timestamp,noncestr,signature);
+        params.setBodyContent(json.toString());
+
+        System.out.println("获取设备状态---" + params.toString());
+        x.http().post(params, new Callback.CommonCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                System.out.println("结果" + result);
+                DeviceStateInfoBean stateInfoBean = JsonUtils.deserialize(result, DeviceStateInfoBean.class);
+                int status = stateInfoBean.getStatus();
+                if (200 == status){
+                    DeviceStateInfoBean.InfoBean infoBean = stateInfoBean.getInfo();
+                    count++;
+                    System.out.println("count---" + count);
+                    workModel = infoBean.getWorkmode();
+                    System.out.println("工作模式---" +workModel);
+
+                    if (workModel.equals("BOOTING")){   //主机启动中
+                        if (!SettingFragment.this.isHidden()){
+                            LoadingProgressDialog.setTipText("主机正在启动中……");
+                        }
+                    }
+                    if (workModel.equals("NORMAL")){        //主机已唤醒
+                        showStateInfo("主机已唤醒");
+                    }
+                    if (workModel.equals("WAKEFAIL")){
+                        showStateInfo("主机唤醒失败");
+                    }
+                    if (workModel.equals("OFF")){
+                        showStateInfo("离线状态无法唤醒");
+                    }
+                    if (count >= 60){
+                        showStateInfo("主机唤醒失败");
+                    }
+
+                }
+            }
+
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {}
+
+            @Override
+            public void onCancelled(CancelledException cex) {}
+
+            @Override
+            public void onFinished() {}
+        });
+    }
+
+
+    /**
      * 显示唤醒状态的对话框
      * @param smg 唤醒成功或失败
      */
     private void showStateInfo(String smg){
+
+        stopTimer();
 
         count = 0;
 
@@ -277,9 +346,6 @@ public class SettingFragment extends Fragment {
             }
         });
         dialog2.show();
-
-        //停止轮询服务
-        MyAlarmManager.stopPollingService(getContext(),DeviceStateService.class);
     }
 
     /**
@@ -455,5 +521,11 @@ public class SettingFragment extends Fragment {
         ImageView leftIcon;
         TextView itemText;
         ImageView RightIcon;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        stopTimer();
     }
 }

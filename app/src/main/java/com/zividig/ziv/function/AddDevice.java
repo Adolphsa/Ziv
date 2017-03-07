@@ -39,6 +39,10 @@ public class AddDevice extends BaseActivity {
     private SharedPreferences spf;
     private Login mLogin;
 
+    private static final int REQUEST_CODE_PERMISSION_CAMERA = 100;
+
+    private static final int REQUEST_CODE_SETTING = 300;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,9 +74,7 @@ public class AddDevice extends BaseActivity {
         setTwoCode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 startActivity(new Intent(AddDevice.this, CaptureActivity.class));
-
             }
         });
 
@@ -214,13 +216,6 @@ public class AddDevice extends BaseActivity {
             }
         });
     }
-
-//    //切换网络
-//    public void changeNetwork(View view) {
-//        Intent intent = new Intent();
-//        intent.setAction("android.net.wifi.PICK_WIFI_NETWORK");
-//        startActivity(intent);
-//    }
 
     /**
      * 二维码设置成功后弹出的表单对话框

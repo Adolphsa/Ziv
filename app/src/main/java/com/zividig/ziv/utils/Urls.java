@@ -51,7 +51,7 @@ public class Urls {
     public static final String REQUEST_VIDEO = "http://api.zivdigi.com/v1/device/rtsp";
 
     //主机唤醒
-    public static final String DEVICE_WAKEUP = "http://api.zivdigi.com/v1/device/wake ";
+    public static final String DEVICE_WAKEUP = "http://api.zivdigi.com/v1/device/wake";
 
     //获取设备状态
     public static final String DEVICE_STATE = "http://api.zivdigi.com/v1/device/info";

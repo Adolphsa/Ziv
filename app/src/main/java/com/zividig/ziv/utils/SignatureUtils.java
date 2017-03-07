@@ -7,7 +7,6 @@ package com.zividig.ziv.utils;
 
 public class SignatureUtils {
 
-
     public static final String SIGNATURE_APP_KEY = "app_key";
     public static final String SIGNATURE_TIMESTAMP = "timestamp";
     public static final String SIGNATURE_NONCESTTR = "noncestr";
@@ -23,10 +22,7 @@ public class SignatureUtils {
             keyStr += key;
         }
 
-//        System.out.println("keyStr---" + keyStr);
         String signature = keyStr + Urls.APP_SECRET;
-
-//        System.out.println("sing----" + signature);
 
         return MD5.getMD5(signature);
     }
