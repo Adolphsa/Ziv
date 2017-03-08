@@ -54,7 +54,7 @@ public class CarLocation extends BaseActivity {
             LocationBean locationBean = intent.getParcelableExtra(LocationService.PAR_KEY);
             lat = locationBean.getLat();
             lon = locationBean.getLon();
-            initMap(lon,lat);
+            initMap(lat,lon);
         }
     };
 
@@ -88,6 +88,7 @@ public class CarLocation extends BaseActivity {
         //设定地图的初始中心
         String stringLat = SharedPreferencesUtils.getString(CarLocation.this, "ziv_lat", "0.0");
         String stringLon = SharedPreferencesUtils.getString(CarLocation.this, "ziv_lon", "0.0");
+
         if (!stringLat.equals("0.0") && !stringLon.equals("0.0")){
             System.out.println("lat---" + Double.valueOf(stringLat));
             System.out.println("lon---" + Double.valueOf(stringLon));
@@ -97,6 +98,7 @@ public class CarLocation extends BaseActivity {
                     .zoom(16.0f);
 
         }else {
+            System.out.println("默认22.549467");
             mBuilder.target(GPSConverterUtils.gpsToBaidu(new LatLng(22.549467,113.920565)))
                     .zoom(16.0f);
         }
@@ -112,7 +114,7 @@ public class CarLocation extends BaseActivity {
 
     public void initMap(Double lat,Double lon){
 
-        if (lat == 0 && lon == 0){
+        if (lat == 0f && lon == 0f){
             if (once){
                 if (!CarLocation.this.isFinishing()){
                     DialogUtils.showPrompt(CarLocation.this, "提示", "暂无数据", "确定", new DialogInterface.OnClickListener() {

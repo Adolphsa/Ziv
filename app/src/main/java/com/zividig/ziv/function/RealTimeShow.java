@@ -74,6 +74,7 @@ public class RealTimeShow extends BaseActivity {
     private int getImageCount = 0;
 
     private long secondTime = 0;
+    private String imageKey = "new";
 
     private Timer mTimer;
 
@@ -218,10 +219,13 @@ public class RealTimeShow extends BaseActivity {
         mHandler.sendEmptyMessage(BEFORE_GET_IMAGE_URL);
         getImageCount++;
 
+        System.out.println("imageKey的值---" + imageKey);
+
         //配置json数据
         JSONObject json = new JSONObject();
         try {
             json.put("devid",devid);
+            json.put("key",imageKey);
             json.put(SIGNATURE_TOKEN, SignatureUtils.token);
 
         } catch (Exception e) {
@@ -235,6 +239,7 @@ public class RealTimeShow extends BaseActivity {
                 noncestr,
                 Urls.APP_KEY,
                 devid,
+                imageKey,
                 SignatureUtils.token);
         //发起请求
         RequestParams params = HttpParamsUtils.setParams(Urls.URL_PIC_SNAP,timestamp,noncestr,signature);
@@ -256,6 +261,8 @@ public class RealTimeShow extends BaseActivity {
                 errorCode = realTimeBean.getStatus();
                 System.out.println("error的值：---" + errorCode);
 
+                imageKey = realTimeBean.getKey();
+
                 switch (errorCode) {
                     case 200: //返回正常
                         if (!url.isEmpty() && !url.equals("")) {
@@ -268,14 +275,17 @@ public class RealTimeShow extends BaseActivity {
                         break;
                     case 404:
                         ToastShow.showToast(RealTimeShow.this,"设备不存在");
+                        imageKey = "new";
                         mTimer.cancel();
                         break;
                     case 403:
                         ToastShow.showToast(RealTimeShow.this,"token错误或者设备不在该用户名下");
+                        imageKey = "new";
                         mTimer.cancel();
                         break;
                     case 402:
                         System.out.println("设备不在线，无法抓取");
+                        imageKey = "new";
                         mTimer.cancel();
                         mHandler.sendEmptyMessage(DEVICE_NOT_ONLINE);
                         break;
@@ -287,6 +297,7 @@ public class RealTimeShow extends BaseActivity {
             public void onError(Throwable ex, boolean isOnCallback) {
                 System.out.println("返回json错误" + ex);
                 mHandler.sendEmptyMessage(GET_IMAGE_URL_ERROR);
+                imageKey = "new";
             }
 
             @Override
@@ -299,6 +310,7 @@ public class RealTimeShow extends BaseActivity {
         if (getImageCount > 9){
             System.out.println("大于九了");
             getImageCount = 0;
+            imageKey = "new";
             mTimer.cancel();
             mHandler.sendEmptyMessage(SNAP_FAIL);
         }
@@ -339,6 +351,7 @@ public class RealTimeShow extends BaseActivity {
             @Override
             public void onFinished() {
 //                btRefresh.setClickable(true);
+                imageKey = "new";
             }
         });
 

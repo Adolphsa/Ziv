@@ -80,7 +80,7 @@ public class ElectronicFence extends BaseActivity {
         public void onReceive(Context context, Intent intent) {
 
             LocationBean locationBean = intent.getParcelableExtra(LocationService.PAR_KEY);
-            initMap(locationBean.getLon(),locationBean.getLat());
+            initMap(locationBean.getLat(),locationBean.getLon());
 
             MyAlarmManager.stopPollingService(ElectronicFence.this, LocationService.class);
         }

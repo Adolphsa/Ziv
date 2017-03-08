@@ -152,7 +152,6 @@ public class MessageFragment extends Fragment {
     private OnItemClickListener onItemClickListener = new OnItemClickListener() {
         @Override
         public void onItemClick(int position) {
-            spf.edit().putBoolean("red_point" + position,false).apply();
             MessageBean.DataBean dataBean = mDataBeanList.get(position);
             Intent intent = new Intent(mContext, MessageMapShow.class);
             intent.putExtra("alarm_message_data",dataBean);

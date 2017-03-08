@@ -9,12 +9,14 @@ public class RealTimeBean {
 
     /**
      * status : 200
-     * url : aaa
+     * url :
+     * key : 1488882230
      * message : bbb
      */
 
     private int status;
     private String url;
+    private String key;
     private String message;
 
     public int getStatus() {
@@ -31,6 +33,14 @@ public class RealTimeBean {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public String getMessage() {

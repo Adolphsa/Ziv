@@ -199,7 +199,6 @@ public class Login extends BaseActivity {
             }
 
             showProgressDialog();
-
             //计算signature
             String timestamp = UtcTimeUtils.getTimestamp();
             String noncestr = HttpParamsUtils.getRandomString(10);
@@ -209,6 +208,7 @@ public class Login extends BaseActivity {
                     user,
                     MD5.getMD5(password),
                     getuiId);
+
             //发起请求
             RequestParams params = HttpParamsUtils.setParams(Urls.LOGIN_URL,timestamp,noncestr,signature);
             params.setBodyContent(json.toString());

@@ -114,7 +114,7 @@ public class MyCarFragment extends Fragment {
     private static Timer mTimer;
 
     private long secondTime = 0;
-    private int loopTime = 5;
+    private int loopTime = 30;
 
     public static MyCarFragment instance() {
         MyCarFragment myCarView = new MyCarFragment();
@@ -168,7 +168,6 @@ public class MyCarFragment extends Fragment {
         mTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                System.out.println("开始定时器");
                 loopGetDeviceState();
             }
         },0,loopTime*1000);
@@ -225,11 +224,9 @@ public class MyCarFragment extends Fragment {
                         String workMode = infoBean.getWorkmode();
                         if (workMode.equals("NORMAL")) {
                             mHandler.sendEmptyMessage(DEVICE_STATE_NORMAL);
-                            loopTime = 30;
                         } else if (workMode.equals("STDBY")) {
                             mHandler.sendEmptyMessage(DEVICE_STATE_STDBY);
                         } else if (workMode.equals("OFF")) {
-                            loopTime = 2;
                             mHandler.sendEmptyMessage(DEVICE_STATE_OFF);
                         } else if (workMode.equals("UNKNOWN")) {
                             mHandler.sendEmptyMessage(DEVICE_STATE_UNKNOWN);
@@ -426,7 +423,7 @@ public class MyCarFragment extends Fragment {
                                 stopTimer();//取消设备状态轮询
                                 startActivity(new Intent(getContext(), CarLocation.class));
                             } else {
-                                MyAlarmManager.startPollingService(getContext(), 1, LocationService.class, devId);
+                                MyAlarmManager.startPollingService(getContext(), 2, LocationService.class, devId);
                                 stopTimer();//取消设备状态轮询
                                 startActivity(new Intent(getContext(), CarLocation.class));
                             }
@@ -519,7 +516,7 @@ public class MyCarFragment extends Fragment {
         System.out.println("是否继续获取设备状态---" + isKeepingGetDeviceState);
 
         if (isKeepingGetDeviceState){
-//            mSpf.edit().putBoolean("is_keeping_get_device_state",false).apply();
+            mSpf.edit().putBoolean("is_keeping_get_device_state",false).apply();
             startTimer();
         }
     }

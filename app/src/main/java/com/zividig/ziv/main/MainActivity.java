@@ -302,6 +302,8 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
                 SharedPreferences sp = getSharedPreferences("config", MODE_PRIVATE);
                 sp.edit().remove("token").apply();
                 sp.edit().remove("is_keeping_get_device_state").apply();
+                sp.edit().remove("lat").apply();
+                sp.edit().remove("lon").apply();
                 finish();
                 System.exit(0);
             }
