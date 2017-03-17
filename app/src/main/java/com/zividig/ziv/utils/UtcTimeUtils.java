@@ -68,4 +68,11 @@ public class UtcTimeUtils {
 
         return System.currentTimeMillis()/1000 + "";
     }
+
+    public static String unixTimeToDate(long unixTime){
+        SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        String date = sDateFormat.format(new java.util.Date(unixTime*1000));
+        System.out.println(date);
+        return date;
+    }
 }

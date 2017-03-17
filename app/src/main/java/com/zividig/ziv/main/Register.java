@@ -212,7 +212,7 @@ public class Register extends BaseActivity {
                                     startActivity(new Intent(Register.this,Login.class));
                                     finish();
 
-                                }else if (status == Urls.STATUS_CODE_400){
+                                }else if (status == Urls.STATUS_CODE_402){
                                     ToastShow.showToast(Register.this,"手机号已被注册");
                                 }else if (status == Urls.STATUS_CODE_500){
                                     ToastShow.showToast(Register.this,"数据库错误");

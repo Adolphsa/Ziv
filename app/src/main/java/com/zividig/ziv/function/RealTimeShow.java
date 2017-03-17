@@ -271,6 +271,13 @@ public class RealTimeShow extends BaseActivity {
                             getImageFromInternet();
                         }else{
                             System.out.println("url返回值为空");
+                            if (getImageCount > 9){
+                                System.out.println("大于九了");
+                                getImageCount = 0;
+                                imageKey = "new";
+                                mTimer.cancel();
+                                mHandler.sendEmptyMessage(SNAP_FAIL);
+                            }
                         }
                         break;
                     case 404:
@@ -307,13 +314,6 @@ public class RealTimeShow extends BaseActivity {
             public void onFinished() {}
         });
 
-        if (getImageCount > 9){
-            System.out.println("大于九了");
-            getImageCount = 0;
-            imageKey = "new";
-            mTimer.cancel();
-            mHandler.sendEmptyMessage(SNAP_FAIL);
-        }
     }
 
     /**
@@ -412,9 +412,7 @@ public class RealTimeShow extends BaseActivity {
                 }
 
                 @Override
-                public void onCancelled(CancelledException cex) {
-
-                }
+                public void onCancelled(CancelledException cex) {}
 
                 @Override
                 public void onFinished() {}
@@ -446,8 +444,6 @@ public class RealTimeShow extends BaseActivity {
             switch (v.getId()) {
                 case R.id.bt_refresh:
                     if ((System.currentTimeMillis()- secondTime) > (2 * 1000)){
-//                        photoView.setImageResource(R.mipmap.default_white);
-//                        photoView.setBackgroundColor(Color.WHITE);
                         if (mTimer != null){
                             starTimer();
                         }

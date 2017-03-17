@@ -52,14 +52,20 @@
             android:launchMode="singleTask"/>
         <activity
             android:name=".function.RealTimeShow"
-            android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name=".function.CarInfo"/>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode="singleTop"
+            />
+        <activity android:name=".function.CarInfo"
+                  android:launchMode="singleTop"/>
         <activity android:name=".function.MyPicture"/>
         <activity android:name=".function.ShowPicture"/>
-        <activity android:name=".function.ElectronicFence"/>
-        <activity android:name=".function.TrackQuery"/>
+        <activity android:name=".function.ElectronicFence"
+                  android:launchMode="singleTop"/>
+        <activity android:name=".function.TrackQuery"
+                  android:launchMode="singleTop"/>
         <activity android:name=".main.Register"/>
-        <activity android:name=".function.CarLocation"/>
+        <activity android:name=".function.CarLocation"
+                  android:launchMode="singleTop"/>
         <activity android:name=".function.TestShareVideo"/>
         <activity android:name=".main.FindPassWord"/>
         <activity android:name=".function.TrackQueryDateChoose"/>

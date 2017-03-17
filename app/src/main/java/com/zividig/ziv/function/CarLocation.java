@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.View;
@@ -29,6 +30,7 @@ import com.zividig.ziv.utils.DialogUtils;
 import com.zividig.ziv.utils.GPSConverterUtils;
 import com.zividig.ziv.utils.MyAlarmManager;
 import com.zividig.ziv.utils.SharedPreferencesUtils;
+import com.zividig.ziv.utils.UtcTimeUtils;
 
 /**
  * 获取GPS的定位的信息的车辆定位
@@ -42,10 +44,13 @@ public class CarLocation extends BaseActivity {
     protected static OverlayOptions overlay;  // 覆盖物
     private boolean isFirst = true;
     private boolean once = true;
-    BitmapDescriptor carIcon = BitmapDescriptorFactory
-            .fromResource(R.mipmap.car_icon);
+
+    private View view1;
+    private TextView mapTime;
+    BitmapDescriptor carIcon;
     double lat;
     double lon;
+    long unixTime;
 
     //动态注册的广播
     private BroadcastReceiver locationBroadcast = new BroadcastReceiver() {
@@ -54,7 +59,10 @@ public class CarLocation extends BaseActivity {
             LocationBean locationBean = intent.getParcelableExtra(LocationService.PAR_KEY);
             lat = locationBean.getLat();
             lon = locationBean.getLon();
-            initMap(lat,lon);
+            unixTime  = Long.parseLong(locationBean.getTi());
+            String maptime =  UtcTimeUtils.unixTimeToDate(unixTime);
+            System.out.println("时间---" + maptime);
+            initMap(lat,lon,maptime);
         }
     };
 
@@ -66,6 +74,10 @@ public class CarLocation extends BaseActivity {
         SharedPreferences spf = getSharedPreferences("config",MODE_PRIVATE);
         //设置获取设备状态为真，以便在Activity销毁时能重新获取设备状态
         spf.edit().putBoolean("is_keeping_get_device_state",true).apply();
+
+        view1 = View.inflate(this,R.layout.layout_map_lable,null);
+        mapTime = (TextView) view1.findViewById(R.id.car_location_text);
+
 
         // 标题
         TextView txtTitle = (TextView) findViewById(R.id.tv_title);
@@ -112,7 +124,7 @@ public class CarLocation extends BaseActivity {
 
     }
 
-    public void initMap(Double lat,Double lon){
+    public void initMap(Double lat,Double lon,String maptime){
 
         if (lat == 0f && lon == 0f){
             if (once){
@@ -134,6 +146,9 @@ public class CarLocation extends BaseActivity {
             LatLng desLatLng = GPSConverterUtils.gpsToBaidu(sourceLatLng);
             System.out.println("转换后的经纬度---" + "lat---" + desLatLng.latitude + "lon---" + desLatLng.longitude);
 
+            mapTime.setText(maptime);
+            carIcon = BitmapDescriptorFactory
+                    .fromView(view1);
             //标注
             overlay = new MarkerOptions().position(desLatLng).icon(carIcon).zIndex(9).draggable(true);
 
@@ -161,6 +176,23 @@ public class CarLocation extends BaseActivity {
                 }
             }
         }
+    }
+
+    private Bitmap getViewBitmap(View addViewContent) {
+
+        addViewContent.setDrawingCacheEnabled(true);
+        addViewContent.measure(
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        addViewContent.layout(0, 0,
+                addViewContent.getMeasuredWidth(),
+                addViewContent.getMeasuredHeight());
+        addViewContent.buildDrawingCache();
+
+        Bitmap cacheBitmap = addViewContent.getDrawingCache();
+        Bitmap bitmap = Bitmap.createBitmap(cacheBitmap);
+
+        return bitmap;
     }
 
     protected void onResume() {

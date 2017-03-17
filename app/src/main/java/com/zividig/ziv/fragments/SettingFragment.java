@@ -304,7 +304,7 @@ public class SettingFragment extends Fragment {
                     if (workModel.equals("OFF")){
                         showStateInfo("离线状态无法唤醒");
                     }
-                    if (count >= 60){
+                    if (count >= 30){
                         showStateInfo("主机唤醒失败");
                     }
 
