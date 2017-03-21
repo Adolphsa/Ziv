@@ -1,11 +1,8 @@
 package com.zividig.ziv.function;
 
 import android.app.AlertDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -33,20 +30,37 @@ import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.model.LatLngBounds;
 import com.baidu.mapapi.utils.CoordinateConverter;
 import com.zividig.ziv.R;
-import com.zividig.ziv.bean.LocationBean;
 import com.zividig.ziv.main.BaseActivity;
-import com.zividig.ziv.service.LocationService;
+import com.zividig.ziv.rxjava.ZivApiManage;
+import com.zividig.ziv.rxjava.model.DeviceStateBody;
+import com.zividig.ziv.rxjava.model.LocationResponse;
 import com.zividig.ziv.utils.DialogUtils;
 import com.zividig.ziv.utils.GPSConverterUtils;
-import com.zividig.ziv.utils.MyAlarmManager;
+import com.zividig.ziv.utils.HttpParamsUtils;
+import com.zividig.ziv.utils.JsonUtils;
+import com.zividig.ziv.utils.SignatureUtils;
 import com.zividig.ziv.utils.ToastShow;
 import com.zividig.ziv.utils.Urls;
+import com.zividig.ziv.utils.UtcTimeUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import rx.Observable;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * 电子围栏
@@ -73,18 +87,7 @@ public class ElectronicFence extends BaseActivity {
 
     private MapStatus.Builder mBuilder;
     private CoordinateConverter mConverter;
-
-    //动态注册的广播
-    private BroadcastReceiver locationBroadcast = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            LocationBean locationBean = intent.getParcelableExtra(LocationService.PAR_KEY);
-            initMap(locationBean.getLat(),locationBean.getLon());
-
-            MyAlarmManager.stopPollingService(ElectronicFence.this, LocationService.class);
-        }
-    };
+    private Subscription mSubscription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,11 +126,7 @@ public class ElectronicFence extends BaseActivity {
                 .zoom(16.0f);
         mBaiduMap.setMapStatus(MapStatusUpdateFactory.newMapStatus(mBuilder.build()));
 
-        //注册广播
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(LocationService.LOCATION_ACTION);
-        filter.setPriority(Integer.MAX_VALUE);
-        registerReceiver(locationBroadcast, filter);
+        RxGetLocationInfo();
 
         String devid = spf.getString("devid","");
         getFenceMessage(devid );
@@ -181,7 +180,9 @@ public class ElectronicFence extends BaseActivity {
             @Override
             public void onMapClick(final LatLng latLng) {
                 System.out.println("当前点击的经纬度" + latLng);
-                marker.remove();
+                if (marker != null){
+                    marker.remove();
+                }
                 MarkerOptions markerOptions = new MarkerOptions().icon(fenceCentrePointBitmap).position(latLng);
                 marker = (Marker) mBaiduMap.addOverlay(markerOptions);
 
@@ -432,8 +433,89 @@ public class ElectronicFence extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         mMapView.onDestroy();
+        if (mSubscription != null){
+            mSubscription.unsubscribe();
+        }
+    }
 
-        unregisterReceiver(locationBroadcast);
-        MyAlarmManager.stopPollingService(ElectronicFence.this, LocationService.class);
+    private void RxGetLocationInfo(){
+
+        String token = spf.getString("token", null);
+        String devid = spf.getString("devid", null);
+
+        //计算signature
+        String timestamp = UtcTimeUtils.getTimestamp();
+        String noncestr = HttpParamsUtils.getRandomString(10);
+        String signature = SignatureUtils.getSinnature(timestamp,
+                noncestr,
+                Urls.APP_KEY,
+                devid,
+                token);
+
+        //配置请求头
+        final Map<String, String> options = new HashMap<>();
+        options.put(SignatureUtils.SIGNATURE_APP_KEY, Urls.APP_KEY);
+        options.put(SignatureUtils.SIGNATURE_TIMESTAMP, timestamp);
+        options.put(SignatureUtils.SIGNATURE_NONCESTTR, noncestr);
+        options.put(SignatureUtils.SIGNATURE_STRING, signature);
+
+        //配置请求体
+        DeviceStateBody deviceStateBody = new DeviceStateBody();
+        deviceStateBody.devid = devid;
+        deviceStateBody.token = token;
+        String stringDeviceListBody = JsonUtils.serialize(deviceStateBody);
+        final RequestBody jsonBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), stringDeviceListBody);
+
+        mSubscription = Observable.interval(0,1, TimeUnit.SECONDS)
+                .observeOn(Schedulers.io())
+                .flatMap(new Func1<Long, Observable<LocationResponse>>() {
+                    @Override
+                    public Observable<LocationResponse> call(Long aLong) {
+                        return ZivApiManage.getInstance().getZhihuApiService().getLocationInfo(options,jsonBody);
+                    }
+                })
+                .takeUntil(new Func1<LocationResponse, Boolean>() {
+                    @Override
+                    public Boolean call(LocationResponse locationResponse) {
+                        int status = locationResponse.getStatus();
+                        if (200 == status){
+                            LocationResponse.GpsBean gpsBean = locationResponse.getGps();
+                            if (gpsBean != null && gpsBean.getLat() != 0){
+                                return true;
+                            }
+                        }
+                        return false;
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<LocationResponse>() {
+                    @Override
+                    public void call(LocationResponse locationResponse) {
+                        System.out.println("Gps信息---" + locationResponse.toString());
+                        handLocationInfo(locationResponse);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        ToastShow.showToast(ElectronicFence.this,"暂无定位数据");
+                    }
+                });
+    }
+
+    /**
+     * 处理位置返回信息
+     * @param locationResponse  位置返回信息
+     */
+    private void handLocationInfo(LocationResponse locationResponse){
+        int status = locationResponse.getStatus();
+        if (200 == status){
+            LocationResponse.GpsBean gpsBean = locationResponse.getGps();
+            if (gpsBean != null){
+                lat = gpsBean.getLat();
+                lon = gpsBean.getLon();
+                initMap(lat,lon);
+            }
+        }
     }
 }

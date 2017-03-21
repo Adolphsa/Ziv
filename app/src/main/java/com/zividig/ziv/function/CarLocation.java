@@ -1,12 +1,7 @@
 package com.zividig.ziv.function;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.View;
@@ -23,14 +18,31 @@ import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.zividig.ziv.R;
-import com.zividig.ziv.bean.LocationBean;
 import com.zividig.ziv.main.BaseActivity;
-import com.zividig.ziv.service.LocationService;
+import com.zividig.ziv.rxjava.ZivApiManage;
+import com.zividig.ziv.rxjava.model.DeviceStateBody;
+import com.zividig.ziv.rxjava.model.LocationResponse;
 import com.zividig.ziv.utils.DialogUtils;
 import com.zividig.ziv.utils.GPSConverterUtils;
-import com.zividig.ziv.utils.MyAlarmManager;
+import com.zividig.ziv.utils.HttpParamsUtils;
+import com.zividig.ziv.utils.JsonUtils;
 import com.zividig.ziv.utils.SharedPreferencesUtils;
+import com.zividig.ziv.utils.SignatureUtils;
+import com.zividig.ziv.utils.Urls;
 import com.zividig.ziv.utils.UtcTimeUtils;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import rx.Observable;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * 获取GPS的定位的信息的车辆定位
@@ -43,7 +55,6 @@ public class CarLocation extends BaseActivity {
     private MapStatus.Builder mBuilder;
     protected static OverlayOptions overlay;  // 覆盖物
     private boolean isFirst = true;
-    private boolean once = true;
 
     private View view1;
     private TextView mapTime;
@@ -52,32 +63,20 @@ public class CarLocation extends BaseActivity {
     double lon;
     long unixTime;
 
-    //动态注册的广播
-    private BroadcastReceiver locationBroadcast = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            LocationBean locationBean = intent.getParcelableExtra(LocationService.PAR_KEY);
-            lat = locationBean.getLat();
-            lon = locationBean.getLon();
-            unixTime  = Long.parseLong(locationBean.getTi());
-            String maptime =  UtcTimeUtils.unixTimeToDate(unixTime);
-            System.out.println("时间---" + maptime);
-            initMap(lat,lon,maptime);
-        }
-    };
+    private SharedPreferences spf;
+    private Subscription mSubscription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_carlocation);
 
-        SharedPreferences spf = getSharedPreferences("config",MODE_PRIVATE);
+        spf = getSharedPreferences("config",MODE_PRIVATE);
         //设置获取设备状态为真，以便在Activity销毁时能重新获取设备状态
         spf.edit().putBoolean("is_keeping_get_device_state",true).apply();
 
         view1 = View.inflate(this,R.layout.layout_map_lable,null);
         mapTime = (TextView) view1.findViewById(R.id.car_location_text);
-
 
         // 标题
         TextView txtTitle = (TextView) findViewById(R.id.tv_title);
@@ -116,30 +115,12 @@ public class CarLocation extends BaseActivity {
         }
         mBaiduMap.setMapStatus(MapStatusUpdateFactory.newMapStatus(mBuilder.build()));
 
-        //注册广播接收器
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(LocationService.LOCATION_ACTION);
-        filter.setPriority(Integer.MAX_VALUE);
-        registerReceiver(locationBroadcast, filter);
+        RxGetLocationInfo();
 
     }
 
     public void initMap(Double lat,Double lon,String maptime){
 
-        if (lat == 0f && lon == 0f){
-            if (once){
-                if (!CarLocation.this.isFinishing()){
-                    DialogUtils.showPrompt(CarLocation.this, "提示", "暂无数据", "确定", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            finish();
-                        }
-                    });
-                }
-                once = false;
-            }
-
-        }else {
             mBaiduMap.clear();
             LatLng sourceLatLng = new LatLng(lat,lon);
             //坐标转换
@@ -165,35 +146,14 @@ public class CarLocation extends BaseActivity {
 
                 Point pt= mBaiduMap.getMapStatus().targetScreen;
                 Point point= mBaiduMap.getProjection().toScreenLocation(desLatLng);
-//                System.out.println("point.x = " + point.x);
-//                System.out.println("point.y = " + point.y);
-//                System.out.println("pt.x = " + pt.x);
-//                System.out.println("pt.y = " + pt.y);
                 if(point.x < pt.x*0.4 || point.x > pt.x*1.6 || point.y < pt.y*0.4 || point.y > pt.y*1.6)
                 {
-
                     mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newLatLng(desLatLng));
                 }
             }
-        }
+
     }
 
-    private Bitmap getViewBitmap(View addViewContent) {
-
-        addViewContent.setDrawingCacheEnabled(true);
-        addViewContent.measure(
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-        addViewContent.layout(0, 0,
-                addViewContent.getMeasuredWidth(),
-                addViewContent.getMeasuredHeight());
-        addViewContent.buildDrawingCache();
-
-        Bitmap cacheBitmap = addViewContent.getDrawingCache();
-        Bitmap bitmap = Bitmap.createBitmap(cacheBitmap);
-
-        return bitmap;
-    }
 
     protected void onResume() {
         super.onResume();
@@ -213,12 +173,83 @@ public class CarLocation extends BaseActivity {
         if (mBaiduMap != null){
             mBaiduMap = null;
         }
-
-        MyAlarmManager.stopPollingService(CarLocation.this, LocationService.class);
-        unregisterReceiver(locationBroadcast);
-
+        if (mSubscription != null){
+            mSubscription.unsubscribe();
+        }
         //保存退出时的经纬度
         SharedPreferencesUtils.putString(CarLocation.this,"ziv_lat",String.valueOf(lat));
         SharedPreferencesUtils.putString(CarLocation.this,"ziv_lon",String.valueOf(lon));
+    }
+
+
+    private void RxGetLocationInfo(){
+
+        String token = spf.getString("token", null);
+        String devid = spf.getString("devid", null);
+
+        //计算signature
+        String timestamp = UtcTimeUtils.getTimestamp();
+        String noncestr = HttpParamsUtils.getRandomString(10);
+        String signature = SignatureUtils.getSinnature(timestamp,
+                noncestr,
+                Urls.APP_KEY,
+                devid,
+                token);
+
+        //配置请求头
+        final Map<String, String> options = new HashMap<>();
+        options.put(SignatureUtils.SIGNATURE_APP_KEY, Urls.APP_KEY);
+        options.put(SignatureUtils.SIGNATURE_TIMESTAMP, timestamp);
+        options.put(SignatureUtils.SIGNATURE_NONCESTTR, noncestr);
+        options.put(SignatureUtils.SIGNATURE_STRING, signature);
+
+        //配置请求体
+        DeviceStateBody deviceStateBody = new DeviceStateBody();
+        deviceStateBody.devid = devid;
+        deviceStateBody.token = token;
+        String stringDeviceListBody = JsonUtils.serialize(deviceStateBody);
+        final RequestBody jsonBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), stringDeviceListBody);
+
+        mSubscription = Observable.interval(0,2, TimeUnit.SECONDS)
+                .observeOn(Schedulers.io())
+                .flatMap(new Func1<Long, Observable<LocationResponse>>() {
+                    @Override
+                    public Observable<LocationResponse> call(Long aLong) {
+                        return ZivApiManage.getInstance().getZhihuApiService().getLocationInfo(options,jsonBody);
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<LocationResponse>() {
+                    @Override
+                    public void call(LocationResponse locationResponse) {
+                        System.out.println("Gps信息---" + locationResponse.toString());
+                        handLocationInfo(locationResponse);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        DialogUtils.showPrompt(CarLocation.this, "提示", "暂无数据", "确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                finish();
+                            }
+                        });
+                    }
+                });
+    }
+
+    private void handLocationInfo(LocationResponse locationResponse){
+        int status = locationResponse.getStatus();
+        if (200 == status){
+            LocationResponse.GpsBean gpsBean = locationResponse.getGps();
+            if (gpsBean != null){
+                lat = gpsBean.getLat();
+                lon = gpsBean.getLon();
+                unixTime  = Long.parseLong(gpsBean.getTi());
+                String maptime =  UtcTimeUtils.unixTimeToDate(unixTime);
+                initMap(lat,lon,maptime);
+            }
+        }
     }
 }

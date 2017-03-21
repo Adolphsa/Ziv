@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,10 +18,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.zividig.ziv.R;
-import com.zividig.ziv.bean.DeviceStateInfoBean;
 import com.zividig.ziv.customView.LoadingProgressDialog;
 import com.zividig.ziv.function.About;
 import com.zividig.ziv.function.LightColor;
+import com.zividig.ziv.rxjava.ZivApiManage;
+import com.zividig.ziv.rxjava.model.DeviceStateBody;
+import com.zividig.ziv.rxjava.model.DeviceStateResponse;
+import com.zividig.ziv.rxjava.model.DeviceWakeResponse;
 import com.zividig.ziv.utils.HttpParamsUtils;
 import com.zividig.ziv.utils.JsonUtils;
 import com.zividig.ziv.utils.SignatureUtils;
@@ -34,10 +38,22 @@ import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import rx.Observable;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 import static com.zividig.ziv.utils.SignatureUtils.SIGNATURE_TOKEN;
+import static com.zividig.ziv.utils.SignatureUtils.token;
 
 /**
  * 设置
@@ -55,37 +71,14 @@ public class SettingFragment extends Fragment {
     private Dialog dialog;
     private Dialog dialog2;
 
-    private String workModel;
-    private int count;
-
     private long secondTime = 0;
+    private int count = 0;
 
-    private  Timer mTimer;
+    private Subscription mSubscription;
 
     public static SettingFragment instance() {
         SettingFragment view = new SettingFragment();
         return view;
-    }
-
-    //定时器开始轮询设备状态
-    public void startTimer(){
-
-        mTimer = new Timer();
-
-        mTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                getDeviceState();
-            }
-        },0,2000);
-
-    }
-
-    public void stopTimer(){
-        if (mTimer != null){
-            mTimer.cancel();
-        }
-
     }
 
     @Nullable
@@ -113,78 +106,16 @@ public class SettingFragment extends Fragment {
                         //连续点击不生效
                         if ((System.currentTimeMillis()- secondTime) > (2 * 1000)){
                             System.out.println("进来了");
-                            count = 0;
-
-                            //开启轮询服务
-                            startTimer();
-
-                            secondTime = System.currentTimeMillis();
-
-                            devID = sp.getString("devid","");
-
-                            //配置json数据
-                            final JSONObject json = new JSONObject();
-                            try {
-                                json.put("devid",devID);
-                                json.put(SIGNATURE_TOKEN, SignatureUtils.token);
-
-                            } catch (Exception e) {
-                                e.printStackTrace();
+                            if (!SettingFragment.this.isHidden()){
+                                dialog = LoadingProgressDialog.createLoadingDialog(getContext(),"正在唤醒中...",true,false,null);
+                                dialog.show();
                             }
-
-                            //计算signature
-                            String timestamp = UtcTimeUtils.getTimestamp();
-                            String noncestr = HttpParamsUtils.getRandomString(10);
-                            String signature = SignatureUtils.getSinnature(timestamp,
-                                    noncestr,
-                                    Urls.APP_KEY,
-                                    devID,
-                                    SignatureUtils.token);
-                            //发起请求
-                            RequestParams params = HttpParamsUtils.setParams(Urls.DEVICE_WAKEUP,timestamp,noncestr,signature);
-                            params.setBodyContent(json.toString());
-
-                            //只发唤醒命令
-                            x.http().post(params, new Callback.CommonCallback<String>() {
-                                @Override
-                                public void onSuccess(String result) {
-                                    System.out.println("主机唤醒结果：" + result);
-                                    try {
-                                        JSONObject json = new JSONObject(result);
-                                        int status = json.getInt("status");
-                                        if (200 == status){
-
-                                            if (!SettingFragment.this.isHidden()){
-                                                dialog = LoadingProgressDialog.createLoadingDialog(getContext(),"正在唤醒中...",true,false,null);
-                                                dialog.show();
-                                            }
-
-                                        }else {
-                                            ToastShow.showToast(getContext(),"唤醒指令发送失败");
-                                            dialog.dismiss();
-                                            stopTimer();
-                                        }
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-
-                                }
-
-                                @Override
-                                public void onError(Throwable ex, boolean isOnCallback) {System.out.println("主机唤醒错误：" + ex);}
-
-                                @Override
-                                public void onCancelled(CancelledException cex) {}
-
-                                @Override
-                                public void onFinished() {}
-                            });
-
+                            RxSendWakeupOrder();
+                            secondTime = System.currentTimeMillis();
                         }else {
                            ToastShow.showToast(getContext(),"请不要重复点击。");
                             break;
                         }
-
                         break;
                     case 1:
                         System.out.println("灯光设置" + position);
@@ -250,19 +181,14 @@ public class SettingFragment extends Fragment {
     }
 
     /**
-     * 获取设备状态
+     * 配置options
+     * @return options
      */
-    private void getDeviceState(){
-         devID = sp.getString("devid","");
-        //配置json数据
-        JSONObject json = new JSONObject();
-        try {
-            json.put("devid",devID);
-            json.put(SIGNATURE_TOKEN, SignatureUtils.token);
+    private Map<String, String> setOp(){
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        String devid = sp.getString("devid", null);
+        String token = sp.getString("token", null);
+
 
         //计算signature
         String timestamp = UtcTimeUtils.getTimestamp();
@@ -270,68 +196,194 @@ public class SettingFragment extends Fragment {
         String signature = SignatureUtils.getSinnature(timestamp,
                 noncestr,
                 Urls.APP_KEY,
-                devID,
-                SignatureUtils.token);
-        //发起请求
-        RequestParams params = HttpParamsUtils.setParams(Urls.DEVICE_STATE,timestamp,noncestr,signature);
-        params.setBodyContent(json.toString());
+                devid,
+                token);
 
-        System.out.println("获取设备状态---" + params.toString());
-        x.http().post(params, new Callback.CommonCallback<String>() {
-            @Override
-            public void onSuccess(String result) {
-                System.out.println("结果" + result);
-                DeviceStateInfoBean stateInfoBean = JsonUtils.deserialize(result, DeviceStateInfoBean.class);
-                int status = stateInfoBean.getStatus();
-                if (200 == status){
-                    DeviceStateInfoBean.InfoBean infoBean = stateInfoBean.getInfo();
-                    count++;
-                    System.out.println("count---" + count);
-                    workModel = infoBean.getWorkmode();
-                    System.out.println("工作模式---" +workModel);
+        //配置请求头
+        Map<String, String> options = new HashMap<>();
+        options.put(SignatureUtils.SIGNATURE_APP_KEY, Urls.APP_KEY);
+        options.put(SignatureUtils.SIGNATURE_TIMESTAMP, timestamp);
+        options.put(SignatureUtils.SIGNATURE_NONCESTTR, noncestr);
+        options.put(SignatureUtils.SIGNATURE_STRING, signature);
 
-                    if (workModel.equals("BOOTING")){   //主机启动中
-                        if (!SettingFragment.this.isHidden()){
-                            LoadingProgressDialog.setTipText("主机正在启动中……");
-                        }
-                    }
-                    if (workModel.equals("NORMAL")){        //主机已唤醒
-                        showStateInfo("主机已唤醒");
-                    }
-                    if (workModel.equals("WAKEFAIL")){
-                        showStateInfo("主机唤醒失败");
-                    }
-                    if (workModel.equals("OFF")){
-                        showStateInfo("离线状态无法唤醒");
-                    }
-                    if (count >= 30){
-                        showStateInfo("主机唤醒失败");
-                    }
-
-                }
-            }
-
-            @Override
-            public void onError(Throwable ex, boolean isOnCallback) {}
-
-            @Override
-            public void onCancelled(CancelledException cex) {}
-
-            @Override
-            public void onFinished() {}
-        });
+        return options;
     }
 
+    /**
+     * 配置jsonBody
+     * @return  RequestBody
+     */
+    private RequestBody setBody(){
+
+        String devid = sp.getString("devid", null);
+        String token = sp.getString("token", null);
+
+        //配置请求体
+        DeviceStateBody body = new  DeviceStateBody();
+        body.devid = devid;
+        body.token = token;
+        String stringDeviceListBody = JsonUtils.serialize(body);
+        RequestBody jsonBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), stringDeviceListBody);
+
+        return jsonBody;
+    }
+
+
+    /**
+     * 发送唤醒主机命令
+     */
+    private void RxSendWakeupOrder(){
+
+        final Map<String, String> options = setOp();
+        final RequestBody jsonBody = setBody();
+
+        mSubscription =  ZivApiManage.getInstance().getZhihuApiService()
+                .getDeviceStateInfo(options,jsonBody)
+                .throttleFirst(2, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
+                .flatMap(new Func1<DeviceStateResponse, Observable<DeviceWakeResponse>>() {
+                    @Override
+                    public Observable<DeviceWakeResponse> call(DeviceStateResponse deviceStateResponse) {
+                        System.out.println("判断设备状态是否不为休眠");
+                        DeviceStateResponse.InfoBean infoBean = deviceStateResponse.getInfo();
+                        String deviceState = infoBean.getWorkmode();
+                        if (deviceState.equals("NORMAL")){
+                            return Observable.error(new Exception("normal"));
+                        }else if (!deviceState.equals("STDBY")){
+                            System.out.println("异常执行了2");
+                            return Observable.error(new Exception("no_stdby"));
+                        }
+                        return ZivApiManage.getInstance().getZhihuApiService().sendWakeupOrder(options,jsonBody);
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<DeviceWakeResponse>() {
+                    @Override
+                    public void call(DeviceWakeResponse deviceWakeResponse) {
+                        int status = deviceWakeResponse.getStatus();
+                        if (200 == status){
+                            System.out.println("发送唤醒命令");
+                            RxGetDeviceState();
+                        }
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        System.out.println("啦啦啦---" + throwable.getMessage());
+                        String t = throwable.getMessage();
+                        if (t.equals("normal")){
+                            showStateInfo("主机已在线，无需唤醒!");
+                        }else if(t.equals("no_stdby")){
+                            showStateInfo("非休眠状态不能唤醒主机！");
+                        }
+                    }
+                });
+    }
+
+    /**
+     * 轮询获取设备状态
+     */
+    public void RxGetDeviceState() {
+
+        count =0;
+        String token = sp.getString("token", null);
+        String devid = sp.getString("devid", null);
+
+        //计算signature
+        String timestamp = UtcTimeUtils.getTimestamp();
+        String noncestr = HttpParamsUtils.getRandomString(10);
+        String signature = SignatureUtils.getSinnature(timestamp,
+                noncestr,
+                Urls.APP_KEY,
+                devid,
+                token);
+
+        //配置请求头
+        final Map<String, String> options = new HashMap<>();
+        options.put(SignatureUtils.SIGNATURE_APP_KEY, Urls.APP_KEY);
+        options.put(SignatureUtils.SIGNATURE_TIMESTAMP, timestamp);
+        options.put(SignatureUtils.SIGNATURE_NONCESTTR, noncestr);
+        options.put(SignatureUtils.SIGNATURE_STRING, signature);
+
+        //配置请求体
+        DeviceStateBody deviceStateBody = new DeviceStateBody();
+        deviceStateBody.devid = devid;
+        deviceStateBody.token = token;
+        String stringDeviceListBody = JsonUtils.serialize(deviceStateBody);
+        final RequestBody jsonBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), stringDeviceListBody);
+
+
+        mSubscription = Observable.interval(0,2,TimeUnit.SECONDS)
+                .take(20)
+                .flatMap(new Func1<Long, Observable<DeviceStateResponse>>() { //先查看设备的状态
+                    @Override
+                    public Observable<DeviceStateResponse> call(Long aLong) {
+                        return ZivApiManage.getInstance().getZhihuApiService().getDeviceStateInfo(options,jsonBody);
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .takeUntil(new Func1<DeviceStateResponse, Boolean>() {
+                    @Override
+                    public Boolean call(DeviceStateResponse deviceStateResponse) {
+                        DeviceStateResponse.InfoBean infoBean = deviceStateResponse.getInfo();
+                        String deviceState = infoBean.getWorkmode();
+                        count++;
+                        System.out.println();
+                        if (!TextUtils.isEmpty(deviceState) && deviceState.equals("NORMAL")){
+                            System.out.println("轮询---主机在线了");
+                            showStateInfo("主机唤醒成功!");
+                            return true;
+                        }
+                        return false;
+                    }
+                })
+                .subscribe(new Action1<DeviceStateResponse>() {
+                    @Override
+                    public void call(DeviceStateResponse deviceStateResponse) {
+                        System.out.println("RXJAVA---设备状态---" + deviceStateResponse.getInfo().getWorkmode());
+                        DeviceStateResponse.InfoBean infoBean = deviceStateResponse.getInfo();
+                        String deviceState = infoBean.getWorkmode();
+                        if (deviceState.equals("BOOTING")) {
+                            LoadingProgressDialog.setTipText("主机正在启动中……");
+                            System.out.println("主机正在启动中……");
+                        } else if (deviceState.equals("NORMAL")) {
+                            System.out.println("onNext---主机在线了");
+                            Observable.error(new Exception("normal"));
+                        } else if (deviceState.equals("WAKEFAIL")) {
+                            LoadingProgressDialog.setTipText("主机唤醒失败");
+                            System.out.println("主机唤醒失败");
+                        }
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        System.out.println("RXJAVA---设备状态出错---" + throwable.getMessage());
+                        String t = throwable.getMessage();
+                        if (t.equals("normal")) {
+                            showStateInfo("主机唤醒成功!");
+                            if (mSubscription != null){
+                                mSubscription.unsubscribe();
+                            }
+                        }
+                    }
+                }, new Action0() {
+                    @Override
+                    public void call() {
+                     if (count > 19){
+                         showStateInfo("主机唤醒失败!");
+                         if (mSubscription != null){
+                             mSubscription.unsubscribe();
+                         }
+                     }
+                    }
+                });
+    }
 
     /**
      * 显示唤醒状态的对话框
      * @param smg 唤醒成功或失败
      */
     private void showStateInfo(String smg){
-
-        stopTimer();
-
-        count = 0;
 
         //关闭dialog1
         if (dialog != null){
@@ -360,7 +412,7 @@ public class SettingFragment extends Fragment {
         try {
             json.put("username",username);
             json.put("action", action);
-            json.put(SIGNATURE_TOKEN, SignatureUtils.token);
+            json.put(SIGNATURE_TOKEN, token);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -373,7 +425,7 @@ public class SettingFragment extends Fragment {
                 Urls.APP_KEY,
                 username,
                 action,
-                SignatureUtils.token);
+                token);
 
         RequestParams params = HttpParamsUtils.setParams(Urls.SETTING_ALARM_DO_NOT_DISTURB,timestamp,noncestr,signature);
         params.setBodyContent(json.toString());
@@ -524,8 +576,17 @@ public class SettingFragment extends Fragment {
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+        System.out.println("Setting---onStop");
+        if (mSubscription != null){
+            mSubscription.unsubscribe();
+        }
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
-        stopTimer();
+
     }
 }

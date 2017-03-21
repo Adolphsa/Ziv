@@ -148,7 +148,6 @@ public class RealTimeShow extends BaseActivity {
         SDKInitializer.initialize(ZivApp.getInstance());
         setContentView(R.layout.acticity_real_time_show);
 
-
         mContext = RealTimeShow.this;
         // 标题
         TextView txtTitle = (TextView) findViewById(R.id.tv_title);
@@ -443,7 +442,7 @@ public class RealTimeShow extends BaseActivity {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.bt_refresh:
-                    if ((System.currentTimeMillis()- secondTime) > (2 * 1000)){
+                    if ((System.currentTimeMillis()- secondTime) > (1 * 1000)){
                         if (mTimer != null){
                             starTimer();
                         }

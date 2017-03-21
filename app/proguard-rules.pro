@@ -81,6 +81,17 @@
 -dontwarn com.zividig.ndk_test.**
 -keep class com.zividig.ndk_test.**{*;}
 
+#eventBus
+-keepattributes *Annotation*
+-keepclassmembers class ** {
+    @org.greenrobot.eventbus.Subscribe <methods>;
+}
+-keep enum org.greenrobot.eventbus.ThreadMode { *; }
+# Only required if you use AsyncExecutor
+-keepclassmembers class * extends org.greenrobot.eventbus.util.ThrowableFailureEvent {
+    <init>(java.lang.Throwable);
+}
+
 #greedao
 -dontwarn org.greenrobot.greendao.database.**
 -keep class org.greenrobot.greendao.**{*;}

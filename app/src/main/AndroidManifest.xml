@@ -85,12 +85,6 @@
             android:enabled="true"
             android:process=":remote"/>
 
-        <!-- 获取位置的服务 -->
-        <service
-            android:name=".service.LocationService"
-            android:enabled="true"
-            android:exported="true"/>
-
         <!-- 获取网络信息的服务 -->
         <service
             android:name=".service.NetWorkTypeService"

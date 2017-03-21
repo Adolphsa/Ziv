@@ -53,6 +53,15 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
     private long exitTime = 0;
     private SharedPreferences mSpf;
 
+    private int currentPage;
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setCurrentPage(int currentPage) {
+        this.currentPage = currentPage;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,17 +106,18 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
     @Override
     public void onPageSelected(int position) {
         System.out.println("position" + position);
+        setCurrentPage(position);
         if (position != 0){
             if (mMyCarFragment != null){
-                mMyCarFragment.stopTimer();
+//                mMyCarFragment.stopTimer();
                 mSpf.edit().putBoolean("is_keeping_get_device_state",false).apply();
             }
 
         }else {
             if (mMyCarFragment != null){
-                mMyCarFragment.startTimer();
+//                mMyCarFragment.startTimer();
                 mSpf.edit().putBoolean("is_keeping_get_device_state",true).apply();
-
+                mMyCarFragment.RxGetDeviceState();
             }
         }
     }
