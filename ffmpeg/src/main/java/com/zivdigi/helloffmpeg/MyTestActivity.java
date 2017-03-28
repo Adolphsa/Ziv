@@ -23,6 +23,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.View;
@@ -48,7 +49,7 @@ import java.util.Vector;
 
 import static com.zivdigi.helloffmpeg.R.id.mta_fullScreen;
 
-public class MyTestActivity extends FragmentActivity implements View.OnClickListener{
+public class MyTestActivity extends FragmentActivity implements View.OnClickListener {
 
     private static String TAG = "MyTestActivity";
 
@@ -90,15 +91,17 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
     private VideoPlayTask mVideoPlayTask;
     private Context mContext;
 
+    GestureDetector mGestureDetector = null;
+
     private Timer mVideoTimer;
 
     private boolean isScreenshot = false;
 
-    private Handler mHandler = new Handler(){
+    private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            switch (msg.what){
+            switch (msg.what) {
                 case PLAY:
                     mCycleProgressBar.setVisibility(View.INVISIBLE);
                     mPlay.setText("暂停");
@@ -112,23 +115,20 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
                     break;
 
                 case HIDE_TOOLS:
-                    if (mOrientation != 1){  //注释的地方为如果是竖屏，则播放控制不隐藏
+                    if (mOrientation != 1) {  //注释的地方为如果是竖屏，则播放控制不隐藏
                         playToolstop.setVisibility(View.INVISIBLE);
                         playToolsBottom.setVisibility(View.INVISIBLE);
                     }
                     break;
 
                 case ERROR_CONNECT:    //播放错误
-//                    Toast.makeText(MyTestActivity.this,"could not open input stream",Toast.LENGTH_LONG).show();
                     mCycleProgressBar.setVisibility(View.VISIBLE);
                     isProgressShow = true;
-//                    showDialog("could not open input stream");
                     break;
                 case ERROR_READ_FRAME:    //av_read_frame error
 
                     mCycleProgressBar.setVisibility(View.VISIBLE);
                     isProgressShow = true;
-//                    showDialog("av_read_frame error");
                     break;
                 case ERROR_TIME_OUT:    //avformat_open_input timeout
 
@@ -137,7 +137,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
                     showDialog("avformat_open_input timeout");
                     break;
                 case FILE_EXIST:    //文件存在
-                    Toast.makeText(MyTestActivity.this,"截图已保存",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MyTestActivity.this, "截图已保存", Toast.LENGTH_SHORT).show();
                     break;
 
             }
@@ -150,14 +150,14 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_fragment_sssp_play);
 
-        mSpf = getSharedPreferences("config",MODE_PRIVATE);
+        mSpf = getSharedPreferences("config", MODE_PRIVATE);
         //设置获取设备状态为真，以便在Activity销毁时能重新获取设备状态
-        mSpf.edit().putBoolean("is_keeping_get_device_state",true).apply();
+        mSpf.edit().putBoolean("is_keeping_get_device_state", true).apply();
 
         mContext = MyTestActivity.this;
 
         //设置status的颜色
-        FfmpegStatusBarUtils.setColor(this,getResources().getColor(R.color.statusColor));
+        FfmpegStatusBarUtils.setColor(this, getResources().getColor(R.color.statusColor));
 
         mTitle = (TextView) findViewById(R.id.mat_tv);
         playToolsBottom = (RelativeLayout) findViewById(R.id.mta_rl);
@@ -183,13 +183,9 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
         myGLRenderer = new MyGLRenderer(glSurfaceView, display, this);
         //设置glsurfaceView参数
         glSurfaceView.setEGLContextClientVersion(2);
-//        glSurfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
         glSurfaceView.setRenderer(myGLRenderer);
-//        glSurfaceView.getHolder().setFormat(PixelFormat.TRANSPARENT);
-//        glSurfaceView.setZOrderOnTop(true);
         glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 
-//        glSurfaceView.setZOrderMediaOverlay(true);
 
         //开始播放视频
         isKeepPlay = true;
@@ -200,21 +196,21 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
         mVideoPlayTask = new VideoPlayTask();
         mVideoPlayTask.start();
 
-        if (!MyTestActivity.this.isFinishing()){
+        if (!MyTestActivity.this.isFinishing()) {
             td.setErrorCodeInterface(new ErrorCodeInterface() {
                 @Override
                 public void getErrorCode(int error) {
                     System.out.println("td.error------" + error);
-                    if (error == 2){
+                    if (error == 2) {
                         System.out.println("播放异常2");
-                         mHandler.sendEmptyMessage(ERROR_CONNECT);
+                        mHandler.sendEmptyMessage(ERROR_CONNECT);
                         try {
                             Thread.sleep(2000);
                             td.startRequest();
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                    }else if(error == 3){ //av_read_frame error
+                    } else if (error == 3) { //av_read_frame error
                         mHandler.sendEmptyMessage(ERROR_READ_FRAME);
                         try {
                             Thread.sleep(2000);
@@ -222,7 +218,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                    }else if (error == 4){ //avformat_open_input timeout
+                    } else if (error == 4) { //avformat_open_input timeout
                         mHandler.sendEmptyMessage(ERROR_TIME_OUT);
                     }
                 }
@@ -252,6 +248,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
 
         //glSurfaceView触碰监听事件
         glSurfaceView.setOnTouchListener(mTouchListener);
+        mGestureDetector = new GestureDetector(new simpleGestureListener());
     }
 
     @Override
@@ -313,31 +310,32 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
 
     /**
      * 点击事件
+     *
      * @param v
      */
     @Override
     public void onClick(View v) {
 
         int id = v.getId();
-        if (id == R.id.mta_play){ //播放
+        if (id == R.id.mta_play) { //播放
             Log.i(TAG, "onClick: play按钮被点击了");
-            if (isPlaying){
+            if (isPlaying) {
                 mPlay.setText("播放");
                 isPlaying = false;
                 mVideoPlayTask.setSuspend(true);    //线程暂停
-            }else {
+            } else {
                 mPlay.setText("暂停");
                 isPlaying = true;
                 mVideoPlayTask.setSuspend(false);   //线程恢复
 
             }
-        }else if (id == R.id.mta_fullScreen){ //全屏
+        } else if (id == R.id.mta_fullScreen) { //全屏
             Log.i(TAG, "onClick: 全屏按钮被点击了");
             click_full();
-        }else if (id == R.id.mta_screenshot){ //截图
+        } else if (id == R.id.mta_screenshot) { //截图
             isScreenshot = true;
             System.out.println("截图设置为真");
-        } else if (id == R.id.mta_btn_back){ //返回
+        } else if (id == R.id.mta_btn_back) { //返回
             finish();
         }
     }
@@ -349,6 +347,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
     class VideoPlayTask extends Thread {
 
         SurfaceHolder holder;
+
         VideoPlayTask() {
             holder = glSurfaceView.getHolder();
         }
@@ -376,8 +375,8 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
 
             while (isKeepPlay) {
 
-                synchronized (control){
-                    if (suspend){
+                synchronized (control) {
+                    if (suspend) {
                         try {
                             control.wait();
                             System.out.println("暂停");
@@ -415,21 +414,21 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
                         myGLRenderer.update(fb.width, fb.height);//设置视频宽高
                     }
                     //是否截图
-                    if (isScreenshot){
+                    if (isScreenshot) {
                         File zivFile = new File(Environment.getExternalStorageDirectory(), "Ziv"); //创建Ziv文件夹
-                        File imageFile = new File(zivFile ,"images");
+                        File imageFile = new File(zivFile, "images");
                         String target = getDateAndTime() + ".jpeg";
-                        File file = new File(imageFile,target);
+                        File file = new File(imageFile, target);
                         System.out.println("路径为---" + file);
                         try {
                             FileOutputStream out = new FileOutputStream(file);
                             dates = new byte[fb.width * fb.height * 2];
-                            td.yuv420p_to_yuv420sp(fb.pix,dates,fb.width,fb.height);
-                            YuvImage yuvImage = new YuvImage(dates, ImageFormat.NV21,fb.width,fb.height,null);
-                            Rect rect = new Rect(0,0,fb.width,fb.height);
+                            td.yuv420p_to_yuv420sp(fb.pix, dates, fb.width, fb.height);
+                            YuvImage yuvImage = new YuvImage(dates, ImageFormat.NV21, fb.width, fb.height, null);
+                            Rect rect = new Rect(0, 0, fb.width, fb.height);
 
                             //转换图片格式为jpeg
-                            if (yuvImage.compressToJpeg(rect,70,out)) {
+                            if (yuvImage.compressToJpeg(rect, 70, out)) {
                                 System.out.println("截图在file2");
                                 out.flush();
                                 out.close();
@@ -447,7 +446,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
 
 //                            updateImage();
                             //判断图片是否已保存
-                            if (file.exists()){
+                            if (file.exists()) {
                                 mHandler.sendEmptyMessage(FILE_EXIST);
                             }
 
@@ -459,7 +458,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
                     }
 //                    Log.i(TAG, "run: 传递YUV数据");
 
-                    if (isProgressShow){
+                    if (isProgressShow) {
                         System.out.println("进度条显示");
                         isProgressShow = false;
                         mHandler.sendEmptyMessage(PLAY);
@@ -475,6 +474,12 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
 
 
     private float distance = 1f;
+
+    private float tScale;
+    private float svaeScale;
+    private float svaeScale0;
+    private float tempDist;
+    private boolean isFirst;
     PointF prev = new PointF();
     private static final int NONE = 0;// 原始
     private static final int DRAG = 1;// 拖动
@@ -487,7 +492,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-
+            mGestureDetector.onTouchEvent(event);
             boolean ret = false;
             if (!isPlaying)
                 return ret;
@@ -495,53 +500,79 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
             switch (event.getAction() & MotionEvent.ACTION_MASK) {
                 //单点触碰按下动作
                 case MotionEvent.ACTION_DOWN:
+                    System.out.println("单指按下");
                     mStatus = DRAG;         //单指拖动状态
                     prev.set(event.getX(), event.getY());
-                    if (MyGLRenderer.ChangeScale <= 0.5f) {
+                    if (MyGLRenderer.ChangeScale <= 1.0f) {
                         zoomFlag = false;
                         MyGLRenderer.Translate = false;
                     } else {
                         zoomFlag = true;
                         MyGLRenderer.Translate = true;
                         MyGLRenderer.Second = true;
+                        System.out.println("大于=1.0f");
                     }
                     ret = true;
                     break;
-//                //多点触碰按下动作
-//                case MotionEvent.ACTION_POINTER_DOWN:
-//                    distance = spacing(event);
-//                    // 如果连续两点距离大于10，则判定为多点模式
-//                    if (distance > 10f) {
-//                        mStatus = ZOOM;
-//                        zoomFlag = true;
-//                    }
-//                    break;
-//                //(需判断移动为多点或单点)触碰点移动动作
-//                case MotionEvent.ACTION_MOVE:
-//                    if (zoomFlag) {
-//                        if (mStatus == DRAG) {       //移动操作
-//                            mIsMoved = true;
-//                            MyGLRenderer.Translate = true;
-//                            MyGLRenderer.transx = event.getX() - prev.x;//偏差值
-//                            MyGLRenderer.transy = event.getY() - prev.y;//平衡y轴
-//                        } else if (mStatus == ZOOM) {//缩放操作
-//                            MyGLRenderer.Translate = false;
-//                            MyGLRenderer.isFirst = true;
-//                            float newDist = spacing(event);
-//                            if (newDist > 10f) {
-//                                float tScale = newDist / distance;
-//                                MyGLRenderer.ChangeScale = tScale;          //将缩放比例交给MyGLRenderer
-//                            }
-//                        }
-//                    }
-//                    ret = true;
-//                    break;
-//                //多点触碰离开动作
-//                case MotionEvent.ACTION_POINTER_UP:
-//                    MyGLRenderer.Translate = false;
-//                    zoomFlag = false;
-//                    mStatus = NONE;             //多点触碰取消
-//                    break;
+                //多点触碰按下动作
+                case MotionEvent.ACTION_POINTER_DOWN:
+                    distance = spacing(event);
+                    // 如果连续两点距离大于10，则判定为多点模式
+                    if (distance > 10f) {
+                        System.out.println("多点触碰，distance---" + distance);
+                        isFirst = true;
+                        mStatus = ZOOM;
+                        zoomFlag = true;
+                    }
+                    break;
+                //(需判断移动为多点或单点)触碰点移动动作
+                case MotionEvent.ACTION_MOVE:
+                    if (zoomFlag) {
+                        if (mStatus == DRAG) {       //移动操作
+                            mIsMoved = true;
+                            MyGLRenderer.Translate = true;
+                            MyGLRenderer.transx = event.getX() - prev.x;//偏差值
+                            MyGLRenderer.transy = event.getY() - prev.y;//平衡y轴
+                        } else if (mStatus == ZOOM) {//缩放操作
+                            MyGLRenderer.Translate = false;
+                            MyGLRenderer.isFirst = true;
+
+                           float newDist = spacing(event);
+                            System.out.println("newDist---" + newDist);
+                            if (newDist > 10f) {
+
+                                tScale = newDist / distance;
+
+                                if (isFirst){
+                                    svaeScale = svaeScale0;
+                                    isFirst = false;
+                                    MyGLRenderer.ChangeScale = svaeScale;          //将缩放比例交给MyGLRenderer
+                                }else {
+
+                                    if (newDist - tempDist < 0){
+                                        System.out.println("缩小");
+                                        svaeScale0 = tScale;
+                                    }else {
+
+                                        svaeScale0 = svaeScale + tScale;
+                                        System.out.println("放大---" + svaeScale0);
+                                    }
+
+                                    tempDist = newDist;
+                                    MyGLRenderer.ChangeScale = svaeScale0;          //将缩放比例交给MyGLRenderer
+                                }
+                            }
+                        }
+                    }
+                    ret = true;
+                    break;
+                //多点触碰离开动作
+                case MotionEvent.ACTION_POINTER_UP:
+                    MyGLRenderer.Translate = false;
+                    zoomFlag = false;
+                    mStatus = NONE;             //多点触碰取消
+                    System.out.println("多点触碰离开");
+                    break;
                 //单点触碰离开动作
                 case MotionEvent.ACTION_UP:
                     MyGLRenderer.haveUp = true;
@@ -560,11 +591,34 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
                     mIsMoved = false;
                     break;
             }
-
             return ret;
         }
     };
 
+
+    private int statusGesture = 0;
+
+    private class simpleGestureListener extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            System.out.println("双击屏幕");
+            if (tScale < 5.0 && statusGesture == 0){
+                System.out.println("放大");
+                tScale += 1.0f;
+            }
+            if (tScale >= 5.0f){
+                statusGesture = 1;
+            }
+            if (statusGesture == 1){
+                tScale -= 1.0f;
+            }
+            if (tScale <= 1.0f){
+                statusGesture = 0;
+            }
+            MyGLRenderer.ChangeScale = tScale;
+            return true;
+        }
+    }
 
     private void show_tools() {
         mHandler.removeMessages(SHOW_TOOLS);
@@ -606,8 +660,8 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
         }
     }
 
-    public void showDialog(String msg){
-        if (!MyTestActivity.this.isFinishing()){
+    public void showDialog(String msg) {
+        if (!MyTestActivity.this.isFinishing()) {
             new AlertDialog.Builder(MyTestActivity.this)
                     .setTitle("警告")
                     .setMessage(msg)
@@ -646,7 +700,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
     }
 
     //定时器开始轮询设备状态
-    public void startTimer(){
+    public void startTimer() {
         System.out.println("开始轮询");
         mVideoTimer = new Timer();
 
@@ -655,16 +709,17 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
             public void run() {
                 startVideo();
             }
-        },20 * 1000,40 * 1000);
+        }, 20 * 1000, 40 * 1000);
 
     }
 
-    public void stopTimer(){
+    public void stopTimer() {
         System.out.println("停止轮询");
-        if (mVideoTimer != null){
+        if (mVideoTimer != null) {
             mVideoTimer.cancel();
         }
     }
+
 
     /**
      * 开启实时视频
@@ -672,13 +727,13 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
      * @param
      */
     public void startVideo() {
-        String token = mSpf.getString("token","");
-        String deviceId = mSpf.getString("devid","");
+        String token = mSpf.getString("token", "");
+        String deviceId = mSpf.getString("devid", "");
 
         //配置json数据
         JSONObject json = new JSONObject();
         try {
-            json.put("devid",deviceId);
+            json.put("devid", deviceId);
             json.put("token", token);
 
         } catch (Exception e) {
@@ -693,7 +748,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
                 deviceId,
                 token);
         //发起请求
-        RequestParams params = ArrayUtil.setParams(FF_REQUEST_VIDEO,timestamp,noncestr,signature);
+        RequestParams params = ArrayUtil.setParams(FF_REQUEST_VIDEO, timestamp, noncestr, signature);
         params.setBodyContent(json.toString());
         x.http().post(params, new Callback.CommonCallback<String>() {
             @Override
@@ -708,10 +763,12 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
             }
 
             @Override
-            public void onCancelled(CancelledException cex) {}
+            public void onCancelled(CancelledException cex) {
+            }
 
             @Override
-            public void onFinished() {}
+            public void onFinished() {
+            }
         });
     }
 

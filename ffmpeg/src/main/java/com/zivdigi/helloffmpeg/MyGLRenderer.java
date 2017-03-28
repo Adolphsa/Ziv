@@ -156,6 +156,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         }
     }
 
+    public void test(){
+        System.out.println("问你");
+        prog.createBuffers(new float[]{-1.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f,
+               1.0f,});
+    }
 
     private int maxOffset = 100;
     private int viewportOffset;
@@ -167,8 +172,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     public static float ChangeScale;
 
     public static boolean Translate = false;
-    private static final float MIN_SCALE = 0.5f;//恢复缩放比例
-    private static final float MAX_SCALE = 4.0f;//最大缩放比例
+    private static final float MIN_SCALE = 1.0f;//恢复缩放比例
+    private static final float MAX_SCALE = 8.0f;//最大缩放比例
     private static final String TAG = "MyGLRenderer";
 
     /**
@@ -188,7 +193,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
             }
             int k = -2;
             viewportOffset = (int) (80 * ChangeScale);//变量值
-            Log.i(TAG, "ChangeScale: " + ChangeScale);
+//            Log.i(TAG, "ChangeScale: " + ChangeScale);
             ScanlteX = -maxOffset + viewportOffset * k;//也是变量值X
             ScanlteY = -maxOffset + viewportOffset * k;//也是变量值Y
 
@@ -196,7 +201,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
             currentBitmapHeight = this.height - viewportOffset * 2 * k + maxOffset * 2;
             //居中缩放函数(放大缩小)
             gl.glViewport(ScanlteX, ScanlteY, currentBitmapWidth, currentBitmapHeight);
-            Log.i("translating", "ScanlteY=" + ScanlteY);
+//            Log.i("translating", "ScanlteY=" + ScanlteY);
             //调用移动函数
             if (Translate) {
                 translateView(gl);          //移动
@@ -207,7 +212,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
                     offSetY = (int) (ScanlteY - transy);
                     transx = 0;
                     transy = 0;
-                    Log.i("translate", "offsetX =" + offsetX + ",offSetY=" + offSetY);
+//                    Log.i("translate", "offsetX =" + offsetX + ",offSetY=" + offSetY);
                 }
             }
         }
@@ -243,7 +248,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
             }
         }
 
-
         //GLSurfaceView 是以右边为X轴正轴,上边为Y轴上轴    所以的Y的偏移量为-
         if (isFirst) {//NO1 移动
             isFirst = false;
@@ -278,7 +282,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     public static void Refreshvar() {
         Translate = false;
-        ChangeScale = 0.5f;
+        ChangeScale = 1.0f;
         transx = 0;
         transy = 0;
     }

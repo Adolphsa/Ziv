@@ -153,7 +153,7 @@ public class AddDevice extends BaseActivity {
                             }
                         });
                     } else if (!AddDevice.this.isFinishing() && status == Urls.STATUS_CODE_403) {
-                        DialogUtils.showPrompt(AddDevice.this, "提示", "绑定设备失败，无权限，已被他人绑定", "确定", new DialogInterface.OnClickListener() {
+                        DialogUtils.showPrompt(AddDevice.this, "提示", "绑定设备失败,无权限，token错误", "确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
@@ -168,15 +168,32 @@ public class AddDevice extends BaseActivity {
                             }
                         });
 
-                    }else {
+                    }else if (!AddDevice.this.isFinishing() && status == Urls.STATUS_CODE_405){
                         System.out.println("绑定结果---" + result);
-                        DialogUtils.showPrompt(AddDevice.this, "提示", "绑定设备失败，异常错误", "确定", new DialogInterface.OnClickListener() {
+                        DialogUtils.showPrompt(AddDevice.this, "提示", "绑定设备失败，二维码不正确", "确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                    }else if (!AddDevice.this.isFinishing() && status == Urls.STATUS_CODE_406){
+                        System.out.println("绑定结果---" + result);
+                        DialogUtils.showPrompt(AddDevice.this, "提示", "绑定设备失败，已被他人绑定", "确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                    }else if (!AddDevice.this.isFinishing() && status == Urls.STATUS_CODE_500){
+                        System.out.println("绑定结果---" + result);
+                        DialogUtils.showPrompt(AddDevice.this, "提示", "绑定设备失败，数据库错误", "确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                             }
                         });
                     }
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                     if (!AddDevice.this.isFinishing()) {

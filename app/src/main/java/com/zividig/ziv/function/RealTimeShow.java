@@ -270,7 +270,7 @@ public class RealTimeShow extends BaseActivity {
                             getImageFromInternet();
                         }else{
                             System.out.println("url返回值为空");
-                            if (getImageCount > 9){
+                            if (getImageCount > 19){
                                 System.out.println("大于九了");
                                 getImageCount = 0;
                                 imageKey = "new";

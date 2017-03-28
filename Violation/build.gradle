@@ -29,7 +29,7 @@ dependencies {
 
     //rxjava
     compile 'io.reactivex:rxandroid:1.2.1'
-    compile 'io.reactivex:rxjava:x.y.z'
+    compile 'io.reactivex:rxjava:1.1.6'
 
     //retrofit
     compile 'com.squareup.retrofit2:retrofit:2.1.0'

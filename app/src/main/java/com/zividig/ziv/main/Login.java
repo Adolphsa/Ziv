@@ -149,7 +149,7 @@ public class Login extends BaseActivity {
         btLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (NetworkTypeUtils.getConnectWifiSsid(ZivApp.getInstance()).contains("car_")){
+                if (NetworkTypeUtils.getConnectWifiSsid(ZivApp.getInstance()).contains("ziv_")){
                     WifiDirectUtils.WifiDirect(Login.this,MainActivity.class);
                 }else {
                     login();

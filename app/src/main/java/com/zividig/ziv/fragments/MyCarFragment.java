@@ -247,7 +247,7 @@ public class MyCarFragment extends Fragment {
                     case 1:
                         System.out.println("实时视频" + position);
                         //判断是否是设备WIFI
-                        if (NetworkTypeUtils.getConnectWifiSsid(ZivApp.getInstance()).contains("car_")) {
+                        if (NetworkTypeUtils.getConnectWifiSsid(ZivApp.getInstance()).contains("ziv_")) {
                             WifiDirectUtils.WifiDirect(getContext(), MyTestActivity.class);
                         } else {
                             if (!devId.equals("")) {
@@ -304,7 +304,6 @@ public class MyCarFragment extends Fragment {
                     case 6:
                         System.out.println("轨迹查询" + position);
                         if (!devId.equals("")) {
-
                             startActivity(new Intent(getContext(), TrackQueryDateChoose.class));
                         } else {
                             ToastShow.showToast(getContext(), "请先添加设备");
@@ -529,10 +528,12 @@ public class MyCarFragment extends Fragment {
         });
     }
 
+
     /**
-     * 轮询获取设备状态
+     * 配置options
+     * @return options
      */
-    public void RxGetDeviceState() {
+    private Map<String, String> setOp(){
 
         String token = mSpf.getString("token", null);
         String devid = mSpf.getString("devid", null);
@@ -547,27 +548,50 @@ public class MyCarFragment extends Fragment {
                 token);
 
         //配置请求头
-        final Map<String, String> options = new HashMap<>();
+        Map<String, String> options = new HashMap<>();
         options.put(SignatureUtils.SIGNATURE_APP_KEY, Urls.APP_KEY);
         options.put(SignatureUtils.SIGNATURE_TIMESTAMP, timestamp);
         options.put(SignatureUtils.SIGNATURE_NONCESTTR, noncestr);
         options.put(SignatureUtils.SIGNATURE_STRING, signature);
 
+        return options;
+    }
+
+    /**
+     * 配置jsonBody
+     * @return  RequestBody
+     */
+    private RequestBody setBody(){
+
+        String token = mSpf.getString("token", null);
+        String devid = mSpf.getString("devid", null);
+
+        //配置请求体
         //配置请求体
         DeviceStateBody deviceStateBody = new DeviceStateBody();
         deviceStateBody.devid = devid;
         deviceStateBody.token = token;
         String stringDeviceListBody = JsonUtils.serialize(deviceStateBody);
-        final RequestBody jsonBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), stringDeviceListBody);
+        RequestBody jsonBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), stringDeviceListBody);
+
+        return jsonBody;
+    }
+
+    /**
+     * 轮询获取设备状态
+     */
+    public void RxGetDeviceState() {
 
         mSubscription = Observable.interval(0,30, TimeUnit.SECONDS)
-                .observeOn(Schedulers.io())
                 .flatMap(new Func1<Long, Observable<DeviceStateResponse>>() {
                     @Override
                     public Observable<DeviceStateResponse> call(Long aLong) {
+                        Map<String, String> options = setOp();
+                        RequestBody jsonBody = setBody();
                         return ZivApiManage.getInstance().getZhihuApiService().getDeviceStateInfo(options, jsonBody);
                     }
                 })
+//                .retryWhen(new RetryWithDelay(3, 2000))
                 .takeUntil(new Func1<DeviceStateResponse, Boolean>() {
                     @Override
                     public Boolean call(DeviceStateResponse deviceStateResponse) {
@@ -593,10 +617,14 @@ public class MyCarFragment extends Fragment {
                     public void call(Throwable throwable) {
                         System.out.println("RXJAVA---设备状态出错---" + throwable.getMessage());
                         if (++retryCount >= 3){
-                            System.out.println("RXJAVA---retryCount---" + retryCount);
-                            deviceState.setText("ID为空");
-                            Observable.error(throwable);
+                            System.out.println("查询失败");
+                            deviceState.setText("查询失败");
+                            retryCount = 0;
+                            if (mSubscription != null){
+                                mSubscription.unsubscribe();
+                            }
                         }else {
+                            System.out.println("RXJAVA---retryCount---" + retryCount);
                             RxGetDeviceState();
                         }
 

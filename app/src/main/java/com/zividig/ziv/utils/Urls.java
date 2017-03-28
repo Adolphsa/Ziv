@@ -11,6 +11,8 @@ public class Urls {
     public static final int STATUS_CODE_402 = 402;
     public static final int STATUS_CODE_403 = 403;
     public static final int STATUS_CODE_404 = 404;
+    public static final int STATUS_CODE_405 = 405;
+    public static final int STATUS_CODE_406 = 406;
     public static final int STATUS_CODE_500 = 500;
 
     public static final String APP_KEY = "1793584B";

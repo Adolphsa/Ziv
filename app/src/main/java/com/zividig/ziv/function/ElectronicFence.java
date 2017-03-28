@@ -467,7 +467,6 @@ public class ElectronicFence extends BaseActivity {
         final RequestBody jsonBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), stringDeviceListBody);
 
         mSubscription = Observable.interval(0,1, TimeUnit.SECONDS)
-                .observeOn(Schedulers.io())
                 .flatMap(new Func1<Long, Observable<LocationResponse>>() {
                     @Override
                     public Observable<LocationResponse> call(Long aLong) {

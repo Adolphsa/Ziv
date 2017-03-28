@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+              android:background="@color/activity_background"
     tools:context="com.zividig.ziv.function.MyPicture">
 
     <include layout="@layout/layout_titlebar"/>
@@ -13,6 +14,5 @@
         android:layout_height="wrap_content"
         android:dividerHeight="0.5dp"
         android:divider="@color/btn_default"
-        android:background="@color/activity_background"
         />
 </LinearLayout>

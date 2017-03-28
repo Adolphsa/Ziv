@@ -71,7 +71,7 @@ public class DropEditText extends EditText implements PopupWindow.OnDismissListe
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_UP) {
             if (getCompoundDrawables()[2] != null) {
-                int start = getWidth() - 60; // 起始位置
+                int start = getWidth() - 80; // 起始位置
                 System.out.println("起始位置---" + start);
                 int end = getWidth(); // 结束位置
                 boolean available = (event.getX() > start) && (event.getX() < end);

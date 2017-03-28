@@ -111,7 +111,6 @@ public class GLProgram {
                 _tIIindex = 13;
                 _tIIIindex = 14;
                 break;
-
             case 0:
             default:
                 _vertices = squareVertices;
@@ -262,7 +261,6 @@ public class GLProgram {
     public void drawFrame() {
         GLES20.glUseProgram(_program);
         checkGlError("glUseProgram");
-
 
         GLES20.glVertexAttribPointer(_coordHandle, 2, GLES20.GL_FLOAT, false, 8, _coord_buffer);
         checkGlError("glVertexAttribPointer maTextureHandle");

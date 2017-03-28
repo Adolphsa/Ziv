@@ -182,7 +182,11 @@ public class CarLocation extends BaseActivity {
     }
 
 
-    private void RxGetLocationInfo(){
+    /**
+     * 配置options
+     * @return options
+     */
+    private Map<String, String> setOp(){
 
         String token = spf.getString("token", null);
         String devid = spf.getString("devid", null);
@@ -197,24 +201,42 @@ public class CarLocation extends BaseActivity {
                 token);
 
         //配置请求头
-        final Map<String, String> options = new HashMap<>();
+        Map<String, String> options = new HashMap<>();
         options.put(SignatureUtils.SIGNATURE_APP_KEY, Urls.APP_KEY);
         options.put(SignatureUtils.SIGNATURE_TIMESTAMP, timestamp);
         options.put(SignatureUtils.SIGNATURE_NONCESTTR, noncestr);
         options.put(SignatureUtils.SIGNATURE_STRING, signature);
 
+        return options;
+    }
+
+    /**
+     * 配置jsonBody
+     * @return  RequestBody
+     */
+    private RequestBody setBody(){
+
+        String devid = spf.getString("devid", null);
+        String token = spf.getString("token", null);
+
+        //配置请求体
         //配置请求体
         DeviceStateBody deviceStateBody = new DeviceStateBody();
         deviceStateBody.devid = devid;
         deviceStateBody.token = token;
         String stringDeviceListBody = JsonUtils.serialize(deviceStateBody);
-        final RequestBody jsonBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), stringDeviceListBody);
+        RequestBody jsonBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), stringDeviceListBody);
 
-        mSubscription = Observable.interval(0,2, TimeUnit.SECONDS)
-                .observeOn(Schedulers.io())
+        return jsonBody;
+    }
+
+    private void RxGetLocationInfo(){
+        mSubscription = Observable.interval(0,1, TimeUnit.SECONDS)
                 .flatMap(new Func1<Long, Observable<LocationResponse>>() {
                     @Override
                     public Observable<LocationResponse> call(Long aLong) {
+                        Map<String, String> options = setOp();
+                        RequestBody jsonBody = setBody();
                         return ZivApiManage.getInstance().getZhihuApiService().getLocationInfo(options,jsonBody);
                     }
                 })
@@ -229,6 +251,7 @@ public class CarLocation extends BaseActivity {
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
+                        System.out.println("地图异常---" + throwable.getMessage());
                         DialogUtils.showPrompt(CarLocation.this, "提示", "暂无数据", "确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
