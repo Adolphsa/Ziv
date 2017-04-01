@@ -239,7 +239,7 @@ public class MyCarFragment extends Fragment {
                     case 0:
                         System.out.println("图片抓拍" + position);
                         if (!devId.equals("")) {
-                            getDeviceState(position);
+                            startActivity(new Intent(getContext(), RealTimeShow.class));
                         } else {
                             ToastShow.showToast(getContext(), "请先添加设备");
                         }
@@ -439,9 +439,7 @@ public class MyCarFragment extends Fragment {
                     DeviceStateInfoBean.InfoBean infoBean = stateInfoBean.getInfo();
                     String workMode = infoBean.getWorkmode();
                     if (workMode.equals("NORMAL")) {
-                        if (0 == postion) {
-                            startActivity(new Intent(getContext(), RealTimeShow.class));
-                        } else if (1 == postion) {
+                        if (1 == postion) {
                             startVideo(devid);
                         }
                     } else {
@@ -588,10 +586,9 @@ public class MyCarFragment extends Fragment {
                     public Observable<DeviceStateResponse> call(Long aLong) {
                         Map<String, String> options = setOp();
                         RequestBody jsonBody = setBody();
-                        return ZivApiManage.getInstance().getZhihuApiService().getDeviceStateInfo(options, jsonBody);
+                        return ZivApiManage.getInstance().getZivApiService().getDeviceStateInfo(options, jsonBody);
                     }
                 })
-//                .retryWhen(new RetryWithDelay(3, 2000))
                 .takeUntil(new Func1<DeviceStateResponse, Boolean>() {
                     @Override
                     public Boolean call(DeviceStateResponse deviceStateResponse) {

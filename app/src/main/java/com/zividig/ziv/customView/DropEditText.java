@@ -29,7 +29,7 @@ public class DropEditText extends EditText implements PopupWindow.OnDismissListe
     private int mDropDrawableResId; // 下拉图标
     private int mRiseDrawableResID; // 上拉图标
 
-    android.widget.AdapterView.OnItemClickListener mOnItemClickListener;
+    AdapterView.OnItemClickListener mOnItemClickListener;
 
     public AdapterView.OnItemClickListener getOnItemClickListener() {
         return mOnItemClickListener;

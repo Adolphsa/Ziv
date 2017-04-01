@@ -237,7 +237,7 @@ public class CarLocation extends BaseActivity {
                     public Observable<LocationResponse> call(Long aLong) {
                         Map<String, String> options = setOp();
                         RequestBody jsonBody = setBody();
-                        return ZivApiManage.getInstance().getZhihuApiService().getLocationInfo(options,jsonBody);
+                        return ZivApiManage.getInstance().getZivApiService().getLocationInfo(options,jsonBody);
                     }
                 })
                 .subscribeOn(Schedulers.io())

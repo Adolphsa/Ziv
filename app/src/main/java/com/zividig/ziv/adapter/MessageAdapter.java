@@ -62,12 +62,12 @@ public class MessageAdapter extends SwipeMenuAdapter<MessageAdapter.DefaultViewH
     }
 
     @Override
-    public MessageAdapter.DefaultViewHolder onCompatCreateViewHolder(View realContentView, int viewType) {
+    public DefaultViewHolder onCompatCreateViewHolder(View realContentView, int viewType) {
         return new DefaultViewHolder(realContentView);
     }
 
     @Override
-    public void onBindViewHolder(MessageAdapter.DefaultViewHolder holder, int position) {
+    public void onBindViewHolder(DefaultViewHolder holder, int position) {
         mDataBeanList = getDataBeanList();
         MessageBean.DataBean dataBeen = mDataBeanList.get(position);
         holder.setData(dataBeen.getTitle(),dataBeen.getAddress_desc(),dataBeen.getTime());

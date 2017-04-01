@@ -537,7 +537,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
                             MyGLRenderer.Translate = false;
                             MyGLRenderer.isFirst = true;
 
-                           float newDist = spacing(event);
+                            float newDist = spacing(event);
                             System.out.println("newDist---" + newDist);
                             if (newDist > 10f) {
 

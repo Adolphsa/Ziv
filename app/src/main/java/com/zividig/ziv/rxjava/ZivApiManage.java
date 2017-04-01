@@ -71,7 +71,7 @@ public class ZivApiManage {
         return sZivApiManage;
     }
 
-    public ZivApi  getZhihuApiService(){
+    public ZivApi getZivApiService(){
         if (zivApi == null){
             synchronized (zivMonitor){
                 if (zivApi == null){

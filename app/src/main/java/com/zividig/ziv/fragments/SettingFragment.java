@@ -237,7 +237,7 @@ public class SettingFragment extends Fragment {
         final Map<String, String> options = setOp();
         final RequestBody jsonBody = setBody();
 
-        mSubscription =  ZivApiManage.getInstance().getZhihuApiService()
+        mSubscription =  ZivApiManage.getInstance().getZivApiService()
                 .getDeviceStateInfo(options,jsonBody)
                 .throttleFirst(2, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.io())
@@ -253,7 +253,7 @@ public class SettingFragment extends Fragment {
                             System.out.println("异常执行了2");
                             return Observable.error(new Exception("no_stdby"));
                         }
-                        return ZivApiManage.getInstance().getZhihuApiService().sendWakeupOrder(options,jsonBody);
+                        return ZivApiManage.getInstance().getZivApiService().sendWakeupOrder(options,jsonBody);
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
@@ -318,7 +318,7 @@ public class SettingFragment extends Fragment {
                 .flatMap(new Func1<Long, Observable<DeviceStateResponse>>() { //先查看设备的状态
                     @Override
                     public Observable<DeviceStateResponse> call(Long aLong) {
-                        return ZivApiManage.getInstance().getZhihuApiService().getDeviceStateInfo(options,jsonBody);
+                        return ZivApiManage.getInstance().getZivApiService().getDeviceStateInfo(options,jsonBody);
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())

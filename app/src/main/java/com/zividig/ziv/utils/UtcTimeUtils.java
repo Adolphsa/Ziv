@@ -59,7 +59,7 @@ public class UtcTimeUtils {
      */
     public static String getDateAndTime() {
         SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-        String date = sDateFormat.format(new java.util.Date());
+        String date = sDateFormat.format(new Date());
         System.out.println(date);
         return date;
     }
@@ -71,7 +71,7 @@ public class UtcTimeUtils {
 
     public static String unixTimeToDate(long unixTime){
         SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        String date = sDateFormat.format(new java.util.Date(unixTime*1000));
+        String date = sDateFormat.format(new Date(unixTime*1000));
         System.out.println(date);
         return date;
     }

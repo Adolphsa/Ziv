@@ -22,12 +22,10 @@ import com.zividig.ziv.customView.DropEditText;
 import com.zividig.ziv.customView.LoadingProgressDialog;
 import com.zividig.ziv.utils.HttpParamsUtils;
 import com.zividig.ziv.utils.MD5;
-import com.zividig.ziv.utils.NetworkTypeUtils;
 import com.zividig.ziv.utils.SignatureUtils;
 import com.zividig.ziv.utils.ToastShow;
 import com.zividig.ziv.utils.Urls;
 import com.zividig.ziv.utils.UtcTimeUtils;
-import com.zividig.ziv.utils.WifiDirectUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -149,11 +147,7 @@ public class Login extends BaseActivity {
         btLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (NetworkTypeUtils.getConnectWifiSsid(ZivApp.getInstance()).contains("ziv_")){
-                    WifiDirectUtils.WifiDirect(Login.this,MainActivity.class);
-                }else {
                     login();
-                }
             }
         });
 
@@ -187,6 +181,7 @@ public class Login extends BaseActivity {
         final String user =  etUser.getText().toString().trim();  //获取账号
         final String password = etPassword.getText().toString().trim();  //获取密码
         final String getuiId = pushManager.getClientid(Login.this);
+        System.out.println("个推ID---" + getuiId);
         if (!TextUtils.isEmpty(user) && !TextUtils.isEmpty(password)){
             //配置json数据
             JSONObject json = new JSONObject();

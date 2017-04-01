@@ -5,17 +5,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.Point;
-import android.graphics.drawable.Drawable;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
-import android.view.Display;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,9 +19,13 @@ import android.widget.Toast;
 import com.baidu.mapapi.SDKInitializer;
 import com.bm.library.PhotoView;
 import com.zividig.ziv.R;
-import com.zividig.ziv.bean.RealTimeBean;
 import com.zividig.ziv.main.BaseActivity;
 import com.zividig.ziv.main.ZivApp;
+import com.zividig.ziv.rxjava.ZivApiManage;
+import com.zividig.ziv.rxjava.model.DeviceStateBody;
+import com.zividig.ziv.rxjava.model.DeviceStateResponse;
+import com.zividig.ziv.rxjava.model.SnapBody;
+import com.zividig.ziv.rxjava.model.SnapResponse;
 import com.zividig.ziv.utils.DialogUtils;
 import com.zividig.ziv.utils.HttpParamsUtils;
 import com.zividig.ziv.utils.JsonUtils;
@@ -35,17 +35,22 @@ import com.zividig.ziv.utils.ToastShow;
 import com.zividig.ziv.utils.Urls;
 import com.zividig.ziv.utils.UtcTimeUtils;
 
-import org.json.JSONObject;
-import org.xutils.common.Callback;
-import org.xutils.http.RequestParams;
-import org.xutils.image.ImageOptions;
-import org.xutils.x;
-
 import java.io.File;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
-import static com.zividig.ziv.utils.SignatureUtils.SIGNATURE_TOKEN;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import rx.Observable;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * 实时预览
@@ -53,94 +58,29 @@ import static com.zividig.ziv.utils.SignatureUtils.SIGNATURE_TOKEN;
  */
 public class RealTimeShow extends BaseActivity {
 
-    private static final int SNAP_FAIL = 30;
-    private static final int DEVICE_NOT_ONLINE = 31;
-    private static final int GET_IMAGE_URL_ERROR = 32;
-    private static final int GET_IMAGE_SUCCESS = 33;
-    private static final int GET_IMAGE_FAIL = 34;
-    private static final int BEFORE_GET_IMAGE_URL = 35;
-
     private Context mContext;
     private PhotoView photoView;
     private ProgressBar progressBar;
-    private ImageOptions options;
 
-    private String url; //图片的地址
-    private int ScreenWidth;
     private Button btRefresh;
     private Button btDownImage;
-    private int errorCode; //错误码
+
     private String devid;
-    private int getImageCount = 0;
+
+
+
+
 
     private long secondTime = 0;
     private String imageKey = "new";
+    private Map<String, String> mapOptions;
+    private SnapBody body;
+    private RequestBody jsonBody;
+    private Bitmap mBitmap;
 
-    private Timer mTimer;
+    private Subscription mSubscription;
 
-     Handler mHandler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what){
-                case SNAP_FAIL:     //抓图失败
-                    if (!RealTimeShow.this.isFinishing()){
-                        DialogUtils.showPrompt(RealTimeShow.this, "提示", "抓图失败", "确定", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                finish();
-                            }
-                        });
-                    }
-                    break;
-
-                case DEVICE_NOT_ONLINE:     //设备不在线
-                    if (!RealTimeShow.this.isFinishing()){
-                        DialogUtils.showPrompt(RealTimeShow.this, "提示", "设备不在线", "确定", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                finish();
-                            }
-                        });
-                    }
-                  break;
-
-                case GET_IMAGE_URL_ERROR:       //获取图片URL失败
-                    btRefresh.setClickable(true);
-                    progressBar.setVisibility(View.INVISIBLE);
-//                ToastShow.showToast(RealTimeShow.this,"图片访问错误");
-                    if (!RealTimeShow.this.isFinishing()){
-                        DialogUtils.showPrompt(RealTimeShow.this, "提示", "返回json错误", "确定", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                finish();
-                            }
-                        });
-                    }
-                    break;
-
-                case GET_IMAGE_SUCCESS:     //获取图片成功
-                    progressBar.setVisibility(View.INVISIBLE);
-                    btRefresh.setClickable(true);
-                    getImageCount = 0;
-
-                    break;
-
-                case GET_IMAGE_FAIL:        //获取图片失败
-                    btRefresh.setClickable(true);
-                    getImageCount = 0;
-                    break;
-
-                case BEFORE_GET_IMAGE_URL:
-                    progressBar.setVisibility(View.VISIBLE);
-                    btRefresh.setClickable(false);
-                    break;
-            }
-
-        }
-    };
+    private SharedPreferences mSpf;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -153,11 +93,11 @@ public class RealTimeShow extends BaseActivity {
         TextView txtTitle = (TextView) findViewById(R.id.tv_title);
         txtTitle.setText("图片抓拍");
 
-        SharedPreferences spf = getSharedPreferences("config",MODE_PRIVATE);
-        devid = spf.getString("devid","");
+        mSpf = getSharedPreferences("config",MODE_PRIVATE);
+        devid = mSpf.getString("devid","");
 
         //设置获取设备状态为真，以便在Activity销毁时能重新获取设备状态
-        spf.edit().putBoolean("is_keeping_get_device_state",true).apply();
+        mSpf.edit().putBoolean("is_keeping_get_device_state",true).apply();
 
         //返回按钮
         Button btnBack = (Button) findViewById(R.id.btn_back);
@@ -174,12 +114,6 @@ public class RealTimeShow extends BaseActivity {
 
         progressBar = (ProgressBar) findViewById(R.id.pb_img); //进度条
 
-        //获取屏幕宽高
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        ScreenWidth = size.x;
-
         //按钮监听
         BtnListener listener = new BtnListener();
 
@@ -189,47 +123,18 @@ public class RealTimeShow extends BaseActivity {
         btRefresh.setOnClickListener(listener);
         btDownImage.setOnClickListener(listener);
 
-        starTimer();
-    }
+        RxgetDeviceState();
 
-    private void starTimer(){
-        mTimer = new Timer();
-        //定时获取图片URL
-        mTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                getImageUrl(); //显示图片
-            }
-        },0,1000);
-
-    }
-
-    private void stopTimer(){
-        if (mTimer != null){
-            mTimer.cancel();
-        }
     }
 
     /**
-     * 发送抓图指令，获取图片链接
+     * 配置options
+     * @return options
      */
-    private void getImageUrl() {
+    private Map<String, String> setOp(){
 
-        mHandler.sendEmptyMessage(BEFORE_GET_IMAGE_URL);
-        getImageCount++;
-
-        System.out.println("imageKey的值---" + imageKey);
-
-        //配置json数据
-        JSONObject json = new JSONObject();
-        try {
-            json.put("devid",devid);
-            json.put("key",imageKey);
-            json.put(SIGNATURE_TOKEN, SignatureUtils.token);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        String token = mSpf.getString("token", null);
+        String devid = mSpf.getString("devid", null);
 
         //计算signature
         String timestamp = UtcTimeUtils.getTimestamp();
@@ -238,122 +143,252 @@ public class RealTimeShow extends BaseActivity {
                 noncestr,
                 Urls.APP_KEY,
                 devid,
-                imageKey,
-                SignatureUtils.token);
-        //发起请求
-        RequestParams params = HttpParamsUtils.setParams(Urls.URL_PIC_SNAP,timestamp,noncestr,signature);
-        params.setBodyContent(json.toString());
+                token);
 
-//        params.setConnectTimeout(120*1000); //超时120s
-        System.out.println("实时预览" + devid);
-        System.out.println("获取图片URL" + params);
-        x.http().post(params, new Callback.CommonCallback<String>() {
+        //配置请求头
+        Map<String, String> options = new HashMap<>();
+        options.put(SignatureUtils.SIGNATURE_APP_KEY, Urls.APP_KEY);
+        options.put(SignatureUtils.SIGNATURE_TIMESTAMP, timestamp);
+        options.put(SignatureUtils.SIGNATURE_NONCESTTR, noncestr);
+        options.put(SignatureUtils.SIGNATURE_STRING, signature);
 
-            @Override
-            public void onSuccess(String result) {
-                System.out.println("返回的数组是：" + result);
-                RealTimeBean realTimeBean = JsonUtils.deserialize(result,RealTimeBean.class);
-
-                url = realTimeBean.getUrl();
-                System.out.println("url的值---" + url);
-
-                errorCode = realTimeBean.getStatus();
-                System.out.println("error的值：---" + errorCode);
-
-                imageKey = realTimeBean.getKey();
-
-                switch (errorCode) {
-                    case 200: //返回正常
-                        if (!url.isEmpty() && !url.equals("")) {
-                            System.out.println("url返回值正常");
-                            mTimer.cancel();
-                            getImageFromInternet();
-                        }else{
-                            System.out.println("url返回值为空");
-                            if (getImageCount > 19){
-                                System.out.println("大于九了");
-                                getImageCount = 0;
-                                imageKey = "new";
-                                mTimer.cancel();
-                                mHandler.sendEmptyMessage(SNAP_FAIL);
-                            }
-                        }
-                        break;
-                    case 404:
-                        ToastShow.showToast(RealTimeShow.this,"设备不存在");
-                        imageKey = "new";
-                        mTimer.cancel();
-                        break;
-                    case 403:
-                        ToastShow.showToast(RealTimeShow.this,"token错误或者设备不在该用户名下");
-                        imageKey = "new";
-                        mTimer.cancel();
-                        break;
-                    case 402:
-                        System.out.println("设备不在线，无法抓取");
-                        imageKey = "new";
-                        mTimer.cancel();
-                        mHandler.sendEmptyMessage(DEVICE_NOT_ONLINE);
-                        break;
-                }
-
-            }
-
-            @Override
-            public void onError(Throwable ex, boolean isOnCallback) {
-                System.out.println("返回json错误" + ex);
-                mHandler.sendEmptyMessage(GET_IMAGE_URL_ERROR);
-                imageKey = "new";
-            }
-
-            @Override
-            public void onCancelled(CancelledException cex) {}
-
-            @Override
-            public void onFinished() {}
-        });
-
+        return options;
     }
 
     /**
-     * 获取图片
+     * 配置jsonBody
+     * @return  RequestBody
      */
-    private void getImageFromInternet() {
+    private RequestBody setBody(){
 
-        //显示图片
-        options = new ImageOptions.Builder()
-                .setImageScaleType(ImageView.ScaleType.FIT_CENTER)
-                .build();
-        x.image().bind(photoView, url, options, new Callback.CommonCallback<Drawable>() {
+        String token = mSpf.getString("token", null);
+        String devid = mSpf.getString("devid", null);
 
-            @Override
-            public void onSuccess(Drawable result) {
-                mHandler.sendEmptyMessage(GET_IMAGE_SUCCESS);
-                int intrinsicWidth = result.getIntrinsicWidth();
-                int intrinsicHeight = result.getIntrinsicHeight();
-                System.out.println("图片的宽度：" + intrinsicWidth + "，图片的高度：" + intrinsicHeight);
-            }
+        //配置请求体
+        DeviceStateBody deviceStateBody = new DeviceStateBody();
+        deviceStateBody.devid = devid;
+        deviceStateBody.token = token;
+        String stringDeviceListBody = JsonUtils.serialize(deviceStateBody);
+        RequestBody jsonBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), stringDeviceListBody);
 
-            @Override
-            public void onError(Throwable ex, boolean isOnCallback) {
+        return jsonBody;
+    }
 
-                System.out.println("加载错误" + ex);
-                mHandler.sendEmptyMessage(GET_IMAGE_FAIL);
+    /**
+     * 获取设备状态
+     */
+    private void RxgetDeviceState(){
 
-            }
+        Map<String, String> options = setOp();
+        RequestBody jsonBody = setBody();
+        ZivApiManage.getInstance().getZivApiService()
+                .getDeviceStateInfo(options,jsonBody)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<DeviceStateResponse>() {
+                    @Override
+                    public void call(DeviceStateResponse deviceStateResponse) {
+                        int status = deviceStateResponse.getStatus();
+                        DeviceStateResponse.InfoBean infoBean =  deviceStateResponse.getInfo();
+                        if (200 == status && infoBean != null){
+                            String worlMode = infoBean.getWorkmode();
+                            if (worlMode.equals("NORMAL")){
+                                //执行获取图片
+                                progressBar.setVisibility(View.VISIBLE);
+                                RXgetImageUrl();
+                            }
+                        }
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        if (!RealTimeShow.this.isFinishing()){
+                            DialogUtils.showPrompt(RealTimeShow.this, "提示", "设备不在线", "确定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    finish();
+                                }
+                            });
+                        }
+                    }
+                });
+    }
 
-            @Override
-            public void onCancelled(CancelledException cex) {
-                System.out.println("加载取消");
-            }
+    private Map<String, String> setOp(String imageKeyTest){
 
-            @Override
-            public void onFinished() {
-//                btRefresh.setClickable(true);
-                imageKey = "new";
-            }
-        });
+        String token = mSpf.getString("token", null);
+        String devid = mSpf.getString("devid", null);
 
+        //计算signature
+        String timestamp = UtcTimeUtils.getTimestamp();
+        String noncestr = HttpParamsUtils.getRandomString(10);
+        String signature = SignatureUtils.getSinnature(timestamp,
+                noncestr,
+                Urls.APP_KEY,
+                devid,
+                token,
+                imageKeyTest);
+
+        //配置请求头
+        mapOptions = new HashMap<>();
+        mapOptions.put(SignatureUtils.SIGNATURE_APP_KEY, Urls.APP_KEY);
+        mapOptions.put(SignatureUtils.SIGNATURE_TIMESTAMP, timestamp);
+        mapOptions.put(SignatureUtils.SIGNATURE_NONCESTTR, noncestr);
+        mapOptions.put(SignatureUtils.SIGNATURE_STRING, signature);
+
+        return mapOptions;
+    }
+
+    private RequestBody setBody(String imageKeyTest){
+
+        String token = mSpf.getString("token", null);
+        String devid = mSpf.getString("devid", null);
+
+        //配置请求体
+        body = new SnapBody();
+        body.devid = devid;
+        body.imageKey = imageKeyTest;
+        body.token = token;
+        String snapBody = JsonUtils.serialize(body);
+        jsonBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), snapBody);
+
+        return jsonBody;
+    }
+
+
+    /**
+     * 获取图片链接
+     */
+    private void RXgetImageUrl() {
+
+        String token = mSpf.getString("token", null);
+        String devid = mSpf.getString("devid", null);
+
+        //计算signature
+        String timestamp = UtcTimeUtils.getTimestamp();
+        String noncestr = HttpParamsUtils.getRandomString(10);
+        String signature = SignatureUtils.getSinnature(timestamp,
+                noncestr,
+                Urls.APP_KEY,
+                devid,
+                token,
+                imageKey);
+
+        //配置请求头
+        mapOptions = new HashMap<>();
+        mapOptions.put(SignatureUtils.SIGNATURE_APP_KEY, Urls.APP_KEY);
+        mapOptions.put(SignatureUtils.SIGNATURE_TIMESTAMP, timestamp);
+        mapOptions.put(SignatureUtils.SIGNATURE_NONCESTTR, noncestr);
+        mapOptions.put(SignatureUtils.SIGNATURE_STRING, signature);
+
+        //配置请求体
+        body = new SnapBody();
+        body.devid = devid;
+        body.imageKey = imageKey;
+        body.token = token;
+        String snapBody = JsonUtils.serialize(body);
+        jsonBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), snapBody);
+
+        System.out.println("访问之前的imageKey---" + imageKey);
+
+        mSubscription =Observable.interval(1, TimeUnit.SECONDS)
+                .take(10)
+                .flatMap(new Func1<Long, Observable<SnapResponse>>() {
+                    @Override
+                    public Observable<SnapResponse> call(Long aLong) {
+                        System.out.println("第一次变换imagekey---" + imageKey);
+                        return ZivApiManage.getInstance().getZivApiService().getImageUrl(mapOptions,jsonBody);
+                    }
+                })
+                .flatMap(new Func1<SnapResponse, Observable<SnapResponse>>() {
+                    @Override
+                    public Observable<SnapResponse> call(SnapResponse snapResponse) {
+                        System.out.println("第二次变换imagekey---" + snapResponse.getKey());
+                        Map<String, String> op = setOp(snapResponse.getKey());
+                        RequestBody js = setBody(snapResponse.getKey());
+                        return ZivApiManage.getInstance().getZivApiService().getImageUrl(op,js);
+                    }
+                })
+                .takeUntil(new Func1<SnapResponse, Boolean>() {
+                    @Override
+                    public Boolean call(SnapResponse snapResponse) {
+                        String url = snapResponse.getUrl();
+                        if (!TextUtils.isEmpty(url)){
+                            System.out.println("停止轮询");
+                            return true;
+                        }
+                        return false;
+                    }
+                })
+                .filter(new Func1<SnapResponse, Boolean>() {
+                    @Override
+                    public Boolean call(SnapResponse snapResponse) {
+                        System.out.println("过滤");
+                        String url = snapResponse.getUrl();
+                        imageKey = snapResponse.getKey();
+                        System.out.println("过滤---" + imageKey);
+                        if (!TextUtils.isEmpty(url)){
+                            System.out.println("url不为空");
+                            return true;
+                        }
+                        return false;
+                    }
+                })
+                .flatMap(new Func1<SnapResponse, Observable<ResponseBody>>() {
+                    @Override
+                    public Observable<ResponseBody> call(SnapResponse snapResponse) {
+                        return ZivApiManage.getInstance().getZivApiService().downLoadImage(snapResponse.getUrl());
+                    }
+                })
+                .map(new Func1<ResponseBody, Bitmap>() {
+                    @Override
+                    public Bitmap call(ResponseBody responseBody) {
+                        InputStream is = null;
+                        try {
+                            is = responseBody.byteStream();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        } finally {
+                            try {
+                                if (is != null) {
+                                    is.close();
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        if (is != null) {
+                            return BitmapFactory.decodeStream(is);
+                        }
+                        return null;
+
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Bitmap>() {
+                    @Override
+                    public void call(Bitmap bitmap) {
+                        mBitmap = bitmap;
+                        photoView.setImageBitmap(bitmap);
+                        progressBar.setVisibility(View.INVISIBLE);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        progressBar.setVisibility(View.INVISIBLE);
+                        if (!RealTimeShow.this.isFinishing()){
+                            DialogUtils.showPrompt(RealTimeShow.this, "提示", "抓图失败", "确定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    finish();
+                                }
+                            });
+                        }
+                    }
+                });
     }
 
     /**
@@ -385,38 +420,11 @@ public class RealTimeShow extends BaseActivity {
             final File file = new File(imageFile,target);
             System.out.println(target);
 
-            x.image().loadFile(url, options, new Callback.CacheCallback<File>() {
-                @Override
-                public boolean onCache(File result) {
-                    System.out.println("图片的地址：" + result.getPath() + "---图片的名称：" + result.getName());
-                    Bitmap bmp = android.graphics.BitmapFactory.decodeFile(result.getPath());
-                    Others.saveImageToGallery(mContext,bmp,file,target);
-                    updateImage();
-                    ToastShow.showToast(RealTimeShow.this,"图片已保存");
-                    return true;
-                }
-
-                @Override
-                public void onSuccess(File result) {
-                    if (result == null) {
-                        System.out.println("结果为空");
-                    } else {
-                        System.out.println("结果不为空");
-                    }
-                }
-
-                @Override
-                public void onError(Throwable ex, boolean isOnCallback) {
-                   ToastShow.showToast(RealTimeShow.this,"网络异常");
-                }
-
-                @Override
-                public void onCancelled(CancelledException cex) {}
-
-                @Override
-                public void onFinished() {}
-            });
-
+            if (mBitmap != null){
+                Others.saveImageToGallery(mContext,mBitmap,file,target);
+                ToastShow.showToast(RealTimeShow.this,"图片已保存");
+                updateImage();
+            }
         } else {
             ToastShow.showToast(RealTimeShow.this,"请先刷新图片");
         }
@@ -435,7 +443,6 @@ public class RealTimeShow extends BaseActivity {
         this.sendBroadcast(intent);
     }
 
-
     class BtnListener implements View.OnClickListener {
 
         @Override
@@ -443,9 +450,8 @@ public class RealTimeShow extends BaseActivity {
             switch (v.getId()) {
                 case R.id.bt_refresh:
                     if ((System.currentTimeMillis()- secondTime) > (1 * 1000)){
-                        if (mTimer != null){
-                            starTimer();
-                        }
+                        imageKey = "new";
+                        RxgetDeviceState();
                     }
                     secondTime = System.currentTimeMillis();
                     break;
@@ -460,8 +466,8 @@ public class RealTimeShow extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        stopTimer();
-        mTimer = null;
+        if (mSubscription != null){
+            mSubscription.unsubscribe();
+        }
     }
-
 }

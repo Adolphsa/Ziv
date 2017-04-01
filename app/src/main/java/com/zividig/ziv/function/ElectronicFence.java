@@ -470,7 +470,7 @@ public class ElectronicFence extends BaseActivity {
                 .flatMap(new Func1<Long, Observable<LocationResponse>>() {
                     @Override
                     public Observable<LocationResponse> call(Long aLong) {
-                        return ZivApiManage.getInstance().getZhihuApiService().getLocationInfo(options,jsonBody);
+                        return ZivApiManage.getInstance().getZivApiService().getLocationInfo(options,jsonBody);
                     }
                 })
                 .takeUntil(new Func1<LocationResponse, Boolean>() {

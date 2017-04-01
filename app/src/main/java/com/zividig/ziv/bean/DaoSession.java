@@ -17,7 +17,7 @@ import com.zividig.ziv.bean.UsersDao;
 /**
  * {@inheritDoc}
  * 
- * @see org.greenrobot.greendao.AbstractDaoSession
+ * @see AbstractDaoSession
  */
 public class DaoSession extends AbstractDaoSession {
 
