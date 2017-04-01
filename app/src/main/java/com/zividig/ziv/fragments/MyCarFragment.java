@@ -393,7 +393,6 @@ public class MyCarFragment extends Fragment {
 
     }
 
-
     private String getDevID() {
         devId = mSpf.getString("devid", "");
         System.out.println("MyCarFragment---deviceId:" + devId);
