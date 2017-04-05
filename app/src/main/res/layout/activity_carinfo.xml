@@ -132,7 +132,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="6dp"
-            android:text="档位:  1  "
+            android:text="档位:  P  "
             android:textSize="23sp"
             android:textColor="@android:color/white"
             android:layout_centerHorizontal="true"

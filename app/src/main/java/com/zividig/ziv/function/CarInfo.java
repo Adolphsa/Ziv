@@ -1,13 +1,7 @@
 package com.zividig.ziv.function;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
@@ -17,11 +11,27 @@ import android.widget.TextView;
 
 import com.zividig.ziv.R;
 import com.zividig.ziv.main.BaseActivity;
-import com.zividig.ziv.service.DeviceStateService;
-import com.zividig.ziv.utils.MyAlarmManager;
+import com.zividig.ziv.rxjava.ZivApiManage;
+import com.zividig.ziv.rxjava.model.DeviceStateBody;
+import com.zividig.ziv.rxjava.model.DeviceStateResponse;
+import com.zividig.ziv.utils.HttpParamsUtils;
+import com.zividig.ziv.utils.JsonUtils;
+import com.zividig.ziv.utils.SignatureUtils;
+import com.zividig.ziv.utils.Urls;
+import com.zividig.ziv.utils.UtcTimeUtils;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import rx.Observable;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * 车辆信息
@@ -39,51 +49,18 @@ public class CarInfo extends BaseActivity {
     private TextView tvVoltage;
     private RotateAnimation speedRotate; //速度动画
     private int [] speedTest = {120,50,100,80,180,60,30,150,50};
-    private int i;
 
-    private String mVoltage;
-
-    private Handler mHandler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what){
-                case 0:
-                    int n = i%9;
-                    System.out.println("接收到消息了");
-                    speedRotate = new RotateAnimation(0,speedTest[n], Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
-                    speedRotate.setDuration(1000);
-                    speedRotate.setFillAfter(true);
-//                speedRotate.setRepeatCount(Animation.INFINITE);
-                    speedPoint.setAnimation(speedRotate);
-                    i++;
-                    break;
-
-                case VOLTAGE:
-                    tvVoltage.setText("电压:   " + mVoltage + "V");
-                    break;
-            }
-
-        }
-    };
-    private Timer timer;
-
-    //广播接收
-    private BroadcastReceiver br = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            mVoltage = intent.getStringExtra("voltage");
-            mHandler.sendEmptyMessage(VOLTAGE);
-        }
-    };
+    private Subscription mSubscription;
+    private SharedPreferences mSpf;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_carinfo);
 
-        SharedPreferences spf = getSharedPreferences("config",MODE_PRIVATE);
+        mSpf = getSharedPreferences("config",MODE_PRIVATE);
         //设置获取设备状态为真，以便在Activity销毁时能重新获取设备状态
-        spf.edit().putBoolean("is_keeping_get_device_state",true).apply();
+        mSpf.edit().putBoolean("is_keeping_get_device_state",true).apply();
 
         // 标题
         TextView txtTitle = (TextView) findViewById(R.id.tv_title);
@@ -107,25 +84,11 @@ public class CarInfo extends BaseActivity {
         temperaturePoint = (ImageView) findViewById(R.id.img_temperature_point);
 
         initView();
-
-        //注册广播接收器
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(DeviceStateService.DEVICE_STATE_ACTION);
-        filter.setPriority(Integer.MAX_VALUE);
-        registerReceiver(br, filter);
+        RxGetDeviceState();
     }
 
     public void initView() {
-
         initAnimation();
-        timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                System.out.println("执行一次");
-                mHandler.sendEmptyMessage(0);
-            }
-        }, 0, 10000000);
     }
 
     public void initAnimation(){
@@ -135,7 +98,6 @@ public class CarInfo extends BaseActivity {
         speedRotate = new RotateAnimation(0,speedTest[0], Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
         speedRotate.setDuration(2000);
         speedRotate.setFillAfter(true);
-        speedRotate.setRepeatCount(Animation.INFINITE);
         speedPoint.setAnimation(speedRotate);
 
 
@@ -164,14 +126,92 @@ public class CarInfo extends BaseActivity {
         temperaturePoint.setAnimation(temperatureRotate);
     }
 
+
+    /**
+     * 配置options
+     * @return options
+     */
+    private Map<String, String> setOp(){
+
+        String token = mSpf.getString("token", null);
+        String devid = mSpf.getString("devid", null);
+
+        //计算signature
+        String timestamp = UtcTimeUtils.getTimestamp();
+        String noncestr = HttpParamsUtils.getRandomString(10);
+        String signature = SignatureUtils.getSinnature(timestamp,
+                noncestr,
+                Urls.APP_KEY,
+                devid,
+                token);
+
+        //配置请求头
+        Map<String, String> options = new HashMap<>();
+        options.put(SignatureUtils.SIGNATURE_APP_KEY, Urls.APP_KEY);
+        options.put(SignatureUtils.SIGNATURE_TIMESTAMP, timestamp);
+        options.put(SignatureUtils.SIGNATURE_NONCESTTR, noncestr);
+        options.put(SignatureUtils.SIGNATURE_STRING, signature);
+
+        return options;
+    }
+
+    /**
+     * 配置jsonBody
+     * @return  RequestBody
+     */
+    private RequestBody setBody(){
+
+        String token = mSpf.getString("token", null);
+        String devid = mSpf.getString("devid", null);
+
+        //配置请求体
+        //配置请求体
+        DeviceStateBody deviceStateBody = new DeviceStateBody();
+        deviceStateBody.devid = devid;
+        deviceStateBody.token = token;
+        String stringDeviceListBody = JsonUtils.serialize(deviceStateBody);
+        RequestBody jsonBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), stringDeviceListBody);
+
+        return jsonBody;
+    }
+
+    /**
+     * 轮询获取设备状态
+     */
+    public void RxGetDeviceState() {
+
+        mSubscription = Observable.interval(0,30, TimeUnit.SECONDS)
+                .flatMap(new Func1<Long, Observable<DeviceStateResponse>>() {
+                    @Override
+                    public Observable<DeviceStateResponse> call(Long aLong) {
+                        Map<String, String> options = setOp();
+                        RequestBody jsonBody = setBody();
+                        return ZivApiManage.getInstance().getZivApiService().getDeviceStateInfo(options, jsonBody);
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<DeviceStateResponse>() {
+                    @Override
+                    public void call(DeviceStateResponse deviceStateResponse) {
+                        DeviceStateResponse.InfoBean infoBean = deviceStateResponse.getInfo();
+                        if (infoBean != null){
+                            String voltage = infoBean.getVoltage();
+                            tvVoltage.setText("电压:   " + voltage + "V");
+                        }
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        System.out.println("RXJAVA---设备状态出错---" + throwable.getMessage());
+                    }
+                });
+    }
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (timer != null){
-            timer.cancel();
+        if (mSubscription != null){
+            mSubscription.unsubscribe();
         }
-
-        MyAlarmManager.stopPollingService(CarInfo.this,DeviceStateService.class);
-        unregisterReceiver(br);
     }
 }

@@ -394,10 +394,6 @@ public class Login extends BaseActivity {
             @Override
             public void onFinished() {}
         });
-
-
-
-
     }
 
     /**

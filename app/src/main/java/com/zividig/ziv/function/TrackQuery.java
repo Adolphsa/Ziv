@@ -70,10 +70,6 @@ public class TrackQuery extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_track_query);
 
-//        SharedPreferences spf = getSharedPreferences("config",MODE_PRIVATE);
-//        //设置获取设备状态为真，以便在Activity销毁时能重新获取设备状态
-//        spf.edit().putBoolean("is_keeping_get_device_state",true).apply();
-
         mGson = new Gson();
         Bundle bundle = getIntent().getExtras();
         mStartTime = bundle.getLong("start_time");
@@ -157,7 +153,6 @@ public class TrackQuery extends BaseActivity {
             @Override
             public void onSuccess(String result) {
                 System.out.println("轨迹结果：" + result);
-
                 try {
                     JSONObject json = new JSONObject(result);
                     int status = json.getInt("status");
@@ -186,8 +181,6 @@ public class TrackQuery extends BaseActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-
             }
 
             @Override
@@ -205,14 +198,10 @@ public class TrackQuery extends BaseActivity {
             }
 
             @Override
-            public void onCancelled(CancelledException cex) {
-
-            }
+            public void onCancelled(CancelledException cex) {}
 
             @Override
-            public void onFinished() {
-
-            }
+            public void onFinished() {}
         });
     }
 
@@ -265,9 +254,6 @@ public class TrackQuery extends BaseActivity {
         System.out.println("缩放地图");
         u = MapStatusUpdateFactory.newLatLngBounds(lngBounds,mMapView.getWidth(),mMapView.getHeight());
         mBaiduMap.animateMapStatus(u);
-
-
-
     }
 
 

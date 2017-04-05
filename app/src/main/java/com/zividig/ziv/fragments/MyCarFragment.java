@@ -38,10 +38,8 @@ import com.zividig.ziv.main.ZivApp;
 import com.zividig.ziv.rxjava.ZivApiManage;
 import com.zividig.ziv.rxjava.model.DeviceStateBody;
 import com.zividig.ziv.rxjava.model.DeviceStateResponse;
-import com.zividig.ziv.service.DeviceStateService;
 import com.zividig.ziv.utils.HttpParamsUtils;
 import com.zividig.ziv.utils.JsonUtils;
-import com.zividig.ziv.utils.MyAlarmManager;
 import com.zividig.ziv.utils.NetworkTypeUtils;
 import com.zividig.ziv.utils.SignatureUtils;
 import com.zividig.ziv.utils.ToastShow;
@@ -264,8 +262,6 @@ public class MyCarFragment extends Fragment {
                         break;
                     case 2:
                         System.out.println("车辆信息" + position);
-                        //开启轮询服务获取设备状态
-                        MyAlarmManager.startPollingService(getContext(), 10, DeviceStateService.class, "");
                         startActivity(new Intent(getContext(), CarInfo.class));
                         break;
                     case 3:
@@ -285,11 +281,8 @@ public class MyCarFragment extends Fragment {
                         if (!devId.equals("")) {
                             //开启轮询服务获取GPS信息
                             if (NetworkTypeUtils.getConnectWifiSsid(ZivApp.getInstance()).contains("car_")) {
-
                                 startActivity(new Intent(getContext(), ElectronicFence.class));
                             } else {
-//                                MyAlarmManager.startPollingService(getContext(), 1, LocationService.class, devId);
-
                                 startActivity(new Intent(getContext(), ElectronicFence.class));
                             }
                         } else {
@@ -298,7 +291,6 @@ public class MyCarFragment extends Fragment {
                         break;
                     case 5:
                         System.out.println("违章查询" + position);
-
                         startActivity(new Intent(getContext(), ViolationActivity.class));
                         break;
                     case 6:

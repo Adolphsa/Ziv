@@ -284,7 +284,6 @@ public class SettingFragment extends Fragment {
      * 轮询获取设备状态
      */
     public void RxGetDeviceState() {
-
         count =0;
         String token = sp.getString("token", null);
         String devid = sp.getString("devid", null);
@@ -349,10 +348,11 @@ public class SettingFragment extends Fragment {
                         } else if (deviceState.equals("NORMAL")) {
                             System.out.println("onNext---主机在线了");
                             Observable.error(new Exception("normal"));
-                        } else if (deviceState.equals("WAKEFAIL")) {
-                            LoadingProgressDialog.setTipText("主机唤醒失败");
-                            System.out.println("主机唤醒失败");
                         }
+//                        else if (deviceState.equals("WAKEFAIL")) {
+//                            LoadingProgressDialog.setTipText("主机唤醒失败");
+//                            System.out.println("主机唤醒失败");
+//                        }
                     }
                 }, new Action1<Throwable>() {
                     @Override

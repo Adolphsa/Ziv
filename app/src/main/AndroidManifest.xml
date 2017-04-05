@@ -91,14 +91,6 @@
             android:enabled="true"
             android:exported="true"/>
 
-        <!--设备状态服务-->
-        <service
-            android:name=".service.DeviceStateService"
-            android:enabled="true"
-            android:exported="true">
-        </service>
-
-
         <!-- 个推Receiver -->
         <receiver
             android:name=".getui.GetuiReceiver"
