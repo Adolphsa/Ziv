@@ -16,7 +16,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.igexin.sdk.PushManager;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.ResponseInfo;
@@ -95,9 +94,6 @@ public class SplashActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_splash);
-
-        //调用个推初始化
-        PushManager.getInstance().initialize(this.getApplicationContext());
 
         tvProgress = (TextView) findViewById(R.id.tv_progress);// 默认隐藏
 

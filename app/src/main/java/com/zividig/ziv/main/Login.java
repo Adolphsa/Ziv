@@ -72,7 +72,6 @@ public class Login extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
         pushManager = PushManager.getInstance(); //获取个推Manager
         config = getSharedPreferences("config", MODE_PRIVATE);
 
@@ -136,7 +135,6 @@ public class Login extends BaseActivity {
             public void onClick(View v) {
 //                System.out.println("cbPwd被点击了");
                 if (cbPwd.isChecked()){
-
                     Login.this.config.edit().putBoolean(CB_PWD,true).apply();
                 }else {
                     Login.this.config.edit().putBoolean(CB_PWD,false).apply();
@@ -150,7 +148,6 @@ public class Login extends BaseActivity {
                     login();
             }
         });
-
 
         List<String> strings = new ArrayList<>();
         mUsersList = mUsersDao.loadAll();
@@ -180,7 +177,13 @@ public class Login extends BaseActivity {
     private void login(){
         final String user =  etUser.getText().toString().trim();  //获取账号
         final String password = etPassword.getText().toString().trim();  //获取密码
-        final String getuiId = pushManager.getClientid(Login.this);
+       String getuiId = pushManager.getClientid(getApplication());
+        if (getuiId.isEmpty()){
+            PushManager.getInstance().initialize(this.getApplicationContext());
+            PushManager pushManager = PushManager.getInstance();
+            getuiId = pushManager.getClientid(getApplication());
+            System.out.println("个推ID为空后---" + getuiId);
+        }
         System.out.println("个推ID---" + getuiId);
         if (!TextUtils.isEmpty(user) && !TextUtils.isEmpty(password)){
             //配置json数据
@@ -207,8 +210,6 @@ public class Login extends BaseActivity {
             //发起请求
             RequestParams params = HttpParamsUtils.setParams(Urls.LOGIN_URL,timestamp,noncestr,signature);
             params.setBodyContent(json.toString());
-//            System.out.println(params.toString());
-
             x.http().post(params, new Callback.CommonCallback<String>() {
 
                 @Override
@@ -240,7 +241,6 @@ public class Login extends BaseActivity {
                                 System.out.println("只修改密码");
                             }
 
-
                             //保存token
                             SignatureUtils.token = json.getString(SignatureUtils.SIGNATURE_TOKEN);
                             config.edit().putString("token",SignatureUtils.token).apply();
@@ -252,7 +252,6 @@ public class Login extends BaseActivity {
 
                             //进入主界面
                             enterMainActivity();
-                            System.out.println("clientId: " + getuiId);
 
                         }else if (status == Urls.STATUS_CODE_403){
                             System.out.println("登录失败");
@@ -280,9 +279,7 @@ public class Login extends BaseActivity {
                 }
 
                 @Override
-                public void onCancelled(CancelledException cex) {
-
-                }
+                public void onCancelled(CancelledException cex) {}
 
                 @Override
                 public void onFinished() {
@@ -291,7 +288,6 @@ public class Login extends BaseActivity {
                 }
             });
         }else {
-
             ToastShow.showToast(Login.this,"用户名或密码不能为空");
         }
     }

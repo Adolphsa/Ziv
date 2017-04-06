@@ -223,14 +223,10 @@ public class AddDevice extends BaseActivity {
             }
 
             @Override
-            public void onCancelled(CancelledException cex) {
-
-            }
+            public void onCancelled(CancelledException cex) {}
 
             @Override
-            public void onFinished() {
-
-            }
+            public void onFinished() {}
         });
     }
 
@@ -353,14 +349,10 @@ public class AddDevice extends BaseActivity {
             }
 
             @Override
-            public void onCancelled(CancelledException cex) {
-
-            }
+            public void onCancelled(CancelledException cex) {}
 
             @Override
-            public void onFinished() {
-
-            }
+            public void onFinished() {}
         });
     }
 }

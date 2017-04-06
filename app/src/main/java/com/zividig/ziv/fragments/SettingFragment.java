@@ -441,7 +441,6 @@ public class SettingFragment extends Fragment {
                     if (200 == status){
                         System.out.println("设置震动消息免打扰成功");
 //                        ToastShow.showToast(getContext(),"设置成功");
-
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -454,14 +453,10 @@ public class SettingFragment extends Fragment {
             }
 
             @Override
-            public void onCancelled(CancelledException cex) {
-
-            }
+            public void onCancelled(CancelledException cex) {}
 
             @Override
-            public void onFinished() {
-
-            }
+            public void onFinished() {}
         });
     }
 

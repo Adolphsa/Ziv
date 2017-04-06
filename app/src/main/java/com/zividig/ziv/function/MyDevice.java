@@ -57,7 +57,6 @@ public class MyDevice extends BaseActivity {
     private String devid;
     private Login mLogin;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,6 +65,8 @@ public class MyDevice extends BaseActivity {
         spf = getSharedPreferences("config",MODE_PRIVATE);
         devid = spf.getString("devid","");
         mLogin = new Login();
+
+        spf.edit().putBoolean("is_keeping_get_device_state",true).apply();
 
         devinfoList = new ArrayList<>();
 
@@ -343,6 +344,7 @@ public class MyDevice extends BaseActivity {
                                     dialog.dismiss();
                                     //获取设备列表信息
                                     getDeviceInfo(username);
+//                                    mMyCarFragment.RxGetDeviceState();
                                 }
                             });
                         }

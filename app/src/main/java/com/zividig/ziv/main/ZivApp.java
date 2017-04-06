@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Process;
 
 import com.baidu.mapapi.SDKInitializer;
+import com.igexin.sdk.PushManager;
 import com.xiaomi.mipush.sdk.MiPushClient;
 import com.zividig.ziv.bean.DaoMaster;
 import com.zividig.ziv.bean.DaoSession;
@@ -39,6 +40,8 @@ public class ZivApp extends Application{
         super.onCreate();
         SDKInitializer.initialize(this.getApplicationContext()); //初始化百度地图
         x.Ext.init(this);
+        //调用个推初始化
+        PushManager.getInstance().initialize(this.getApplicationContext());
 
         //初始化push推送服务
         if(shouldInit()) {

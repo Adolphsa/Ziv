@@ -109,13 +109,13 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
         setCurrentPage(position);
         if (position != 0){
             if (mMyCarFragment != null){
-//                mMyCarFragment.stopTimer();
+                System.out.println("不为零，设置为不获取设备状态");
                 mSpf.edit().putBoolean("is_keeping_get_device_state",false).apply();
             }
 
         }else {
             if (mMyCarFragment != null){
-//                mMyCarFragment.startTimer();
+                System.out.println("为零，设置为继续获取设备状态");
                 mSpf.edit().putBoolean("is_keeping_get_device_state",true).apply();
                 mMyCarFragment.RxGetDeviceState();
             }

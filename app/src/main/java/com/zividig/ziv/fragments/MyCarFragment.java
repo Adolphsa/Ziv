@@ -1,11 +1,13 @@
 package com.zividig.ziv.fragments;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -110,6 +112,7 @@ public class MyCarFragment extends Fragment {
 
     private Subscription mSubscription;
     private int retryCount = 0;
+    private Dialog dialog2;
 
     public static MyCarFragment instance() {
         MyCarFragment myCarView = new MyCarFragment();
@@ -158,10 +161,10 @@ public class MyCarFragment extends Fragment {
     //设置我的车的标题
     public void setTitle() {
         System.out.println("设置车的标题");
-        String devid = mSpf.getString("devid", "");
-        if (!devid.equals("")) {
+        String devid = mSpf.getString("devid", null);
+        if (!TextUtils.isEmpty(devid)) {
             String carid = getCurrentCarid(devid);
-            if (!carid.equals("")) {
+            if (!TextUtils.isEmpty(carid)) {
                 mTitle.setText(carid);
             } else {
                 String tmp = devid.substring(devid.length() - 4, devid.length());
@@ -257,7 +260,6 @@ public class MyCarFragment extends Fragment {
                             } else {
                                 ToastShow.showToast(getContext(), "请先添加设备");
                             }
-
                         }
                         break;
                     case 2:
@@ -371,7 +373,7 @@ public class MyCarFragment extends Fragment {
     public void onStop() {
         super.onStop();
         System.out.println("MyFragment--- onStop");
-        if (mSubscription != null){
+        if (mSubscription != null) {
             mSubscription.unsubscribe();
         }
     }
@@ -381,8 +383,6 @@ public class MyCarFragment extends Fragment {
         super.onDestroy();
 //        countDownTimer.cancel();
         System.out.println("MyFragment--- onDestroy");
-
-
     }
 
     private String getDevID() {
@@ -441,13 +441,16 @@ public class MyCarFragment extends Fragment {
             }
 
             @Override
-            public void onError(Throwable ex, boolean isOnCallback) {}
+            public void onError(Throwable ex, boolean isOnCallback) {
+            }
 
             @Override
-            public void onCancelled(CancelledException cex) {}
+            public void onCancelled(CancelledException cex) {
+            }
 
             @Override
-            public void onFinished() {}
+            public void onFinished() {
+            }
         });
     }
 
@@ -507,12 +510,10 @@ public class MyCarFragment extends Fragment {
 
             @Override
             public void onCancelled(CancelledException cex) {
-
             }
 
             @Override
             public void onFinished() {
-
             }
         });
     }
@@ -520,50 +521,57 @@ public class MyCarFragment extends Fragment {
 
     /**
      * 配置options
+     *
      * @return options
      */
-    private Map<String, String> setOp(){
+    private Map<String, String> setOp() {
 
         String token = mSpf.getString("token", null);
         String devid = mSpf.getString("devid", null);
 
-        //计算signature
-        String timestamp = UtcTimeUtils.getTimestamp();
-        String noncestr = HttpParamsUtils.getRandomString(10);
-        String signature = SignatureUtils.getSinnature(timestamp,
-                noncestr,
-                Urls.APP_KEY,
-                devid,
-                token);
+        if (token != null && devid != null) {
 
-        //配置请求头
-        Map<String, String> options = new HashMap<>();
-        options.put(SignatureUtils.SIGNATURE_APP_KEY, Urls.APP_KEY);
-        options.put(SignatureUtils.SIGNATURE_TIMESTAMP, timestamp);
-        options.put(SignatureUtils.SIGNATURE_NONCESTTR, noncestr);
-        options.put(SignatureUtils.SIGNATURE_STRING, signature);
+            //计算signature
+            String timestamp = UtcTimeUtils.getTimestamp();
+            String noncestr = HttpParamsUtils.getRandomString(10);
+            String signature = SignatureUtils.getSinnature(timestamp,
+                    noncestr,
+                    Urls.APP_KEY,
+                    devid,
+                    token);
 
-        return options;
+            //配置请求头
+            Map<String, String> options = new HashMap<>();
+            options.put(SignatureUtils.SIGNATURE_APP_KEY, Urls.APP_KEY);
+            options.put(SignatureUtils.SIGNATURE_TIMESTAMP, timestamp);
+            options.put(SignatureUtils.SIGNATURE_NONCESTTR, noncestr);
+            options.put(SignatureUtils.SIGNATURE_STRING, signature);
+
+            return options;
+        }
+        return null;
     }
 
     /**
      * 配置jsonBody
-     * @return  RequestBody
+     *
+     * @return RequestBody
      */
-    private RequestBody setBody(){
+    private RequestBody setBody() {
 
         String token = mSpf.getString("token", null);
         String devid = mSpf.getString("devid", null);
 
-        //配置请求体
-        //配置请求体
-        DeviceStateBody deviceStateBody = new DeviceStateBody();
-        deviceStateBody.devid = devid;
-        deviceStateBody.token = token;
-        String stringDeviceListBody = JsonUtils.serialize(deviceStateBody);
-        RequestBody jsonBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), stringDeviceListBody);
-
-        return jsonBody;
+        if (token != null && devid != null) {
+            //配置请求体
+            DeviceStateBody deviceStateBody = new DeviceStateBody();
+            deviceStateBody.devid = devid;
+            deviceStateBody.token = token;
+            String stringDeviceListBody = JsonUtils.serialize(deviceStateBody);
+            RequestBody jsonBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), stringDeviceListBody);
+            return jsonBody;
+        }
+        return null;
     }
 
     /**
@@ -571,13 +579,19 @@ public class MyCarFragment extends Fragment {
      */
     public void RxGetDeviceState() {
 
-        mSubscription = Observable.interval(0,30, TimeUnit.SECONDS)
+        mSubscription = Observable.interval(0, 30, TimeUnit.SECONDS)
                 .flatMap(new Func1<Long, Observable<DeviceStateResponse>>() {
                     @Override
                     public Observable<DeviceStateResponse> call(Long aLong) {
+
                         Map<String, String> options = setOp();
                         RequestBody jsonBody = setBody();
-                        return ZivApiManage.getInstance().getZivApiService().getDeviceStateInfo(options, jsonBody);
+                        if (options != null && jsonBody != null) {
+                            return ZivApiManage.getInstance().getZivApiService().getDeviceStateInfo(options, jsonBody);
+                        } else {
+                            return Observable.error(new Exception("devid_is_null"));
+                        }
+
                     }
                 })
                 .takeUntil(new Func1<DeviceStateResponse, Boolean>() {
@@ -604,14 +618,21 @@ public class MyCarFragment extends Fragment {
                     @Override
                     public void call(Throwable throwable) {
                         System.out.println("RXJAVA---设备状态出错---" + throwable.getMessage());
-                        if (++retryCount >= 3){
+                        String error = throwable.getMessage();
+                        if (++retryCount >= 3) {
                             System.out.println("查询失败");
-                            deviceState.setText("查询失败");
+                            String devid = mSpf.getString("devid", null);
+                            if (devid != null){
+                                deviceState.setText("查询失败");
+                            }else {
+                                deviceState.setText("ID为空");
+                            }
                             retryCount = 0;
-                            if (mSubscription != null){
+                            setTitle();
+                            if (mSubscription != null) {
                                 mSubscription.unsubscribe();
                             }
-                        }else {
+                        } else {
                             System.out.println("RXJAVA---retryCount---" + retryCount);
                             RxGetDeviceState();
                         }
@@ -622,13 +643,15 @@ public class MyCarFragment extends Fragment {
 
     /**
      * 处理设备状态的返回
-     * @param deviceStateResponse   设备状态的返回
+     *
+     * @param deviceStateResponse 设备状态的返回
      */
-    private void handDevideStateResponse(DeviceStateResponse deviceStateResponse){
+    private void handDevideStateResponse(DeviceStateResponse deviceStateResponse) {
         int status = deviceStateResponse.getStatus();
-        if (200 == status){
+        System.out.println("设备状态---" + status);
+        if (200 == status) {
             DeviceStateResponse.InfoBean infoBean = deviceStateResponse.getInfo();
-            if (infoBean != null){
+            if (infoBean != null) {
                 String workMode = infoBean.getWorkmode();
                 if (workMode.equals("NORMAL")) {
                     deviceState.setText("在线");
@@ -643,6 +666,18 @@ public class MyCarFragment extends Fragment {
                 }
             }
         }
+//        else if (600 == status){
+//            dialog2 = LoadingProgressDialog.createLoadingDialog(getContext(), "账号已在其他地方登陆", false, true, new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    if (mSubscription != null){
+//                        mSubscription.unsubscribe();
+//                    }
+//                    dialog2.dismiss();
+//                    getContext().startActivity(new Intent(getContext(), Login.class));
+//                }
+//            });
+//        }
     }
 
 }
