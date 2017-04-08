@@ -28,14 +28,14 @@ android {
                 PACKAGE_NAME : applicationId
         ]
         ndk {
-            abiFilters "armeabi", "armeabi-v7a"
+            abiFilters "armeabi-v7a"
         }
 
     }
     buildTypes {
         release {
             minifyEnabled true
-            shrinkResources false
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.config
         }
@@ -62,7 +62,7 @@ dependencies {
     compile project(':sharesdk')
     compile project(':zXingProj')
     compile project(':ffmpeg')
-    compile 'com.getui:sdk:2.9.0.0'
+    compile 'com.getui:sdk:2.+'
     compile 'com.yanzhenjie:recyclerview-swipe:1.0.2'
     //时间日期选择器
     compile 'com.bigkoo:pickerview:2.1.1'

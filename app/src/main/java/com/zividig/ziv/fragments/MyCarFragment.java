@@ -27,8 +27,6 @@ import com.zivdigi.helloffmpeg.TestDecoder;
 import com.zividig.ndk_test.weizhang.activity.ViolationActivity;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.DeviceInfoBean;
-import com.zividig.ziv.bean.DeviceStateInfoBean;
-import com.zividig.ziv.bean.VideoInfoBean;
 import com.zividig.ziv.function.AddDevice;
 import com.zividig.ziv.function.CarInfo;
 import com.zividig.ziv.function.CarLocation;
@@ -40,6 +38,7 @@ import com.zividig.ziv.main.ZivApp;
 import com.zividig.ziv.rxjava.ZivApiManage;
 import com.zividig.ziv.rxjava.model.DeviceStateBody;
 import com.zividig.ziv.rxjava.model.DeviceStateResponse;
+import com.zividig.ziv.rxjava.model.VideoResponse;
 import com.zividig.ziv.utils.HttpParamsUtils;
 import com.zividig.ziv.utils.JsonUtils;
 import com.zividig.ziv.utils.NetworkTypeUtils;
@@ -47,12 +46,6 @@ import com.zividig.ziv.utils.SignatureUtils;
 import com.zividig.ziv.utils.ToastShow;
 import com.zividig.ziv.utils.Urls;
 import com.zividig.ziv.utils.UtcTimeUtils;
-import com.zividig.ziv.utils.WifiDirectUtils;
-
-import org.json.JSONObject;
-import org.xutils.common.Callback;
-import org.xutils.http.RequestParams;
-import org.xutils.x;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,9 +61,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
-
-import static com.zividig.ziv.utils.SignatureUtils.SIGNATURE_TOKEN;
-import static com.zividig.ziv.utils.SignatureUtils.token;
 
 /**
  * 我的车
@@ -240,7 +230,7 @@ public class MyCarFragment extends Fragment {
                     case 0:
                         System.out.println("图片抓拍" + position);
                         if (!devId.equals("")) {
-                            startActivity(new Intent(getContext(), RealTimeShow.class));
+                            getDeviceStatus(position);
                         } else {
                             ToastShow.showToast(getContext(), "请先添加设备");
                         }
@@ -248,19 +238,19 @@ public class MyCarFragment extends Fragment {
                     case 1:
                         System.out.println("实时视频" + position);
                         //判断是否是设备WIFI
-                        if (NetworkTypeUtils.getConnectWifiSsid(ZivApp.getInstance()).contains("ziv_")) {
-                            WifiDirectUtils.WifiDirect(getContext(), MyTestActivity.class);
-                        } else {
+//                        if (NetworkTypeUtils.getConnectWifiSsid(ZivApp.getInstance()).contains("ziv_")) {
+//                            WifiDirectUtils.WifiDirect(getContext(), MyTestActivity.class);
+//                        } else {
                             if (!devId.equals("")) {
-                                if ((System.currentTimeMillis() - secondTime) > (3 * 1000)) {
-                                    System.out.println("大于3秒");
-                                    getDeviceState(position);
+                                if ((System.currentTimeMillis() - secondTime) > (2 * 1000)) {
+                                    System.out.println("大于2秒");
+                                    RxStartVideo();
                                 }
                                 secondTime = System.currentTimeMillis();
                             } else {
                                 ToastShow.showToast(getContext(), "请先添加设备");
                             }
-                        }
+//                        }
                         break;
                     case 2:
                         System.out.println("车辆信息" + position);
@@ -373,9 +363,7 @@ public class MyCarFragment extends Fragment {
     public void onStop() {
         super.onStop();
         System.out.println("MyFragment--- onStop");
-        if (mSubscription != null) {
-            mSubscription.unsubscribe();
-        }
+        stopLoop();
     }
 
     @Override
@@ -390,134 +378,6 @@ public class MyCarFragment extends Fragment {
         System.out.println("MyCarFragment---deviceId:" + devId);
         return devId;
     }
-
-    /**
-     * 获取
-     */
-    private void getDeviceState(final int postion) {
-
-        final String devid = mSpf.getString("devid", "");
-
-        //配置json数据
-        JSONObject json = new JSONObject();
-        try {
-            json.put("devid", devid);
-            json.put(SIGNATURE_TOKEN, token);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        //计算signature
-        String timestamp = UtcTimeUtils.getTimestamp();
-        String noncestr = HttpParamsUtils.getRandomString(10);
-        String signature = SignatureUtils.getSinnature(timestamp,
-                noncestr,
-                Urls.APP_KEY,
-                devid,
-                token);
-        //发起请求
-        RequestParams params = HttpParamsUtils.setParams(Urls.DEVICE_STATE, timestamp, noncestr, signature);
-        params.setBodyContent(json.toString());
-
-        x.http().post(params, new Callback.CommonCallback<String>() {
-            @Override
-            public void onSuccess(String result) {
-                System.out.println("结果" + result);
-                DeviceStateInfoBean stateInfoBean = JsonUtils.deserialize(result, DeviceStateInfoBean.class);
-                int status = stateInfoBean.getStatus();
-                if (200 == status) {
-                    DeviceStateInfoBean.InfoBean infoBean = stateInfoBean.getInfo();
-                    String workMode = infoBean.getWorkmode();
-                    if (workMode.equals("NORMAL")) {
-                        if (1 == postion) {
-                            startVideo(devid);
-                        }
-                    } else {
-                        ToastShow.showToast(getContext(), "主机不在线");
-                    }
-                }
-
-            }
-
-            @Override
-            public void onError(Throwable ex, boolean isOnCallback) {
-            }
-
-            @Override
-            public void onCancelled(CancelledException cex) {
-            }
-
-            @Override
-            public void onFinished() {
-            }
-        });
-    }
-
-
-    /**
-     * 开启实时视频
-     *
-     * @param
-     */
-    public void startVideo(String deviceId) {
-        System.out.println("点击了开启实时视频1");
-
-        //配置json数据
-        JSONObject json = new JSONObject();
-        try {
-            json.put("devid", deviceId);
-            json.put(SIGNATURE_TOKEN, token);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        //计算signature
-        String timestamp = UtcTimeUtils.getTimestamp();
-        String noncestr = HttpParamsUtils.getRandomString(10);
-        String signature = SignatureUtils.getSinnature(timestamp,
-                noncestr,
-                Urls.APP_KEY,
-                deviceId,
-                token);
-        //发起请求
-        RequestParams params = HttpParamsUtils.setParams(Urls.REQUEST_VIDEO, timestamp, noncestr, signature);
-        params.setBodyContent(json.toString());
-
-        x.http().post(params, new Callback.CommonCallback<String>() {
-            @Override
-            public void onSuccess(String result) {
-                System.out.println(result);
-
-                VideoInfoBean videoInfoBean = JsonUtils.deserialize(result, VideoInfoBean.class);
-                int code = videoInfoBean.getStatus();
-                if (code == 200) {
-                    System.out.println("视频URL:" + videoInfoBean.getUrl());
-                    TestDecoder.setUrl(videoInfoBean.getUrl());
-
-                    getActivity().startActivity(new Intent(getContext(), MyTestActivity.class));
-                } else {
-                    System.out.println("非200");
-                    ToastShow.showToast(getContext(), "连接异常，请检测设备状态");
-                }
-            }
-
-            @Override
-            public void onError(Throwable ex, boolean isOnCallback) {
-                System.out.println("访问错误" + ex);
-                ToastShow.showToast(getContext(), "视频访问错误");
-            }
-
-            @Override
-            public void onCancelled(CancelledException cex) {
-            }
-
-            @Override
-            public void onFinished() {
-            }
-        });
-    }
-
 
     /**
      * 配置options
@@ -575,70 +435,154 @@ public class MyCarFragment extends Fragment {
     }
 
     /**
-     * 轮询获取设备状态
+     * 在图片抓拍和实时视频之前获取设备状态
      */
-    public void RxGetDeviceState() {
+    private void getDeviceStatus(final int position){
 
-        mSubscription = Observable.interval(0, 30, TimeUnit.SECONDS)
-                .flatMap(new Func1<Long, Observable<DeviceStateResponse>>() {
-                    @Override
-                    public Observable<DeviceStateResponse> call(Long aLong) {
+        Map<String, String> options = setOp();
+        RequestBody jsonBody = setBody();
 
-                        Map<String, String> options = setOp();
-                        RequestBody jsonBody = setBody();
-                        if (options != null && jsonBody != null) {
-                            return ZivApiManage.getInstance().getZivApiService().getDeviceStateInfo(options, jsonBody);
-                        } else {
-                            return Observable.error(new Exception("devid_is_null"));
-                        }
-
-                    }
-                })
-                .takeUntil(new Func1<DeviceStateResponse, Boolean>() {
-                    @Override
-                    public Boolean call(DeviceStateResponse deviceStateResponse) {
-                        int currentPage = mMainActivity.getCurrentPage();
-                        if (0 != currentPage) {
-                            mSubscription.unsubscribe();
-                            return true;
-                        }
-                        return false;
-                    }
-                })
+        ZivApiManage.getInstance().getZivApiService()
+                .getDeviceStateInfo(options, jsonBody)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<DeviceStateResponse>() {
                     @Override
                     public void call(DeviceStateResponse deviceStateResponse) {
-                        System.out.println("RXJAVA---设备状态---" + deviceStateResponse.getInfo().getWorkmode());
-                        handDevideStateResponse(deviceStateResponse);
-                        setTitle();
+                        int status = deviceStateResponse.getStatus();
+                        if (status == 200){
+                            if (deviceStateResponse.getInfo() != null){
+                                String deviceStatus = deviceStateResponse.getInfo().getWorkmode();
+                                System.out.println("设备状态---" + deviceStatus);
+                                if (deviceStatus.equals("NORMAL")){
+                                    if (position == 0){
+                                        startActivity(new Intent(getContext(), RealTimeShow.class));
+                                    }else if (position == 1){
+                                        RxStartVideo();
+                                    }
+                                }else if (deviceStatus.equals("STDBY")) {
+                                    deviceState.setText("休眠");
+                                    ToastShow.showToast(getContext(), "设备不在线");
+                                } else if (deviceStatus.equals("OFF")) {
+                                    deviceState.setText("离线");
+                                    ToastShow.showToast(getContext(), "设备不在线");
+                                }
+                            }
+                        }else if (status == 403){
+                            ToastShow.showToast(getContext(), "token错误");
+                        }else if (status == 404){
+                            ToastShow.showToast(getContext(), "设备不存在");
+                        }
                     }
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        System.out.println("RXJAVA---设备状态出错---" + throwable.getMessage());
                         String error = throwable.getMessage();
-                        if (++retryCount >= 3) {
-                            System.out.println("查询失败");
-                            String devid = mSpf.getString("devid", null);
-                            if (devid != null){
-                                deviceState.setText("查询失败");
-                            }else {
-                                deviceState.setText("ID为空");
-                            }
-                            retryCount = 0;
-                            setTitle();
-                            if (mSubscription != null) {
-                                mSubscription.unsubscribe();
-                            }
-                        } else {
-                            System.out.println("RXJAVA---retryCount---" + retryCount);
-                            RxGetDeviceState();
+                        System.out.println("错误---" + error);
+                    }
+                });
+    }
+
+    /**
+     * 开启实时视频
+     */
+    private void RxStartVideo(){
+
+        Map<String, String> options = setOp();
+        RequestBody jsonBody = setBody();
+
+        ZivApiManage.getInstance().getZivApiService()
+                .startVideo(options,jsonBody)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<VideoResponse>() {
+                    @Override
+                    public void call(VideoResponse videoResponse) {
+                        int status = videoResponse.getStatus();
+                        if (200 == status){
+                            String url = videoResponse.getUrl();
+                            System.out.println("视频URL:" + url);
+                            TestDecoder.setUrl(url);
+                            getActivity().startActivity(new Intent(getContext(), MyTestActivity.class));
+                        }else if (402 == status){
+                            ToastShow.showToast(getContext(), "设备不在线");
+                        }else if (403 == status){
+                            ToastShow.showToast(getContext(), "连接异常");
+                        }else if (404 == status){
+                            ToastShow.showToast(getContext(), "设备不存在");
                         }
 
                     }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        String error = throwable.getMessage();
+                        System.out.println("错误---" + error);
+                    }
                 });
+    }
+
+
+    /**
+     * 轮询获取设备状态
+     */
+    public void RxGetDeviceState() {
+        System.out.println("轮询获取涉设备状态");
+
+        if (mSubscription == null){
+            mSubscription = Observable.interval(0, 30, TimeUnit.SECONDS)
+                    .flatMap(new Func1<Long, Observable<DeviceStateResponse>>() {
+                        @Override
+                        public Observable<DeviceStateResponse> call(Long aLong) {
+
+                            Map<String, String> options = setOp();
+                            RequestBody jsonBody = setBody();
+                            if (options != null && jsonBody != null) {
+                                return ZivApiManage.getInstance().getZivApiService().getDeviceStateInfo(options, jsonBody);
+                            } else {
+                                return Observable.error(new Exception("devid_is_null"));
+                            }
+
+                        }
+                    })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Action1<DeviceStateResponse>() {
+                        @Override
+                        public void call(DeviceStateResponse deviceStateResponse) {
+                            System.out.println("RXJAVA---设备状态---" + deviceStateResponse.getInfo().getWorkmode());
+                            handDevideStateResponse(deviceStateResponse);
+                            setTitle();
+                        }
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            System.out.println("RXJAVA---设备状态出错---" + throwable.getMessage());
+                            String error = throwable.getMessage();
+                            if (++retryCount >= 3) {
+                                System.out.println("查询失败");
+                                String devid = mSpf.getString("devid", null);
+                                if (devid != null){
+                                    deviceState.setText("查询失败");
+                                }else {
+                                    deviceState.setText("ID为空");
+                                }
+                                retryCount = 0;
+                                setTitle();
+                                if (mSubscription != null) {
+                                    mSubscription.unsubscribe();
+                                }
+                            } else {
+                                System.out.println("RXJAVA---retryCount---" + retryCount);
+                                stopLoop();
+                                RxGetDeviceState();
+                            }
+
+                        }
+                    });
+        }
+
+
     }
 
     /**
@@ -678,6 +622,16 @@ public class MyCarFragment extends Fragment {
 //                }
 //            });
 //        }
+    }
+
+    /**
+     * 停止轮询涉笔状态
+     */
+    public void stopLoop(){
+        if (mSubscription != null){
+            mSubscription.unsubscribe();
+            mSubscription = null;
+        }
     }
 
 }

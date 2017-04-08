@@ -4,6 +4,7 @@ import com.zividig.ziv.rxjava.model.DeviceStateResponse;
 import com.zividig.ziv.rxjava.model.DeviceWakeResponse;
 import com.zividig.ziv.rxjava.model.LocationResponse;
 import com.zividig.ziv.rxjava.model.SnapResponse;
+import com.zividig.ziv.rxjava.model.VideoResponse;
 
 import java.util.Map;
 
@@ -47,4 +48,9 @@ public interface ZivApi {
     //下载图片
     @GET
     Observable<ResponseBody> downLoadImage(@Url String imageUrl);
+
+    //实时视频
+    @Headers({"Content-Type: application/json","Accept: application/json"})
+    @POST("device/rtsp")
+    Observable<VideoResponse> startVideo(@QueryMap Map<String, String> options, @Body RequestBody body);
 }

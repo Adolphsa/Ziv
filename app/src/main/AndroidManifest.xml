@@ -16,6 +16,10 @@
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
     <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
 
+    <permission
+        android:name="getui.permission.GetuiService.${applicationId}"
+        android:protectionLevel="normal"/>
+
     <!-- 小米推送 -->
     <uses-permission android:name="android.permission.VIBRATE"/>
 
@@ -52,7 +56,6 @@
             android:launchMode="singleTask"/>
         <activity
             android:name=".function.RealTimeShow"
-            android:theme="@style/AppTheme.NoActionBar"
             android:launchMode="singleTop"
             />
         <activity android:name=".function.CarInfo"
@@ -92,13 +95,37 @@
             android:exported="true"/>
 
         <!-- 个推Receiver -->
-        <receiver
-            android:name=".getui.GetuiReceiver"
-            android:exported="false">
+        <!-- 配置SDK核心服务 -->
+        <service
+            android:name="com.igexin.sdk.PushService"
+            android:exported="true"
+            android:label="NotificationCenter"
+            android:process=":pushservice">
             <intent-filter>
-                <action android:name="com.igexin.sdk.action.${GETUI_APP_ID}"/>
+                <action android:name="com.igexin.sdk.action.service.message"/>
+            </intent-filter>
+        </service>
+
+        <receiver
+            android:name="com.igexin.sdk.PushReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+                <action android:name="android.intent.action.USER_PRESENT"/>
+                <action android:name="com.igexin.sdk.action.refreshls"/>
+                <action android:name="android.intent.action.MEDIA_MOUNTED"/>
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED"/>
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED"/>
             </intent-filter>
         </receiver>
+
+        <!--<service android:name=".getui.GetuiIntentService"/>-->
+        <service
+            android:name=".getui.GetuiPushService"
+            android:exported="true"
+            android:label="PushService"
+            android:process=":pushservice">
+        </service>
 
         <!-- 通知服务 -->
         <service

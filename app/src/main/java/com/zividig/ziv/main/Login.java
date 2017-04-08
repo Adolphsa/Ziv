@@ -1,10 +1,15 @@
 package com.zividig.ziv.main;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,6 +25,7 @@ import com.zividig.ziv.bean.Users;
 import com.zividig.ziv.bean.UsersDao;
 import com.zividig.ziv.customView.DropEditText;
 import com.zividig.ziv.customView.LoadingProgressDialog;
+import com.zividig.ziv.getui.GetuiPushService;
 import com.zividig.ziv.utils.HttpParamsUtils;
 import com.zividig.ziv.utils.MD5;
 import com.zividig.ziv.utils.SignatureUtils;
@@ -44,6 +50,8 @@ import static com.zividig.ziv.utils.SignatureUtils.SIGNATURE_TOKEN;
  */
 public class Login extends BaseActivity {
 
+    private static final String TAG = "Login ";
+
     public static final String ET_USER = "et_user";
     private static final String ET_PWD = "et_pwd";
     private static final String CB_USER = "cb_user";
@@ -60,7 +68,12 @@ public class Login extends BaseActivity {
     private static String devid;
     private static String carid;
     private static List<DeviceInfoBean.DevinfoBean> devinfoList;
-    private PushManager pushManager;
+
+    private static final int REQUEST_PERMISSION = 0;
+
+    // DemoPushService.class 自定义服务名称, 核心服务
+    private Class userPushService = GetuiPushService.class;
+    private int getuiCount = 0;
 
     private Dialog mDialog;
 
@@ -72,14 +85,60 @@ public class Login extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        pushManager = PushManager.getInstance(); //获取个推Manager
-        config = getSharedPreferences("config", MODE_PRIVATE);
 
+        config = getSharedPreferences("config", MODE_PRIVATE);
         mUsersDao = ZivApp.getInstance().getDaoSession().getUsersDao();
 
         initView();
+        initGeTui();
     }
 
+    private void initGeTui(){
+        Log.d(TAG, "initializing sdk...");
+
+        PackageManager pkgManager = getPackageManager();
+
+        // 读写 sd card 权限非常重要, android6.0默认禁止的, 建议初始化之前就弹窗让用户赋予该权限
+        boolean sdCardWritePermission =
+                pkgManager.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, getPackageName()) == PackageManager.PERMISSION_GRANTED;
+
+        // read phone state用于获取 imei 设备信息
+        boolean phoneSatePermission =
+                pkgManager.checkPermission(Manifest.permission.READ_PHONE_STATE, getPackageName()) == PackageManager.PERMISSION_GRANTED;
+
+        if (Build.VERSION.SDK_INT >= 23 && !sdCardWritePermission || !phoneSatePermission) {
+            requestPermission();
+        } else {
+            PushManager.getInstance().initialize(this.getApplicationContext(), userPushService);
+        }
+    }
+
+    private void requestPermission() {
+        ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE},
+                REQUEST_PERMISSION);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == REQUEST_PERMISSION) {
+            if ((grantResults.length == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                    && grantResults[1] == PackageManager.PERMISSION_GRANTED)) {
+                PushManager.getInstance().initialize(this.getApplicationContext(), userPushService);
+            } else {
+                Log.e(TAG, "We highly recommend that you need to grant the special permissions before initializing the SDK, otherwise some "
+                        + "functions will not work");
+                PushManager.getInstance().initialize(this.getApplicationContext(), userPushService);
+            }
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+    private String getCid() {
+        String cid = PushManager.getInstance().getClientid(this);
+        Log.d(TAG, "当前应用的cid = " + cid);
+        return cid;
+    }
     /**
      * 初始化控件
      */
@@ -175,16 +234,28 @@ public class Login extends BaseActivity {
      * 登录
      */
     private void login(){
+
         final String user =  etUser.getText().toString().trim();  //获取账号
         final String password = etPassword.getText().toString().trim();  //获取密码
-       String getuiId = pushManager.getClientid(getApplication());
-        if (getuiId.isEmpty()){
-            PushManager.getInstance().initialize(this.getApplicationContext());
-            PushManager pushManager = PushManager.getInstance();
-            getuiId = pushManager.getClientid(getApplication());
-            System.out.println("个推ID为空后---" + getuiId);
+       String getuiId = getCid();
+        System.out.println("clientID---" + getuiId);
+
+        while (getuiId == null){
+            getuiCount++;
+            System.out.println("重复获取clienid" + getuiCount);
+            getuiId = getCid();
+            if (getuiCount > 5){
+                getuiCount = 0;
+                break;
+            }
+
         }
-        System.out.println("个推ID---" + getuiId);
+
+        if (getuiId == null){
+            ToastShow.showToast(this,"无法获取clientId,请退出应用重新登录");
+            return;
+        }
+
         if (!TextUtils.isEmpty(user) && !TextUtils.isEmpty(password)){
             //配置json数据
             JSONObject json = new JSONObject();
@@ -197,6 +268,7 @@ public class Login extends BaseActivity {
             }
 
             showProgressDialog();
+
             //计算signature
             String timestamp = UtcTimeUtils.getTimestamp();
             String noncestr = HttpParamsUtils.getRandomString(10);

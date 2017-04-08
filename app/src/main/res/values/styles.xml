@@ -14,7 +14,7 @@
     </style>
 
     <!--自定义的主题样式-->
-    <style name="MyAppTheme" parent="android:Theme.Holo.Light.NoActionBar">
+    <style name="MyAppTheme" parent="NoActionBar">
         <item name="android:windowBackground">@mipmap/splash_icon</item>
     </style>
 

@@ -67,10 +67,6 @@ public class RealTimeShow extends BaseActivity {
 
     private String devid;
 
-
-
-
-
     private long secondTime = 0;
     private String imageKey = "new";
     private Map<String, String> mapOptions;

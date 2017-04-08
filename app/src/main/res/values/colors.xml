@@ -13,7 +13,6 @@
     <color name="title_bar_background">#1E212A</color>
 
     <color name="textnormal">#adadad</color>
-    <color name="home_bar_text_normal">#6a6c6f</color>
     <color name="home_bar_text_push">#00c8ff</color>
 
     <color name="csy_bg_body">#ffe9e9e9</color>
@@ -26,7 +25,6 @@
     <color name="csy_label">#ff969696</color>
     <color name="csy_text">#ff555555</color>
     <color name="csy_hint">#ffc6c6c6</color>
-    <color name="csy_blue2">#00ccff</color>
 
     <drawable name="pressTrue">#24292c</drawable>
     <drawable name="pressFalse">#212c34</drawable>
@@ -36,8 +34,4 @@
 
     <color name="red_normal">#FF0000</color>
     <color name="red_pressed">#FF6666</color>
-    <color name="green_normal">#37C000</color>
-    <color name="green_pressed">#30A070</color>
-    <color name="purple_normal">#9932CC</color>
-    <color name="purple_pressed">#9F79EE</color>
 </resources>

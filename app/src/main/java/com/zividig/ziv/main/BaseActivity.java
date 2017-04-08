@@ -1,6 +1,6 @@
 package com.zividig.ziv.main;
 
-import android.app.Activity;
+import android.support.v7.app.AppCompatActivity;
 
 import com.zividig.ziv.R;
 import com.zividig.ziv.utils.StatusBarUtils;
@@ -10,7 +10,7 @@ import com.zividig.ziv.utils.StatusBarUtils;
  * on 2016-10-11.
  */
 
-public class BaseActivity extends Activity {
+public class BaseActivity extends AppCompatActivity {
 
     @Override
     public void setContentView(int layoutResID) {

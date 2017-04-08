@@ -1,10 +1,11 @@
-package com.zividig.ziv.bean;
+package com.zividig.ziv.rxjava.model;
 
 /**
- * 视频流信息
- * Created by Administrator on 2016-08-13.
+ * Created by adolph
+ * on 2017-04-06.
  */
-public class VideoInfoBean {
+
+public class VideoResponse {
 
     /**
      * status : 200

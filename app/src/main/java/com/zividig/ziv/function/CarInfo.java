@@ -95,10 +95,10 @@ public class CarInfo extends BaseActivity {
 
         System.out.println("动画被调用");
         //速度动画
-        speedRotate = new RotateAnimation(0,speedTest[0], Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
-        speedRotate.setDuration(2000);
-        speedRotate.setFillAfter(true);
-        speedPoint.setAnimation(speedRotate);
+//        speedRotate = new RotateAnimation(0,speedTest[0], Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
+//        speedRotate.setDuration(2000);
+//        speedRotate.setFillAfter(true);
+//        speedPoint.setAnimation(speedRotate);
 
 
 //        //油压动画
@@ -176,11 +176,12 @@ public class CarInfo extends BaseActivity {
     }
 
     /**
-     * 轮询获取设备状态
+     * 查询电压
      */
-    public void RxGetDeviceState() {
+    private void RxGetDeviceState() {
 
-        mSubscription = Observable.interval(0,30, TimeUnit.SECONDS)
+        System.out.println("查询电压");
+        mSubscription = Observable.interval(0,10, TimeUnit.SECONDS)
                 .flatMap(new Func1<Long, Observable<DeviceStateResponse>>() {
                     @Override
                     public Observable<DeviceStateResponse> call(Long aLong) {
@@ -195,6 +196,7 @@ public class CarInfo extends BaseActivity {
                     @Override
                     public void call(DeviceStateResponse deviceStateResponse) {
                         DeviceStateResponse.InfoBean infoBean = deviceStateResponse.getInfo();
+                        System.out.println("电压---" + infoBean.getVoltage());
                         if (infoBean != null){
                             String voltage = infoBean.getVoltage();
                             tvVoltage.setText("电压:   " + voltage + "V");
@@ -207,6 +209,8 @@ public class CarInfo extends BaseActivity {
                     }
                 });
     }
+
+
     @Override
     protected void onDestroy() {
         super.onDestroy();

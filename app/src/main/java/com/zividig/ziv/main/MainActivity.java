@@ -88,6 +88,7 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
         mViewPager.setOffscreenPageLimit(VIEW_SIZE);
         FragmentAdapter adapter = new FragmentAdapter(getSupportFragmentManager());
 
+        mViewPager.setOffscreenPageLimit(4);
         mViewPager.setAdapter(new FragmentAdapter(getSupportFragmentManager()));
 
         adapter.notifyDataSetChanged();
@@ -111,8 +112,8 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
             if (mMyCarFragment != null){
                 System.out.println("不为零，设置为不获取设备状态");
                 mSpf.edit().putBoolean("is_keeping_get_device_state",false).apply();
+                mMyCarFragment.stopLoop();
             }
-
         }else {
             if (mMyCarFragment != null){
                 System.out.println("为零，设置为继续获取设备状态");
