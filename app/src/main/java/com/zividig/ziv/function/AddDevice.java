@@ -12,7 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.dtr.zxing.activity.CaptureActivity;
+import com.zbar.lib.CaptureActivity;
 import com.zividig.ziv.R;
 import com.zividig.ziv.main.BaseActivity;
 import com.zividig.ziv.main.Login;

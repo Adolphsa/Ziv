@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#000000</color>
+    <color name="divider_color">#C8C7CC</color>
+    <color name="green_09bb07">#09bb07</color>
+    <color name="province_line_border">#D0D0D0</color>
+    <color name="white">#FFFFFF</color>
+    <color name="zXing_activity_background">#212c34</color>
+    <color name="zXing_black_russian">#0D0D0D</color>
+    <color name="zXing_btn_default">#888A96</color>
+    <color name="zXing_btn_press_new">#A0A2A6</color>
+    <color name="zXing_title_bar_background">#1E212A</color>
+    <string name="app_name">QrCodeScan</string>
+    <string name="scan_tips">将二维码图片对准扫描框即可自动扫描</string>
+    <style name="AppBaseTheme" parent="android:Theme.Light">
+        <!--
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+        -->
+    </style>
+    <style name="AppTheme" parent="AppBaseTheme">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    </style>
+</resources>

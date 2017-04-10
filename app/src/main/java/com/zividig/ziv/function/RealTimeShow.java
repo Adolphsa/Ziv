@@ -48,6 +48,7 @@ import okhttp3.ResponseBody;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
@@ -75,6 +76,7 @@ public class RealTimeShow extends BaseActivity {
     private Bitmap mBitmap;
 
     private Subscription mSubscription;
+    private int count;
 
     private SharedPreferences mSpf;
 
@@ -258,6 +260,7 @@ public class RealTimeShow extends BaseActivity {
      */
     private void RXgetImageUrl() {
 
+        count = 0;
         String token = mSpf.getString("token", null);
         String devid = mSpf.getString("devid", null);
 
@@ -289,7 +292,7 @@ public class RealTimeShow extends BaseActivity {
         System.out.println("访问之前的imageKey---" + imageKey);
 
         mSubscription =Observable.interval(1, TimeUnit.SECONDS)
-                .take(10)
+                .take(60)
                 .flatMap(new Func1<Long, Observable<SnapResponse>>() {
                     @Override
                     public Observable<SnapResponse> call(Long aLong) {
@@ -309,6 +312,8 @@ public class RealTimeShow extends BaseActivity {
                 .takeUntil(new Func1<SnapResponse, Boolean>() {
                     @Override
                     public Boolean call(SnapResponse snapResponse) {
+                        count++;
+                        System.out.println("count---" + count);
                         String url = snapResponse.getUrl();
                         if (!TextUtils.isEmpty(url)){
                             System.out.println("停止轮询");
@@ -320,12 +325,11 @@ public class RealTimeShow extends BaseActivity {
                 .filter(new Func1<SnapResponse, Boolean>() {
                     @Override
                     public Boolean call(SnapResponse snapResponse) {
-                        System.out.println("过滤");
                         String url = snapResponse.getUrl();
                         imageKey = snapResponse.getKey();
                         System.out.println("过滤---" + imageKey);
                         if (!TextUtils.isEmpty(url)){
-                            System.out.println("url不为空");
+                            System.out.println("url不为空---" + url);
                             return true;
                         }
                         return false;
@@ -374,7 +378,7 @@ public class RealTimeShow extends BaseActivity {
                     @Override
                     public void call(Throwable throwable) {
                         progressBar.setVisibility(View.INVISIBLE);
-                        if (!RealTimeShow.this.isFinishing()){
+                        if (!RealTimeShow.this.isFinishing()) {
                             DialogUtils.showPrompt(RealTimeShow.this, "提示", "抓图失败", "确定", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -382,6 +386,23 @@ public class RealTimeShow extends BaseActivity {
                                     finish();
                                 }
                             });
+                        }
+                    }
+                }, new Action0() {
+                    @Override
+                    public void call() {
+                        System.out.println("完成了");
+                        if (count > 29){
+                            progressBar.setVisibility(View.INVISIBLE);
+                            if (!RealTimeShow.this.isFinishing()) {
+                                DialogUtils.showPrompt(RealTimeShow.this, "提示", "抓图失败", "确定", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                        finish();
+                                    }
+                                });
+                            }
                         }
                     }
                 });

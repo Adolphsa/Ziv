@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.zividig.ziv.function.AddDevice"
-    android:background="@color/zXing_activity_background"
+    android:background="@color/activity_background"
     >
 
     <include layout="@layout/layout_titlebar"/>

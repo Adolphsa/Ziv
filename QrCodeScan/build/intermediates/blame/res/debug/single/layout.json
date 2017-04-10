@@ -1,0 +1,14 @@
+[
+    {
+        "merged": "F:\\github\\Android\\Ziv\\QrCodeScan\\build\\intermediates\\res\\merged\\debug\\layout\\activity_qr_scan.xml",
+        "source": "F:\\github\\Android\\Ziv\\QrCodeScan\\src\\main\\res\\layout\\activity_qr_scan.xml"
+    },
+    {
+        "merged": "F:\\github\\Android\\Ziv\\QrCodeScan\\build\\intermediates\\res\\merged\\debug\\layout\\zx_layout_titlebar.xml",
+        "source": "F:\\github\\Android\\Ziv\\QrCodeScan\\src\\main\\res\\layout\\zx_layout_titlebar.xml"
+    },
+    {
+        "merged": "F:\\github\\Android\\Ziv\\QrCodeScan\\build\\intermediates\\res\\merged\\debug\\layout\\activity_result.xml",
+        "source": "F:\\github\\Android\\Ziv\\QrCodeScan\\src\\main\\res\\layout\\activity_result.xml"
+    }
+]

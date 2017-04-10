@@ -542,7 +542,6 @@ public class MyCarFragment extends Fragment {
                             } else {
                                 return Observable.error(new Exception("devid_is_null"));
                             }
-
                         }
                     })
                     .subscribeOn(Schedulers.io())
@@ -550,7 +549,7 @@ public class MyCarFragment extends Fragment {
                     .subscribe(new Action1<DeviceStateResponse>() {
                         @Override
                         public void call(DeviceStateResponse deviceStateResponse) {
-                            System.out.println("RXJAVA---设备状态---" + deviceStateResponse.getInfo().getWorkmode());
+                            System.out.println("RXJAVA---设备状态---" + deviceStateResponse.getInfo().toString());
                             handDevideStateResponse(deviceStateResponse);
                             setTitle();
                         }

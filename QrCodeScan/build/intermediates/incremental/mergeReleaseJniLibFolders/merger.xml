@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="main"><source path="F:\github\Android\Ziv\QrCodeScan\src\main\jniLibs"><file name="armeabi-v7a/libzbar.so" path="F:\github\Android\Ziv\QrCodeScan\src\main\jniLibs\armeabi-v7a\libzbar.so"/></source></dataSet><dataSet config="release"><source path="F:\github\Android\Ziv\QrCodeScan\src\release\jniLibs"/></dataSet></merger>

@@ -76,5 +76,14 @@ public class DeviceStateResponse {
         public void setCsq(String csq) {
             this.csq = csq;
         }
+
+        @Override
+        public String toString() {
+            return "InfoBean{" +
+                    "workmode='" + workmode + '\'' +
+                    ", voltage='" + voltage + '\'' +
+                    ", csq='" + csq + '\'' +
+                    '}';
+        }
     }
 }

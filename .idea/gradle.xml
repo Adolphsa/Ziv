@@ -9,11 +9,11 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/QrCodeScan" />
             <option value="$PROJECT_DIR$/Violation" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/ffmpeg" />
             <option value="$PROJECT_DIR$/sharesdk" />
-            <option value="$PROJECT_DIR$/zXingProj" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
