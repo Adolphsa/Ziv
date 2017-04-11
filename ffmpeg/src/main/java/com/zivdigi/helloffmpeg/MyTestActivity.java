@@ -21,6 +21,7 @@ import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -33,6 +34,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
@@ -54,6 +56,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
     private static String TAG = "MyTestActivity";
 
     public static final String FF_REQUEST_VIDEO = "http://api.zivdigi.com/v1/device/rtsp";
+    public static final String DEVICE_STATE = "http://api.zivdigi.com/v1/device/info";
 
     private static final int PLAY = 0;
     private static final int ERROR_CONNECT = 12;
@@ -543,16 +546,16 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
 
                                 tScale = newDist / distance;
 
-                                if (isFirst){
+                                if (isFirst) {
                                     svaeScale = svaeScale0;
                                     isFirst = false;
                                     MyGLRenderer.ChangeScale = svaeScale;          //将缩放比例交给MyGLRenderer
-                                }else {
+                                } else {
 
-                                    if (newDist - tempDist < 0){
+                                    if (newDist - tempDist < 0) {
                                         System.out.println("缩小");
                                         svaeScale0 = tScale;
-                                    }else {
+                                    } else {
 
                                         svaeScale0 = svaeScale + tScale;
                                         System.out.println("放大---" + svaeScale0);
@@ -602,17 +605,17 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
         @Override
         public boolean onDoubleTap(MotionEvent e) {
             System.out.println("双击屏幕");
-            if (tScale < 5.0 && statusGesture == 0){
+            if (tScale < 5.0 && statusGesture == 0) {
                 System.out.println("放大");
                 tScale += 1.0f;
             }
-            if (tScale >= 5.0f){
+            if (tScale >= 5.0f) {
                 statusGesture = 1;
             }
-            if (statusGesture == 1){
+            if (statusGesture == 1) {
                 tScale -= 1.0f;
             }
-            if (tScale <= 1.0f){
+            if (tScale <= 1.0f) {
                 statusGesture = 0;
             }
             MyGLRenderer.ChangeScale = tScale;
@@ -711,6 +714,13 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
             }
         }, 20 * 1000, 40 * 1000);
 
+        mVideoTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                getDeviceStateInFfmpeg();
+            }
+        },2000,2000);
+
     }
 
     public void stopTimer() {
@@ -719,7 +729,6 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
             mVideoTimer.cancel();
         }
     }
-
 
     /**
      * 开启实时视频
@@ -768,6 +777,77 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
 
             @Override
             public void onFinished() {
+            }
+        });
+    }
+
+    private void getDeviceStateInFfmpeg() {
+        String token = mSpf.getString("token", "");
+        final String deviceId = mSpf.getString("devid", "");
+
+        //配置json数据
+        JSONObject json = new JSONObject();
+        try {
+            json.put("devid", deviceId);
+            json.put("token", token);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //计算signature
+        String timestamp = ArrayUtil.getTimestamp();
+        String noncestr = ArrayUtil.getRandomString(10);
+        String signature = ArrayUtil.getSinnature(timestamp,
+                noncestr,
+                ArrayUtil.FF_APP_KEY,
+                deviceId,
+                token);
+        //发起请求
+        RequestParams params = ArrayUtil.setParams(DEVICE_STATE, timestamp, noncestr, signature);
+        params.setBodyContent(json.toString());
+        x.http().post(params, new Callback.CommonCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                if (!TextUtils.isEmpty(result)) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(result);
+                        int status = jsonObject.getInt("status");
+                        if (200 == status) {
+                            JSONObject info = jsonObject.getJSONObject("info");
+                            String deviceStatus = info.getString("workmode");
+                            System.out.println("播放视频时候的状态---" + deviceStatus);
+                            if (!deviceStatus.equals("NORMAL") && !MyTestActivity.this.isFinishing()) {
+                                stopTimer();
+                                FfmpegDialogUtils.showPrompt(MyTestActivity.this, "提示", "设备唤醒时间已到，正在进入休眠,视频停止！", "确定", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                        finish();
+                                    }
+                                });
+                            }
+
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+
+            }
+
+            @Override
+            public void onCancelled(CancelledException cex) {
+
+            }
+
+            @Override
+            public void onFinished() {
+
             }
         });
     }

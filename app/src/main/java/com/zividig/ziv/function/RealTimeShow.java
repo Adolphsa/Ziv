@@ -1,5 +1,6 @@
 package com.zividig.ziv.function;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 import com.baidu.mapapi.SDKInitializer;
 import com.bm.library.PhotoView;
 import com.zividig.ziv.R;
+import com.zividig.ziv.customView.LoadingProgressDialog;
 import com.zividig.ziv.main.BaseActivity;
 import com.zividig.ziv.main.ZivApp;
 import com.zividig.ziv.rxjava.ZivApiManage;
@@ -79,6 +81,7 @@ public class RealTimeShow extends BaseActivity {
     private int count;
 
     private SharedPreferences mSpf;
+    private Dialog mDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -193,6 +196,9 @@ public class RealTimeShow extends BaseActivity {
                             if (worlMode.equals("NORMAL")){
                                 //执行获取图片
                                 progressBar.setVisibility(View.VISIBLE);
+                                if("Meizu".equals(android.os.Build.MANUFACTURER)){
+                                    showProgressDialog();
+                                }
                                 RXgetImageUrl();
                             }
                         }
@@ -371,13 +377,17 @@ public class RealTimeShow extends BaseActivity {
                     @Override
                     public void call(Bitmap bitmap) {
                         mBitmap = bitmap;
+                        System.out.println("图片宽度---" + bitmap.getWidth() + "图片高度---" + bitmap.getHeight());
                         photoView.setImageBitmap(bitmap);
                         progressBar.setVisibility(View.INVISIBLE);
+                        closeDialog();
+
                     }
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
                         progressBar.setVisibility(View.INVISIBLE);
+                        closeDialog();
                         if (!RealTimeShow.this.isFinishing()) {
                             DialogUtils.showPrompt(RealTimeShow.this, "提示", "抓图失败", "确定", new DialogInterface.OnClickListener() {
                                 @Override
@@ -394,6 +404,7 @@ public class RealTimeShow extends BaseActivity {
                         System.out.println("完成了");
                         if (count > 29){
                             progressBar.setVisibility(View.INVISIBLE);
+                            closeDialog();
                             if (!RealTimeShow.this.isFinishing()) {
                                 DialogUtils.showPrompt(RealTimeShow.this, "提示", "抓图失败", "确定", new DialogInterface.OnClickListener() {
                                     @Override
@@ -458,6 +469,26 @@ public class RealTimeShow extends BaseActivity {
         Uri uri = Uri.fromFile(new File(path));
         intent.setData(uri);
         this.sendBroadcast(intent);
+    }
+
+    /**
+     * 显示进度条
+     */
+    private void showProgressDialog(){
+        if (mDialog == null && !RealTimeShow.this.isFinishing()){
+            mDialog = LoadingProgressDialog.createLoadingDialog(RealTimeShow.this,"正在抓图中...",true,false,null);
+            mDialog.show();
+        }
+    }
+
+    /**
+     * 关闭进度条
+     */
+    private void closeDialog() {
+        if (mDialog != null) {
+            mDialog.dismiss();
+            mDialog = null;
+        }
     }
 
     class BtnListener implements View.OnClickListener {

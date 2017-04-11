@@ -34,19 +34,20 @@ public final class R {
         public static int zx_login_btn=0x7f020008;
     }
     public static final class id {
-        public static int bottom_mask=0x7f080006;
-        public static int btn_back=0x7f08000b;
+        public static int bottom_mask=0x7f080007;
+        public static int btn_back=0x7f08000c;
         public static int capture_containter=0x7f080000;
-        public static int capture_crop_layout=0x7f080004;
-        public static int capture_preview=0x7f080002;
-        public static int capture_scan_line=0x7f080005;
-        public static int left_mask=0x7f080007;
-        public static int ll_title=0x7f08000a;
+        public static int capture_crop_layout=0x7f080005;
+        public static int capture_preview=0x7f080003;
+        public static int capture_scan_line=0x7f080006;
+        public static int left_mask=0x7f080008;
+        public static int ll_title=0x7f08000b;
+        public static int qr_back=0x7f080002;
         public static int qr_title=0x7f080001;
-        public static int result_text=0x7f080009;
-        public static int right_mask=0x7f080008;
-        public static int top_mask=0x7f080003;
-        public static int tv_title=0x7f08000c;
+        public static int result_text=0x7f08000a;
+        public static int right_mask=0x7f080009;
+        public static int top_mask=0x7f080004;
+        public static int tv_title=0x7f08000d;
     }
     public static final class layout {
         public static int activity_qr_scan=0x7f030000;
