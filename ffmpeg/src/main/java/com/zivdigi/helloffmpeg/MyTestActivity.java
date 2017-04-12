@@ -817,6 +817,8 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
                             String deviceStatus = info.getString("workmode");
                             System.out.println("播放视频时候的状态---" + deviceStatus);
                             if (!deviceStatus.equals("NORMAL") && !MyTestActivity.this.isFinishing()) {
+                                td.setCancelInterface(false);
+                                td.stopRequest();
                                 stopTimer();
                                 FfmpegDialogUtils.showPrompt(MyTestActivity.this, "提示", "设备唤醒时间已到，正在进入休眠,视频停止！", "确定", new DialogInterface.OnClickListener() {
                                     @Override
@@ -836,19 +838,13 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
             }
 
             @Override
-            public void onError(Throwable ex, boolean isOnCallback) {
-
-            }
+            public void onError(Throwable ex, boolean isOnCallback) {}
 
             @Override
-            public void onCancelled(CancelledException cex) {
-
-            }
+            public void onCancelled(CancelledException cex) {}
 
             @Override
-            public void onFinished() {
-
-            }
+            public void onFinished() {}
         });
     }
 

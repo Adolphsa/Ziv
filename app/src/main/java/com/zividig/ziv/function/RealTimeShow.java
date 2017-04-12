@@ -61,6 +61,8 @@ import rx.schedulers.Schedulers;
  */
 public class RealTimeShow extends BaseActivity {
 
+    private static final int SNAP_COUNT = 60;
+
     private Context mContext;
     private PhotoView photoView;
     private ProgressBar progressBar;
@@ -298,7 +300,7 @@ public class RealTimeShow extends BaseActivity {
         System.out.println("访问之前的imageKey---" + imageKey);
 
         mSubscription =Observable.interval(1, TimeUnit.SECONDS)
-                .take(60)
+                .take(SNAP_COUNT)
                 .flatMap(new Func1<Long, Observable<SnapResponse>>() {
                     @Override
                     public Observable<SnapResponse> call(Long aLong) {
@@ -402,7 +404,7 @@ public class RealTimeShow extends BaseActivity {
                     @Override
                     public void call() {
                         System.out.println("完成了");
-                        if (count > 29){
+                        if (count > SNAP_COUNT-1){
                             progressBar.setVisibility(View.INVISIBLE);
                             closeDialog();
                             if (!RealTimeShow.this.isFinishing()) {

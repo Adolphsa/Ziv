@@ -15,6 +15,9 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
     <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.READ_LOGS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <permission
         android:name="getui.permission.GetuiService.${applicationId}"
@@ -56,19 +59,22 @@
             android:launchMode="singleTask"/>
         <activity
             android:name=".function.RealTimeShow"
-            android:launchMode="singleTop"
-            />
-        <activity android:name=".function.CarInfo"
-                  android:launchMode="singleTop"/>
+            android:launchMode="singleTop"/>
+        <activity
+            android:name=".function.CarInfo"
+            android:launchMode="singleTop"/>
         <activity android:name=".function.MyPicture"/>
         <activity android:name=".function.ShowPicture"/>
-        <activity android:name=".function.ElectronicFence"
-                  android:launchMode="singleTop"/>
-        <activity android:name=".function.TrackQuery"
-                  android:launchMode="singleTop"/>
+        <activity
+            android:name=".function.ElectronicFence"
+            android:launchMode="singleTop"/>
+        <activity
+            android:name=".function.TrackQuery"
+            android:launchMode="singleTop"/>
         <activity android:name=".main.Register"/>
-        <activity android:name=".function.CarLocation"
-                  android:launchMode="singleTop"/>
+        <activity
+            android:name=".function.CarLocation"
+            android:launchMode="singleTop"/>
         <activity android:name=".function.TestShareVideo"/>
         <activity android:name=".main.FindPassWord"/>
         <activity android:name=".function.TrackQueryDateChoose"/>
@@ -106,8 +112,7 @@
             </intent-filter>
         </service>
 
-        <receiver
-            android:name="com.igexin.sdk.PushReceiver">
+        <receiver android:name="com.igexin.sdk.PushReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
@@ -119,7 +124,7 @@
             </intent-filter>
         </receiver>
 
-        <!--<service android:name=".getui.GetuiIntentService"/>-->
+        <!-- <service android:name=".getui.GetuiIntentService"/> -->
         <service
             android:name=".getui.GetuiPushService"
             android:exported="true"
@@ -191,7 +196,12 @@
             </intent-filter>
         </receiver>
 
-
+        <!--日志服务-->
+        <service
+            android:name=".service.LogService"
+            android:enabled="true"
+            android:exported="true">
+        </service>
     </application>
 
 </manifest>

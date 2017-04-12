@@ -27,6 +27,7 @@ import com.zividig.ziv.rxjava.model.DeviceStateResponse;
 import com.zividig.ziv.rxjava.model.DeviceWakeResponse;
 import com.zividig.ziv.utils.HttpParamsUtils;
 import com.zividig.ziv.utils.JsonUtils;
+import com.zividig.ziv.utils.LogUtils;
 import com.zividig.ziv.utils.SignatureUtils;
 import com.zividig.ziv.utils.ToastShow;
 import com.zividig.ziv.utils.Urls;
@@ -61,6 +62,8 @@ import static com.zividig.ziv.utils.SignatureUtils.token;
  */
 public class SettingFragment extends Fragment {
 
+    private static final int SNAP_COUNT = 30;
+
     private ListView lvSettingDevice;
     private ListView lvSettingSoftware;
     ViewHolder holder;
@@ -75,6 +78,7 @@ public class SettingFragment extends Fragment {
     private int count = 0;
 
     private Subscription mSubscription;
+    private boolean isGetDeviceState;
 
     public static SettingFragment instance() {
         SettingFragment view = new SettingFragment();
@@ -105,7 +109,6 @@ public class SettingFragment extends Fragment {
                         System.out.println("主机唤醒" + position);
                         //连续点击不生效
                         if ((System.currentTimeMillis()- secondTime) > (2 * 1000)){
-                            System.out.println("进来了");
                             if (!SettingFragment.this.isHidden()){
                                 dialog = LoadingProgressDialog.createLoadingDialog(getContext(),"正在唤醒中...",true,false,null);
                                 dialog.show();
@@ -118,7 +121,7 @@ public class SettingFragment extends Fragment {
                         }
                         break;
                     case 1:
-                        System.out.println("灯光设置" + position);
+                        LogUtils.i("灯光设置" + position);
                         startActivity(new Intent(getContext(), LightColor.class));
                         break;
 
@@ -140,38 +143,36 @@ public class SettingFragment extends Fragment {
                         if (autoUpdate){
                             holder.RightIcon.setImageResource(R.mipmap.switch_off); //关闭自动更新
                             sp.edit().putBoolean("auto_update",false).apply();
-                            System.out.println("关闭自动更新");
+                            LogUtils.i("关闭自动更新");
 
                         }else {
                             holder.RightIcon.setImageResource(R.mipmap.switch_on); //开启自动更新
                             sp.edit().putBoolean("auto_update",true).apply();
-                            System.out.println("开启自动更新");
+                            LogUtils.i("开启自动更新");
                         }
                         break;
                     case 1:
-                        System.out.println("震动免打扰" + position);
+                        LogUtils.i("震动免打扰" + position);
                         String username = sp.getString("et_user", "");
-                        System.out.println("用户名" + username);
+                        LogUtils.i("用户名" + username);
                         String alarmState = sp.getString("alarm_status","");
-                        System.out.println("");
                         if (alarmState.equals("open")){
                             holder.RightIcon.setImageResource(R.mipmap.switch_on); //不允许推送
                             //设置成不推送
                             setAlarmDoNotDisturb(username,"close");
                             sp.edit().putString("alarm_status","close").apply();
-                            System.out.println("设置成不推送");
+                            LogUtils.i("设置成不推送");
 
                         }else {
                             holder.RightIcon.setImageResource(R.mipmap.switch_off); //允许推送
-//                            sp.edit().putBoolean("no_disturb",true).apply();
                             //设置成推送
                             setAlarmDoNotDisturb(username,"open");
                             sp.edit().putString("alarm_status","open").apply();
-                            System.out.println("设置成推送");
+                            LogUtils.i("设置成推送");
                         }
                         break;
                     case 2:
-                        System.out.println("关于" + position);
+                        LogUtils.i("关于" + position);
                         startActivity(new Intent(getContext(), About.class));
                         break;
                 }
@@ -234,6 +235,7 @@ public class SettingFragment extends Fragment {
      */
     private void RxSendWakeupOrder(){
 
+        isGetDeviceState = true;
         final Map<String, String> options = setOp();
         final RequestBody jsonBody = setBody();
 
@@ -244,13 +246,12 @@ public class SettingFragment extends Fragment {
                 .flatMap(new Func1<DeviceStateResponse, Observable<DeviceWakeResponse>>() {
                     @Override
                     public Observable<DeviceWakeResponse> call(DeviceStateResponse deviceStateResponse) {
-                        System.out.println("判断设备状态是否不为休眠");
+                        LogUtils.i("判断设备状态是否不为休眠");
                         DeviceStateResponse.InfoBean infoBean = deviceStateResponse.getInfo();
                         String deviceState = infoBean.getWorkmode();
                         if (deviceState.equals("NORMAL")){
                             return Observable.error(new Exception("normal"));
                         }else if (!deviceState.equals("STDBY")){
-                            System.out.println("异常执行了2");
                             return Observable.error(new Exception("no_stdby"));
                         }
                         return ZivApiManage.getInstance().getZivApiService().sendWakeupOrder(options,jsonBody);
@@ -262,7 +263,7 @@ public class SettingFragment extends Fragment {
                     public void call(DeviceWakeResponse deviceWakeResponse) {
                         int status = deviceWakeResponse.getStatus();
                         if (200 == status){
-                            System.out.println("发送唤醒命令");
+                            LogUtils.i("发送唤醒命令");
                             RxGetDeviceState();
                         }
                     }
@@ -284,6 +285,7 @@ public class SettingFragment extends Fragment {
      * 轮询获取设备状态
      */
     public void RxGetDeviceState() {
+
         count =0;
         String token = sp.getString("token", null);
         String devid = sp.getString("devid", null);
@@ -313,14 +315,13 @@ public class SettingFragment extends Fragment {
 
 
         mSubscription = Observable.interval(0,2,TimeUnit.SECONDS)
-                .take(20)
+                .take(SNAP_COUNT)
                 .flatMap(new Func1<Long, Observable<DeviceStateResponse>>() { //先查看设备的状态
                     @Override
                     public Observable<DeviceStateResponse> call(Long aLong) {
                         return ZivApiManage.getInstance().getZivApiService().getDeviceStateInfo(options,jsonBody);
                     }
                 })
-                .observeOn(AndroidSchedulers.mainThread())
                 .takeUntil(new Func1<DeviceStateResponse, Boolean>() {
                     @Override
                     public Boolean call(DeviceStateResponse deviceStateResponse) {
@@ -329,48 +330,46 @@ public class SettingFragment extends Fragment {
                         count++;
                         System.out.println();
                         if (!TextUtils.isEmpty(deviceState) && deviceState.equals("NORMAL")){
-                            System.out.println("轮询---主机在线了");
-                            showStateInfo("主机唤醒成功!");
+                            LogUtils.i("轮询---主机在线了");
                             return true;
                         }
                         return false;
                     }
                 })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<DeviceStateResponse>() {
                     @Override
                     public void call(DeviceStateResponse deviceStateResponse) {
-                        System.out.println("RXJAVA---设备状态---" + deviceStateResponse.getInfo().getWorkmode());
+                        LogUtils.i("RXJAVA---设备状态---" + deviceStateResponse.getInfo().getWorkmode());
                         DeviceStateResponse.InfoBean infoBean = deviceStateResponse.getInfo();
                         String deviceState = infoBean.getWorkmode();
                         if (deviceState.equals("BOOTING")) {
                             LoadingProgressDialog.setTipText("主机正在启动中……");
-                            System.out.println("主机正在启动中……");
+                            LogUtils.i("主机正在启动中……");
                         } else if (deviceState.equals("NORMAL")) {
-                            System.out.println("onNext---主机在线了");
-                            Observable.error(new Exception("normal"));
-                        }
-//                        else if (deviceState.equals("WAKEFAIL")) {
-//                            LoadingProgressDialog.setTipText("主机唤醒失败");
-//                            System.out.println("主机唤醒失败");
-//                        }
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        System.out.println("RXJAVA---设备状态出错---" + throwable.getMessage());
-                        String t = throwable.getMessage();
-                        if (t.equals("normal")) {
+                            LogUtils.d("onNext---主机在线了");
                             showStateInfo("主机唤醒成功!");
                             if (mSubscription != null){
                                 mSubscription.unsubscribe();
                             }
+                        } else if (deviceState.equals("WAKEFAIL")) {
+                            LoadingProgressDialog.setTipText("主机唤醒失败");
+                            LogUtils.i("主机唤醒失败");
+                            isGetDeviceState = false;
                         }
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        LogUtils.i("RXJAVA---设备状态出错---" + throwable.getMessage());
                     }
                 }, new Action0() {
                     @Override
                     public void call() {
-                     if (count > 19){
-                         showStateInfo("主机唤醒失败!");
+                        LogUtils.i("唤醒查询完成");
+                     if (count > SNAP_COUNT-1){
+                         showStateInfo("主机唤醒超时，请在主页面查看状态");
                          if (mSubscription != null){
                              mSubscription.unsubscribe();
                          }
@@ -384,6 +383,8 @@ public class SettingFragment extends Fragment {
      * @param smg 唤醒成功或失败
      */
     private void showStateInfo(String smg){
+
+        isGetDeviceState = false;
 
         //关闭dialog1
         if (dialog != null){
@@ -429,18 +430,16 @@ public class SettingFragment extends Fragment {
 
         RequestParams params = HttpParamsUtils.setParams(Urls.SETTING_ALARM_DO_NOT_DISTURB,timestamp,noncestr,signature);
         params.setBodyContent(json.toString());
-        System.out.println("params---" + params.toString());
 
         x.http().post(params, new Callback.CommonCallback<String>() {
             @Override
             public void onSuccess(String result) {
-                System.out.println("震动消息免设置消息返回结果---" + result);
+                LogUtils.i("震动消息免设置消息返回结果---" + result);
                 try {
                     JSONObject json = new JSONObject(result);
                     int status = json.getInt("status");
                     if (200 == status){
-                        System.out.println("设置震动消息免打扰成功");
-//                        ToastShow.showToast(getContext(),"设置成功");
+                        LogUtils.i("设置震动消息免打扰成功");
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -449,7 +448,7 @@ public class SettingFragment extends Fragment {
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
-                System.out.println("震动消息免打扰设置异常---" + ex.getMessage());
+                LogUtils.i("震动消息免打扰设置异常---" + ex.getMessage());
             }
 
             @Override
@@ -571,9 +570,19 @@ public class SettingFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        LogUtils.i("setting---onResume");
+        if (isGetDeviceState){
+            RxGetDeviceState();
+        }
+
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
-        System.out.println("Setting---onStop");
+        LogUtils.i("Setting---onStop");
         if (mSubscription != null){
             mSubscription.unsubscribe();
         }

@@ -530,11 +530,10 @@ public class MyCarFragment extends Fragment {
         System.out.println("轮询获取涉设备状态");
 
         if (mSubscription == null){
-            mSubscription = Observable.interval(0, 30, TimeUnit.SECONDS)
+            mSubscription = Observable.interval(0, 5, TimeUnit.SECONDS)
                     .flatMap(new Func1<Long, Observable<DeviceStateResponse>>() {
                         @Override
                         public Observable<DeviceStateResponse> call(Long aLong) {
-
                             Map<String, String> options = setOp();
                             RequestBody jsonBody = setBody();
                             if (options != null && jsonBody != null) {
@@ -558,7 +557,7 @@ public class MyCarFragment extends Fragment {
                         public void call(Throwable throwable) {
                             System.out.println("RXJAVA---设备状态出错---" + throwable.getMessage());
                             String error = throwable.getMessage();
-                            if (++retryCount >= 3) {
+                            if (++retryCount >= 5) {
                                 System.out.println("查询失败");
                                 String devid = mSpf.getString("devid", null);
                                 if (devid != null){
@@ -598,6 +597,8 @@ public class MyCarFragment extends Fragment {
                 String workMode = infoBean.getWorkmode();
                 if (workMode.equals("NORMAL")) {
                     deviceState.setText("在线");
+                } else if (workMode.equals("OFFING")) {
+                    deviceState.setText("下线中");
                 } else if (workMode.equals("STDBY")) {
                     deviceState.setText("休眠");
                 } else if (workMode.equals("OFF")) {
