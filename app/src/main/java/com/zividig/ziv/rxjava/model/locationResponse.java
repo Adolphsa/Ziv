@@ -53,7 +53,7 @@ public class LocationResponse {
         private String ti;
         private double lat;
         private double lon;
-        private int spd;
+        private double spd;
         private int hd;
         private int alt;
 
@@ -81,11 +81,11 @@ public class LocationResponse {
             this.lon = lon;
         }
 
-        public int getSpd() {
+        public double getSpd() {
             return spd;
         }
 
-        public void setSpd(int spd) {
+        public void setSpd(double spd) {
             this.spd = spd;
         }
 

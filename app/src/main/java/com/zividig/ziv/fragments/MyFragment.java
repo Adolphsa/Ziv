@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zividig.ziv.R;
+import com.zividig.ziv.function.CxllActivity;
 import com.zividig.ziv.function.MyAccountInfo;
 import com.zividig.ziv.function.MyDevice;
 import com.zividig.ziv.function.MyPicture;
@@ -70,6 +71,10 @@ public class MyFragment extends Fragment {
                     case 2: //我的设备
                         startActivity(new Intent(getContext(), MyDevice.class));
                         break;
+                    case 3: //流量查询
+                        System.out.println("流量查询");
+                        startActivity(new Intent(getContext(), CxllActivity.class));
+                        break;
                 }
             }
         });
@@ -80,7 +85,7 @@ public class MyFragment extends Fragment {
 
         @Override
         public int getCount() {
-            return 3;
+            return 4;
         }
 
         @Override
@@ -116,8 +121,12 @@ public class MyFragment extends Fragment {
                     holder.itemText.setText("我的图片");
                     break;
                 case 2:
+                    holder.leftIcon.setImageResource(R.mipmap.gps);
                     holder.itemText.setText("我的设备");
                     break;
+                case 3:
+                    holder.leftIcon.setImageResource(R.mipmap.cxll);
+                    holder.itemText.setText("流量查询");
             }
             return convertView;
         }

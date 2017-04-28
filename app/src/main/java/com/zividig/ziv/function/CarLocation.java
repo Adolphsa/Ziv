@@ -231,6 +231,7 @@ public class CarLocation extends BaseActivity {
     }
 
     private void RxGetLocationInfo(){
+
         mSubscription = Observable.interval(0,1, TimeUnit.SECONDS)
                 .flatMap(new Func1<Long, Observable<LocationResponse>>() {
                     @Override

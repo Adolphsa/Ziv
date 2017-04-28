@@ -15,7 +15,7 @@
 
     <!--自定义的主题样式-->
     <style name="MyAppTheme" parent="NoActionBar">
-        <item name="android:windowBackground">@mipmap/splash_icon</item>
+        <item name="android:windowBackground">@mipmap/splash_one</item>
     </style>
 
     <style name="CustomTabPageIndicator.Text" parent="android:TextAppearance.Medium">

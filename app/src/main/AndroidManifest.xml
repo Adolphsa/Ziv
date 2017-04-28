@@ -15,7 +15,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
     <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
-    <uses-permission android:name="android.permission.READ_LOGS" />
+    <uses-permission android:name="android.permission.READ_LOGS"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
@@ -87,6 +87,7 @@
             android:exported="true"/>
         <activity android:name=".function.LightColor"/>
         <activity android:name=".function.MessageMapShow"/>
+        <activity android:name=".function.CxllActivity"/>
 
         <!-- 百度地图服务 -->
         <service
@@ -196,12 +197,13 @@
             </intent-filter>
         </receiver>
 
-        <!--日志服务-->
+        <!-- 日志服务 -->
         <service
             android:name=".service.LogService"
             android:enabled="true"
             android:exported="true">
         </service>
+
     </application>
 
 </manifest>

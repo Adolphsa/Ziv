@@ -174,13 +174,13 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
             if(position >= 0 && position < VIEW_SIZE){
                 switch (position){
                     case  VIEW_FIRST:
-                        return  "我的车";
+                        return  getString(R.string.main_tab_bar_one);
                     case  VIEW_SECOND:
-                        return  "消息";
+                        return  getString(R.string.main_tab_bar_two);
                     case  VIEW_THIRD:
-                        return  "设置";
+                        return  getString(R.string.main_tab_bar_three);
                     case  VIEW_FOURTH:
-                        return  "我";
+                        return  getString(R.string.main_tab_bar_four);
                     default:
                         break;
                 }
@@ -306,7 +306,7 @@ public class MainActivity extends FragmentActivity implements ViewPager.OnPageCh
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN){
             if((System.currentTimeMillis()-exitTime) > 2000){
-                Toast.makeText(getApplicationContext(), "再按一次退出程序", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.main_exit, Toast.LENGTH_SHORT).show();
                 exitTime = System.currentTimeMillis();
             } else {
 //                logout();

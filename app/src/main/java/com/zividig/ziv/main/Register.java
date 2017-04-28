@@ -23,6 +23,10 @@ import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
 
+import static com.zividig.ziv.R.string.find_password_get_yzm_fail;
+import static com.zividig.ziv.R.string.find_password_input_yzm;
+import static com.zividig.ziv.R.string.find_password_yzm_no_ok;
+
 public class Register extends BaseActivity {
 
     private EditText etUser;
@@ -45,7 +49,7 @@ public class Register extends BaseActivity {
         @Override
         public void onFinish() {
             getYzmButton.setEnabled(true);
-            getYzmButton.setText("获取验证码");
+            getYzmButton.setText(R.string.find_password_yzm);
         }
     };
 
@@ -57,7 +61,7 @@ public class Register extends BaseActivity {
 
         // 标题
         TextView txtTitle = (TextView) findViewById(R.id.tv_title);
-        txtTitle.setText("注册");
+        txtTitle.setText(R.string.register_title);
 
         //返回按钮
         Button btnBack = (Button) findViewById(R.id.btn_back);
@@ -87,11 +91,11 @@ public class Register extends BaseActivity {
         System.out.println(user + "\n" + pwd + "\n" + yzm);
         if (TextUtils.isEmpty(user) || user.length() != 11){
             System.out.println("usr的长度" + user.length());
-            ToastShow.showToast(Register.this,"请输入手机号码");
+            ToastShow.showToast(Register.this,getString(R.string.find_password_input_phone));
             return false;
         }
         if (TextUtils.isEmpty(pwd)){
-            ToastShow.showToast(Register.this,"请输入密码");
+            ToastShow.showToast(Register.this,getString(R.string.register_pwd));
             return false;
         }
         return true;
@@ -131,7 +135,7 @@ public class Register extends BaseActivity {
                             System.out.println("获取注册验证码成功" + result);
                             md5Yzm = json.getString("code");
                         }else {
-                            ToastShow.showToast(Register.this,"获取验证码失败");
+                            ToastShow.showToast(Register.this,getString(find_password_get_yzm_fail));
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -164,7 +168,7 @@ public class Register extends BaseActivity {
             pwd = etPwd.getText().toString().trim();
             yzm = etYzm.getText().toString().trim();
             if (TextUtils.isEmpty(yzm)){
-                ToastShow.showToast(Register.this,"请输入验证码");
+                ToastShow.showToast(Register.this,getString(find_password_input_yzm));
                 return;
             }
             String tempYzm = yzm + "#$" + user;
@@ -208,14 +212,14 @@ public class Register extends BaseActivity {
                                 int status = json.getInt("status");
                                 if (status == Urls.STATUS_CODE_200){  //注册成功
 
-                                    ToastShow.showToast(Register.this,"注册成功");
+                                    ToastShow.showToast(Register.this,getString(R.string.register_ok));
                                     startActivity(new Intent(Register.this,Login.class));
                                     finish();
 
                                 }else if (status == Urls.STATUS_CODE_402){
-                                    ToastShow.showToast(Register.this,"手机号已被注册");
+                                    ToastShow.showToast(Register.this,getString(R.string.register_phone_is_exist));
                                 }else if (status == Urls.STATUS_CODE_500){
-                                    ToastShow.showToast(Register.this,"数据库错误");
+                                    ToastShow.showToast(Register.this,getString(R.string.register_data_error));
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -240,7 +244,7 @@ public class Register extends BaseActivity {
 
                 }else {
                     System.out.println("不相等");
-                    ToastShow.showToast(Register.this,"验证码不正确，请重新输入");
+                    ToastShow.showToast(Register.this,getString(find_password_yzm_no_ok));
                 }
             } catch (Exception e) {
                 e.printStackTrace();

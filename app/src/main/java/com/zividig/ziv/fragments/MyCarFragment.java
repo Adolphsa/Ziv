@@ -466,6 +466,8 @@ public class MyCarFragment extends Fragment {
                                 } else if (deviceStatus.equals("OFF")) {
                                     deviceState.setText("离线");
                                     ToastShow.showToast(getContext(), "设备不在线");
+                                }else {
+                                    ToastShow.showToast(getContext(), "设备不在线");
                                 }
                             }
                         }else if (status == 403){
@@ -557,7 +559,7 @@ public class MyCarFragment extends Fragment {
                         public void call(Throwable throwable) {
                             System.out.println("RXJAVA---设备状态出错---" + throwable.getMessage());
                             String error = throwable.getMessage();
-                            if (++retryCount >= 5) {
+                            if (++retryCount >= 10) {
                                 System.out.println("查询失败");
                                 String devid = mSpf.getString("devid", null);
                                 if (devid != null){

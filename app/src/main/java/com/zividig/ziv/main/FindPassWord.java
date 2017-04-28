@@ -47,7 +47,7 @@ public class FindPassWord extends BaseActivity {
         @Override
         public void onFinish() {
             getYzmButton.setEnabled(true);
-            getYzmButton.setText("获取验证码");
+            getYzmButton.setText(R.string.find_password_yzm);
         }
     };
 
@@ -58,7 +58,7 @@ public class FindPassWord extends BaseActivity {
 
         // 标题
         TextView txtTitle = (TextView) findViewById(R.id.tv_title);
-        txtTitle.setText("重置密码");
+        txtTitle.setText(R.string.find_password_reset);
 
         //返回按钮
         Button btnBack = (Button) findViewById(R.id.btn_back);
@@ -87,11 +87,11 @@ public class FindPassWord extends BaseActivity {
         fdPwd = etPwd.getText().toString().trim();
         System.out.println(fdUser + "\n" + fdPwd + "\n" + fdYzm);
         if (TextUtils.isEmpty(fdUser) || fdUser.length() != 11){
-            Toast.makeText(FindPassWord.this,"请输入手机号码",Toast.LENGTH_SHORT).show();
+            Toast.makeText(FindPassWord.this, R.string.find_password_input_phone,Toast.LENGTH_SHORT).show();
             return false;
         }
         if (TextUtils.isEmpty(fdPwd)){
-            Toast.makeText(FindPassWord.this,"请输入新密码",Toast.LENGTH_SHORT).show();
+            Toast.makeText(FindPassWord.this, R.string.find_password_input_password,Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;
@@ -130,7 +130,7 @@ public class FindPassWord extends BaseActivity {
                             System.out.println("获取注册验证码成功" + result);
                             md5Yzm = json.getString("code");
                         }else {
-                            ToastShow.showToast(FindPassWord.this,"获取验证码失败");
+                            ToastShow.showToast(FindPassWord.this,getString(R.string.find_password_get_yzm_fail));
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -166,7 +166,7 @@ public class FindPassWord extends BaseActivity {
             fdPwd = etPwd.getText().toString().trim();
             fdYzm = etYzm.getText().toString().trim();
             if (TextUtils.isEmpty(fdYzm)){
-                Toast.makeText(FindPassWord.this,"请输入验证码",Toast.LENGTH_SHORT).show();
+                Toast.makeText(FindPassWord.this, R.string.find_password_input_yzm,Toast.LENGTH_SHORT).show();
                 return;
             }
             String tempYzm = fdYzm + "#$" + fdUser;
@@ -206,11 +206,11 @@ public class FindPassWord extends BaseActivity {
                                 JSONObject json = new JSONObject(result);
                                 int status = json.getInt("status");
                                 if (status == Urls.STATUS_CODE_200){
-                                    Toast.makeText(FindPassWord.this,"重置密码成功",Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(FindPassWord.this, R.string.find_password_reset_pwd_ok,Toast.LENGTH_SHORT).show();
                                     startActivity(new Intent(FindPassWord.this,Login.class));
                                     finish();
                                 }else {
-                                    Toast.makeText(FindPassWord.this,"重置密码失败",Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(FindPassWord.this, R.string.find_password_reset_pwd_fail,Toast.LENGTH_SHORT).show();
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -230,7 +230,7 @@ public class FindPassWord extends BaseActivity {
                     });
                 }else {
                     System.out.println("不相等");
-                    Toast.makeText(FindPassWord.this,"验证码不正确，请重新输入",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(FindPassWord.this, R.string.find_password_yzm_no_ok,Toast.LENGTH_SHORT).show();
                 }
             } catch (Exception e) {
                 e.printStackTrace();

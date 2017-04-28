@@ -369,7 +369,7 @@ public class SettingFragment extends Fragment {
                     public void call() {
                         LogUtils.i("唤醒查询完成");
                      if (count > SNAP_COUNT-1){
-                         showStateInfo("主机唤醒超时，请在主页面查看状态");
+                         showStateInfo("主机唤醒超时，请在我的车页面查看状态");
                          if (mSubscription != null){
                              mSubscription.unsubscribe();
                          }

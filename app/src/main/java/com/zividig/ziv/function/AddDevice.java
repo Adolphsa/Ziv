@@ -39,16 +39,14 @@ public class AddDevice extends BaseActivity {
     private SharedPreferences spf;
     private Login mLogin;
 
-    private static final int REQUEST_CODE_PERMISSION_CAMERA = 100;
-
-    private static final int REQUEST_CODE_SETTING = 300;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_device);
 
         spf = getSharedPreferences("config", MODE_PRIVATE);
+        //设置获取设备状态为真，以便在Activity销毁时能重新获取设备状态
+        spf.edit().putBoolean("is_keeping_get_device_state",true).apply();
         mLogin = new Login();
 
         initView();
@@ -80,17 +78,13 @@ public class AddDevice extends BaseActivity {
 
         //显示设备ID
         deviceId = (TextView) findViewById(R.id.tv_device_id);
-
-        String devid = spf.getString("devid", "");
-        if (!devid.equals("")) {
-            deviceId.setText(devid);
-        }
-
         //显示二维码
-        String twoCode = spf.getString("two_code", "");
-        System.out.println("重新创建");
         tvTwoCode = (TextView) findViewById(R.id.tv_two_code);
+
+        String twoCode = spf.getString("two_code", "");
         if (!TextUtils.isEmpty(twoCode)) {
+            String subDevid = twoCode.substring(25,twoCode.length());
+            deviceId.setText(subDevid);
             tvTwoCode.setText(twoCode);
         }
     }
@@ -149,7 +143,6 @@ public class AddDevice extends BaseActivity {
                                 //请设置车牌号和别名
                                 getFormDialog(username,devid);
 
-//                                startActivity(new Intent(AddDevice.this, Login.class));
                             }
                         });
                     } else if (!AddDevice.this.isFinishing() && status == Urls.STATUS_CODE_403) {
