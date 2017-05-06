@@ -6,7 +6,45 @@
     style="@style/AllActivityBackground"
     >
 
-    <include layout="@layout/layout_titlebar"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/title_bar_background"
+        >
+        <Button
+            android:id="@+id/rts_btn_back"
+            android:layout_width="55dp"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/selector_back_button"
+            android:background="@null"
+            android:layout_marginLeft="5dp"
+            android:text="返回"
+            android:gravity="center_vertical"
+            android:textColor="@android:color/white"
+            android:textSize="14.0sp"
+            />
+        <TextView
+            android:id="@+id/rts_tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:padding="8dp"
+            android:textColor="#ffffff"
+            android:layout_centerInParent="true"
+            />
+
+        <Button
+            android:id="@+id/rts_share_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/rts_share_image"
+            android:textColor="@android:color/white"
+            android:layout_alignParentRight="true"
+            android:background="@android:color/transparent"
+            />
+
+    </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"

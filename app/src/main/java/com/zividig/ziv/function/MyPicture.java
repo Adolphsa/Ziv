@@ -42,7 +42,7 @@ public class MyPicture extends BaseActivity {
 
         // 标题
         TextView txtTitle = (TextView) findViewById(R.id.tv_title);
-        txtTitle.setText("我的图片");
+        txtTitle.setText(R.string.my_picture_title);
 
         //返回按钮
         Button btnBack = (Button) findViewById(R.id.btn_back);
@@ -228,7 +228,7 @@ public class MyPicture extends BaseActivity {
             }
             final List<PictureBean> pictureBeans = sortList.get(position);
             String data = pictureBeans.get(0).getPicNum().toString();
-            String data2 = data.substring(0,4) + "年" + data.substring(4,6) + "月" + data.substring(6,8) + "日";
+            String data2 = data.substring(0,4) + getString(R.string.my_picture_year) + data.substring(4,6) + getString(R.string.my_picture_month) + data.substring(6,8) + getString(R.string.my_picture_day);
             holder.tvName.setText(data2); //设置是哪一天的照片
             //图片的点击事件
             holder.gvPicture.setOnItemClickListener(new AdapterView.OnItemClickListener() {

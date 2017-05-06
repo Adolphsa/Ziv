@@ -56,7 +56,7 @@ public class MessageMapShow extends BaseActivity {
     private void initView(){
         // 标题
         TextView txtTitle = (TextView) findViewById(R.id.tv_title);
-        txtTitle.setText("信息详情");
+        txtTitle.setText(R.string.mms_title);
 
         //返回按钮
         Button btnBack = (Button) findViewById(R.id.btn_back);
@@ -79,10 +79,10 @@ public class MessageMapShow extends BaseActivity {
     }
 
     private void initData(){
-        mmsTvAlarmType.setText("震动类型 : " + dataBean.getTitle());
-        mmsTvAddress.setText("地        址 : " + dataBean.getAddress());
-        mmsTvAddressDescribe.setText("地址详情 : " + dataBean.getAddress_desc());
-        mmsTvAlarmTime.setText("时        间 : " + dataBean.getTime());
+        mmsTvAlarmType.setText(getString(R.string.mms_shock_type) + dataBean.getTitle());
+        mmsTvAddress.setText(getString(R.string.mms_address) + dataBean.getAddress());
+        mmsTvAddressDescribe.setText(getString(R.string.mms_add) + dataBean.getAddress_desc());
+        mmsTvAlarmTime.setText(getString(R.string.mms_time) + dataBean.getTime());
 
         LatLng latLng = new LatLng(dataBean.getLat(),dataBean.getLon());
         LatLng convertLatLon =  GPSConverterUtils.gpsToBaidu(latLng);

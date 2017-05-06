@@ -55,7 +55,7 @@ public class AddDevice extends BaseActivity {
     private void initView() {
         // 标题
         TextView txtTitle = (TextView) findViewById(R.id.tv_title);
-        txtTitle.setText("添加设备");
+        txtTitle.setText(R.string.add_device_title);
 
         //返回按钮
         Button btnBack = (Button) findViewById(R.id.btn_back);
@@ -95,7 +95,7 @@ public class AddDevice extends BaseActivity {
         String code = spf.getString("two_code", "");
         System.out.println("二维码是：" + code);
         if (code.isEmpty()) {
-            ToastShow.showToast(AddDevice.this, "请先添加二维码");
+            ToastShow.showToast(AddDevice.this, getString(R.string.add_device_two_code));
             return;
         }
         JSONObject json = new JSONObject();
@@ -135,7 +135,7 @@ public class AddDevice extends BaseActivity {
 
                         final String devid = json.getString("deviceid");
                         System.out.println("devid---" + devid);
-                        DialogUtils.showPrompt(AddDevice.this, "提示", "绑定设备成功,请设置车牌号和别名", "确定", new DialogInterface.OnClickListener() {
+                        DialogUtils.showPrompt(AddDevice.this, getString(R.string.add_device_tips), getString(R.string.add_device_bind_ok), getString(R.string.add_device_ensure), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 //删除已保存的二维码
@@ -146,7 +146,7 @@ public class AddDevice extends BaseActivity {
                             }
                         });
                     } else if (!AddDevice.this.isFinishing() && status == Urls.STATUS_CODE_403) {
-                        DialogUtils.showPrompt(AddDevice.this, "提示", "绑定设备失败,无权限，token错误", "确定", new DialogInterface.OnClickListener() {
+                        DialogUtils.showPrompt(AddDevice.this, getString(R.string.add_device_tips), getString(R.string.add_device_token), getString(R.string.add_device_ensure), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
@@ -154,7 +154,7 @@ public class AddDevice extends BaseActivity {
                         });
 
                     }else if (!AddDevice.this.isFinishing() && status == Urls.STATUS_CODE_404) {
-                        DialogUtils.showPrompt(AddDevice.this, "提示", "绑定设备失败，用户不存在或者设备不存在", "确定", new DialogInterface.OnClickListener() {
+                        DialogUtils.showPrompt(AddDevice.this, getString(R.string.add_device_tips), getString(R.string.add_device_no_user), getString(R.string.add_device_ensure), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
@@ -163,7 +163,7 @@ public class AddDevice extends BaseActivity {
 
                     }else if (!AddDevice.this.isFinishing() && status == Urls.STATUS_CODE_405){
                         System.out.println("绑定结果---" + result);
-                        DialogUtils.showPrompt(AddDevice.this, "提示", "绑定设备失败，二维码不正确", "确定", new DialogInterface.OnClickListener() {
+                        DialogUtils.showPrompt(AddDevice.this, getString(R.string.add_device_tips), getString(R.string.add_device_error_two_code), getString(R.string.add_device_ensure), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
@@ -171,7 +171,7 @@ public class AddDevice extends BaseActivity {
                         });
                     }else if (!AddDevice.this.isFinishing() && status == Urls.STATUS_CODE_406){
                         System.out.println("绑定结果---" + result);
-                        DialogUtils.showPrompt(AddDevice.this, "提示", "绑定设备失败，已被他人绑定", "确定", new DialogInterface.OnClickListener() {
+                        DialogUtils.showPrompt(AddDevice.this, getString(R.string.add_device_tips), getString(R.string.add_device_has_binded), getString(R.string.add_device_ensure), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
@@ -179,7 +179,7 @@ public class AddDevice extends BaseActivity {
                         });
                     }else if (!AddDevice.this.isFinishing() && status == Urls.STATUS_CODE_500){
                         System.out.println("绑定结果---" + result);
-                        DialogUtils.showPrompt(AddDevice.this, "提示", "绑定设备失败，数据库错误", "确定", new DialogInterface.OnClickListener() {
+                        DialogUtils.showPrompt(AddDevice.this, getString(R.string.add_device_tips), getString(R.string.add_device_database_error), getString(R.string.add_device_ensure), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
@@ -190,7 +190,7 @@ public class AddDevice extends BaseActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                     if (!AddDevice.this.isFinishing()) {
-                        DialogUtils.showPrompt(AddDevice.this, "提示", "绑定设备失败，数据解析失败", "确定", new DialogInterface.OnClickListener() {
+                        DialogUtils.showPrompt(AddDevice.this, getString(R.string.add_device_tips), getString(R.string.add_device_json_error), getString(R.string.add_device_ensure), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
@@ -205,7 +205,7 @@ public class AddDevice extends BaseActivity {
             public void onError(Throwable ex, boolean isOnCallback) {
                 System.out.println("绑定设备--" + ex);
                 if (!AddDevice.this.isFinishing()) {
-                    DialogUtils.showPrompt(AddDevice.this, "提示", "绑定设备失败,网络错误,请检查网络", "确定", new DialogInterface.OnClickListener() {
+                    DialogUtils.showPrompt(AddDevice.this, getString(R.string.add_device_tips), getString(R.string.add_device_network_error), getString(R.string.add_device_ensure), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
@@ -231,12 +231,12 @@ public class AddDevice extends BaseActivity {
     private void getFormDialog(final String usrname, final String devid){
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(false);
-        builder.setTitle("设置车牌号和别名(可选)");//设置标题
+        builder.setTitle(R.string.add_device_setting_carid);//设置标题
         View view = LayoutInflater.from(this).inflate(R.layout.layout_form_dialog,null);
         final EditText etCarid = (EditText) view.findViewById(R.id.et_carid);//车牌号
         final EditText etAlias = (EditText) view.findViewById(R.id.et_alias);//别名
         builder.setView(view);//给对话框设置布局
-        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getString(R.string.add_device_ensure), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 //点击确定按钮的操作
@@ -254,7 +254,7 @@ public class AddDevice extends BaseActivity {
                 System.out.println("alias---" + alias);
             }
         });
-        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.add_device_cancle, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 System.out.println("设置车牌号和别名取消");
@@ -311,7 +311,7 @@ public class AddDevice extends BaseActivity {
                     int status = json.getInt("status");
                     if (200 == status){
                         if (!AddDevice.this.isFinishing()){
-                            DialogUtils.showPrompt(AddDevice.this, "提示", "设置车牌号和别名成功", "确定", new DialogInterface.OnClickListener() {
+                            DialogUtils.showPrompt(AddDevice.this, getString(R.string.add_device_tips), getString(R.string.add_device_setting_ok), getString(R.string.add_device_ensure), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
@@ -332,7 +332,7 @@ public class AddDevice extends BaseActivity {
             public void onError(Throwable ex, boolean isOnCallback) {
                 System.out.println("设置车牌号错误");
                 if (!AddDevice.this.isFinishing()) {
-                    DialogUtils.showPrompt(AddDevice.this, "提示", "设置车牌号失败", "确定", new DialogInterface.OnClickListener() {
+                    DialogUtils.showPrompt(AddDevice.this, getString(R.string.add_device_tips), getString(R.string.add_device_setting_fail), getString(R.string.add_device_ensure), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();

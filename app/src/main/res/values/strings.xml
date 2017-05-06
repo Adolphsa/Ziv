@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">360车宝</string>
-    <string name="app_version">1.0.0.1.0428</string>
+    <string name="app_version">1.0.0.1.0506</string>
 
     <!--mainActivity-->
     <string name="main_tab_bar_one">我的车</string>
@@ -9,6 +9,7 @@
     <string name="main_tab_bar_four">我</string>
     <string name="main_exit">再按一次退出程序</string>
 
+    <!--findPassword-->
     <string name="find_password_yzm">获取验证码</string>
     <string name="find_password_reset">重置密码</string>
     <string name="find_password_input_phone">请输入手机号码</string>
@@ -18,10 +19,89 @@
     <string name="find_password_reset_pwd_ok">重置密码成功</string>
     <string name="find_password_reset_pwd_fail">重置密码失败</string>
     <string name="find_password_yzm_no_ok">验证码不正确，请重新输入</string>
+
+    <!--register-->
     <string name="register_title">注册</string>
     <string name="register_pwd">请输入密码</string>
     <string name="register_ok">注册成功</string>
     <string name="register_phone_is_exist">手机号已被注册</string>
     <string name="register_data_error">数据库错误</string>
+    <string name="about_title">关于</string>
+
+    <!--add_device-->
+    <string name="add_device_title">添加设备</string>
+    <string name="add_device_two_code">请先添加二维码</string>
+    <string name="add_device_tips">提示</string>
+    <string name="add_device_bind_ok">绑定设备成功,请设置车牌号和别名</string>
+    <string name="add_device_ensure">确定</string>
+    <string name="add_device_token">绑定设备失败,无权限，token错误</string>
+    <string name="add_device_no_user">绑定设备失败，用户不存在或者设备不存在</string>
+    <string name="add_device_error_two_code">绑定设备失败，二维码不正确</string>
+    <string name="add_device_has_binded">绑定设备失败，已被他人绑定</string>
+    <string name="add_device_database_error">绑定设备失败，数据库错误</string>
+    <string name="add_device_json_error">绑定设备失败，数据解析失败</string>
+    <string name="add_device_network_error">绑定设备失败,网络错误,请检查网络</string>
+    <string name="add_device_setting_carid">设置车牌号和别名(可选)</string>
+    <string name="add_device_cancle">取消</string>
+    <string name="add_device_setting_ok">设置车牌号和别名成功</string>
+    <string name="add_device_setting_fail">设置车牌号失败</string>
+
+    <!--car_info-->
+    <string name="car_info_title">车辆信息</string>
+    <string name="car_info_voltage">"电压:   "</string>
+
+    <!--car_location-->
+    <string name="car_location_title">车辆定位</string>
+    <string name="car_location_no_data">暂无数据</string>
+
+    <!--fence-->
+    <string name="fence_title">电子围栏</string>
+    <string name="fence_no_map_data">暂无地图数据</string>
+    <string name="fence_choose_centre">请点击地图选择围栏中心点</string>
+    <string name="fence_ensure_center">电子围栏中心点确认</string>
+    <string name="fence_setting_radius">设置半径和围栏名称</string>
+    <string name="fence_no_radius">围栏半径不能为空</string>
+    <string name="fence_no_name">围栏名称不能为空</string>
+    <string name="fence_setting_ok">电子围栏设置成功</string>
+    <string name="fence_no_fence">还没有设置围栏</string>
+    <string name="fence_no_location_data">暂无定位数据</string>
+
+    <!--light_color-->
+    <string name="light_title">灯光设置</string>
+
+    <!--message_map_show-->
+    <string name="mms_title">信息详情</string>
+    <string name="mms_shock_type">"震动类型 : "</string>
+    <string name="mms_address">"地        址 : "</string>
+    <string name="mms_add">"地址详情 : "</string>
+    <string name="mms_time">"时        间 : "</string>
+    <string name="my_account_title">我的账号</string>
+    <string name="my_device_title">我的设备</string>
+    <string name="my_device_unbind_device">解绑设备</string>
+    <string name="my_device_setting_carid">设置车牌号</string>
+    <string name="my_device_has_changed">已切换</string>
+    <string name="my_device_unbind_ok">解绑成功</string>
+    <string name="my_device_unbind_fail">解绑失败，用户不存在或者设备不存在</string>
+    <string name="my_device_json_error">解绑失败，json解析或网络异常</string>
+    <string name="my_device_setting_alias">设置车牌号和别名(可选)</string>
+    <string name="my_device_setting_alias_ok">设置车牌号和别名成功</string>
+    <string name="my_device_carid_fail">设置车牌号失败</string>
+    <string name="my_device_error">出错啦</string>
+    <string name="my_picture_title">我的图片</string>
+    <string name="my_picture_year">年</string>
+    <string name="my_picture_month">月</string>
+    <string name="my_picture_day">日</string>
+    <string name="rts_title">图片抓拍</string>
+    <string name="rts_device_offline">设备不在线</string>
+    <string name="rts_snap_fail">抓图失败</string>
+    <string name="rts_no_storage">存储空间不足</string>
+    <string name="rts_image_has_saved">图片已保存</string>
+    <string name="rts_refresh_image">请先刷新图片</string>
+    <string name="rts_snaping">正在抓图中...</string>
+    <string name="tq_title">轨迹查询</string>
+    <string name="tq_no_data">当前查询无数据</string>
+    <string name="tq_data_no">无数据</string>
+    <string name="tqdc_title">选择查询时间</string>
+    <string name="rts_share_image">分享</string>
 
 </resources>

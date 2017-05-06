@@ -74,7 +74,7 @@ public class MyDevice extends BaseActivity {
 
         // 标题
         TextView txtTitle = (TextView) findViewById(R.id.tv_title);
-        txtTitle.setText("我的设备");
+        txtTitle.setText(R.string.my_device_title);
 
         //返回按钮
         Button btnBack = (Button) findViewById(R.id.btn_back);
@@ -115,7 +115,7 @@ public class MyDevice extends BaseActivity {
             SwipeMenuItem deleteItem = new SwipeMenuItem(MyDevice.this)
                     .setBackgroundDrawable(R.drawable.selector_red)
                     .setImage(R.mipmap.ic_action_close) // 图标。
-                    .setText("解绑设备") // 文字。
+                    .setText(getString(R.string.my_device_unbind_device)) // 文字。
                     .setTextColor(Color.WHITE) // 文字颜色。
                     .setTextSize(15) // 文字大小。
                     .setWidth(width)
@@ -126,7 +126,7 @@ public class MyDevice extends BaseActivity {
             SwipeMenuItem caridAndAliasItem = new SwipeMenuItem(MyDevice.this)
                     .setBackgroundDrawable(R.drawable.selector_blue)
                     .setImage(R.mipmap.ic_set_carid) // 图标。
-                    .setText("设置车牌号") // 文字。
+                    .setText(getString(R.string.my_device_setting_carid)) // 文字。
                     .setTextColor(Color.WHITE) // 文字颜色。
                     .setTextSize(15) // 文字大小。
                     .setWidth(width)
@@ -142,7 +142,7 @@ public class MyDevice extends BaseActivity {
             System.out.println("devinfoBean---" + devinfoBean.toString());
             spf.edit().putString("devid",devinfoBean.getDevid()).apply();
             devid = spf.getString("devid","");
-            ToastShow.showToast(MyDevice.this,"已切换");
+            ToastShow.showToast(MyDevice.this,getString(R.string.my_device_has_changed));
             swipeMenuRecyclerView.setAdapter(mMenuAdapter);
         }
     };
@@ -210,7 +210,7 @@ public class MyDevice extends BaseActivity {
                     JSONObject json = new JSONObject(result);
                     int status = json.getInt("status");
                     if (200 == status){
-                        ToastShow.showToast(MyDevice.this,"解绑成功");
+                        ToastShow.showToast(MyDevice.this,getString(R.string.my_device_unbind_ok));
                         //删除devid
                         spf.edit().remove("devid").apply();
 
@@ -222,9 +222,9 @@ public class MyDevice extends BaseActivity {
                         mLogin.getDeviceInfo(username,spf);
 
                     }else if (400 == status){
-                        ToastShow.showToast(MyDevice.this,"解绑失败，用户不存在或者设备不存在");
+                        ToastShow.showToast(MyDevice.this,getString(R.string.my_device_unbind_fail));
                     }else {
-                        ToastShow.showToast(MyDevice.this,"解绑失败，用户不存在或者设备不存在");
+                        ToastShow.showToast(MyDevice.this,getString(R.string.my_device_unbind_fail));
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -233,7 +233,7 @@ public class MyDevice extends BaseActivity {
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
-                ToastShow.showToast(MyDevice.this,"解绑失败，json解析或网络异常");
+                ToastShow.showToast(MyDevice.this,getString(R.string.my_device_json_error));
             }
 
             @Override
@@ -252,14 +252,14 @@ public class MyDevice extends BaseActivity {
     private void showFormDialog(final String usrname, final String devid){
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(false);
-        builder.setTitle("设置车牌号和别名(可选)");//设置标题
+        builder.setTitle(R.string.my_device_setting_alias);//设置标题
         View view = LayoutInflater.from(this).inflate(R.layout.layout_form_dialog,null);
         TextView tvTips = (TextView) view.findViewById(R.id.et_tips);
         tvTips.setVisibility(View.GONE);    //设置小标题隐藏
         final EditText etCarid = (EditText) view.findViewById(R.id.et_carid);//车牌号
         final EditText etAlias = (EditText) view.findViewById(R.id.et_alias);//别名
         builder.setView(view);//给对话框设置布局
-        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getString(R.string.add_device_ensure), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 //点击确定按钮的操作
@@ -279,7 +279,7 @@ public class MyDevice extends BaseActivity {
 
             }
         });
-        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(getString(R.string.add_device_cancle), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 System.out.println("设置车牌号和别名取消");
@@ -338,7 +338,7 @@ public class MyDevice extends BaseActivity {
                     int status = json.getInt("status");
                     if (200 == status){
                         if (!MyDevice.this.isFinishing()){
-                            DialogUtils.showPrompt(MyDevice.this, "提示", "设置车牌号和别名成功", "确定", new DialogInterface.OnClickListener() {
+                            DialogUtils.showPrompt(MyDevice.this, getString(R.string.add_device_tips), getString(R.string.my_device_setting_alias_ok), getString(R.string.add_device_ensure), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
@@ -358,7 +358,7 @@ public class MyDevice extends BaseActivity {
             public void onError(Throwable ex, boolean isOnCallback) {
                 System.out.println("设置车牌号错误");
                 if (!MyDevice.this.isFinishing()) {
-                    DialogUtils.showPrompt(MyDevice.this, "提示", "设置车牌号失败", "确定", new DialogInterface.OnClickListener() {
+                    DialogUtils.showPrompt(MyDevice.this, getString(R.string.add_device_tips), getString(R.string.my_device_carid_fail), getString(R.string.add_device_ensure), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
@@ -446,7 +446,7 @@ public class MyDevice extends BaseActivity {
             devinfoList = deviceInfoBean.getDevinfo();
             return devinfoList;
         }else {
-            ToastShow.showToast(MyDevice.this,"出错啦");
+            ToastShow.showToast(MyDevice.this,getString(R.string.my_device_error));
             return null;
         }
     }

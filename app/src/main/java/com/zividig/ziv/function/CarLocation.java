@@ -80,7 +80,7 @@ public class CarLocation extends BaseActivity {
 
         // 标题
         TextView txtTitle = (TextView) findViewById(R.id.tv_title);
-        txtTitle.setText("车辆定位");
+        txtTitle.setText(R.string.car_location_title);
 
         //返回按钮
         Button btnBack = (Button) findViewById(R.id.btn_back);
@@ -253,7 +253,7 @@ public class CarLocation extends BaseActivity {
                     @Override
                     public void call(Throwable throwable) {
                         System.out.println("地图异常---" + throwable.getMessage());
-                        DialogUtils.showPrompt(CarLocation.this, "提示", "暂无数据", "确定", new DialogInterface.OnClickListener() {
+                        DialogUtils.showPrompt(CarLocation.this, getString(R.string.add_device_tips), getString(R.string.car_location_no_data), getString(R.string.add_device_ensure), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 finish();

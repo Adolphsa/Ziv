@@ -28,7 +28,7 @@ public class MyAccountInfo extends BaseActivity {
 
         // 标题
         TextView txtTitle = (TextView) findViewById(R.id.tv_title);
-        txtTitle.setText("我的账号");
+        txtTitle.setText(R.string.my_account_title);
 
         //返回按钮
         Button btnBack = (Button) findViewById(R.id.btn_back);

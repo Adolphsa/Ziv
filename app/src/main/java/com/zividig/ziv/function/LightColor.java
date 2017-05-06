@@ -27,7 +27,7 @@ public class LightColor extends BaseActivity implements View.OnClickListener{
     private void initView(){
         // 标题
         TextView txtTitle = (TextView) findViewById(R.id.tv_title);
-        txtTitle.setText("灯光设置");
+        txtTitle.setText(R.string.light_title);
 
         //返回按钮
         Button btnBack = (Button) findViewById(R.id.btn_back);

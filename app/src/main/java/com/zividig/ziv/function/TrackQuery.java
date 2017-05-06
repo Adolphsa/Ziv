@@ -87,7 +87,7 @@ public class TrackQuery extends BaseActivity {
     private void initView(){
         // 标题
         TextView txtTitle = (TextView) findViewById(R.id.tv_title);
-        txtTitle.setText("轨迹查询");
+        txtTitle.setText(R.string.tq_title);
 
         //返回按钮
         Button btnBack = (Button) findViewById(R.id.btn_back);
@@ -170,7 +170,7 @@ public class TrackQuery extends BaseActivity {
                         }
                     }else {
                         if (!TrackQuery.this.isFinishing()){
-                            DialogUtils.showPrompt(TrackQuery.this, "提示", "当前查询无数据", "确定", new DialogInterface.OnClickListener() {
+                            DialogUtils.showPrompt(TrackQuery.this, getString(R.string.add_device_tips), getString(R.string.tq_no_data), getString(R.string.add_device_ensure), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     finish();
@@ -187,7 +187,7 @@ public class TrackQuery extends BaseActivity {
             public void onError(Throwable ex, boolean isOnCallback) {
                 System.out.println("访问出错" + ex);
                 if (!TrackQuery.this.isFinishing()){
-                    DialogUtils.showPrompt(TrackQuery.this, "提示", "无数据", "确定", new DialogInterface.OnClickListener() {
+                    DialogUtils.showPrompt(TrackQuery.this,getString(R.string.add_device_tips), getString(R.string.tq_data_no), getString(R.string.add_device_ensure), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             finish();

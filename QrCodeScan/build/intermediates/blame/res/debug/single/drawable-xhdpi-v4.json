@@ -1,11 +1,11 @@
 [
     {
-        "merged": "F:\\github\\Android\\Ziv\\QrCodeScan\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi-v4\\ic_launcher.png",
-        "source": "F:\\github\\Android\\Ziv\\QrCodeScan\\src\\main\\res\\drawable-xhdpi\\ic_launcher.png"
-    },
-    {
         "merged": "F:\\github\\Android\\Ziv\\QrCodeScan\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi-v4\\selector_zx_button.xml",
         "source": "F:\\github\\Android\\Ziv\\QrCodeScan\\src\\main\\res\\drawable-xhdpi\\selector_zx_button.xml"
+    },
+    {
+        "merged": "F:\\github\\Android\\Ziv\\QrCodeScan\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi-v4\\ic_launcher.png",
+        "source": "F:\\github\\Android\\Ziv\\QrCodeScan\\src\\main\\res\\drawable-xhdpi\\ic_launcher.png"
     },
     {
         "merged": "F:\\github\\Android\\Ziv\\QrCodeScan\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi-v4\\scan_mask.png",

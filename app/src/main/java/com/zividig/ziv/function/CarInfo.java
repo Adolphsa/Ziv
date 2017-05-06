@@ -64,7 +64,7 @@ public class CarInfo extends BaseActivity {
 
         // 标题
         TextView txtTitle = (TextView) findViewById(R.id.tv_title);
-        txtTitle.setText("车辆信息");
+        txtTitle.setText(R.string.car_info_title);
 
         //返回按钮
         Button btnBack = (Button) findViewById(R.id.btn_back);
@@ -199,7 +199,7 @@ public class CarInfo extends BaseActivity {
                         System.out.println("电压---" + infoBean.getVoltage());
                         if (infoBean != null){
                             String voltage = infoBean.getVoltage();
-                            tvVoltage.setText("电压:   " + voltage + "V");
+                            tvVoltage.setText(getString(R.string.car_info_voltage) + voltage + "V");
                         }
                     }
                 }, new Action1<Throwable>() {

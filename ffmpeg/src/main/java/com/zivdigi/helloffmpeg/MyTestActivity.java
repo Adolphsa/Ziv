@@ -49,6 +49,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
 
+import cn.sharerec.recorder.Recorder;
+import cn.sharerec.recorder.impl.GLRecorder;
+
 import static com.zivdigi.helloffmpeg.R.id.mta_fullScreen;
 
 public class MyTestActivity extends FragmentActivity implements View.OnClickListener {
@@ -85,14 +88,16 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
 
     private TestDecoder td;                 //jni数据传递类
     private MyGLRenderer myGLRenderer;      //Opengl ES  Render
-    private GLSurfaceView glSurfaceView;    //视频显示控件
+    private MyGLSurfaceView glSurfaceView;    //视频显示控件
     private TextView mTitle;
     private RelativeLayout playToolsBottom;
     private RelativeLayout playToolstop;
     private ProgressBar mCycleProgressBar;  //圆形进度条
     private Button mPlay;                   //播放按钮
+    private Button VideoRecord;
     private VideoPlayTask mVideoPlayTask;
     private Context mContext;
+    private int videoRecordTemp = 0;
 
     GestureDetector mGestureDetector = null;
 
@@ -165,6 +170,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
         mTitle = (TextView) findViewById(R.id.mat_tv);
         playToolsBottom = (RelativeLayout) findViewById(R.id.mta_rl);
         playToolstop = (RelativeLayout) findViewById(R.id.mta_rl_top);
+        VideoRecord = (Button) findViewById(R.id.ffmpeg_record);
         mCycleProgressBar = (ProgressBar) findViewById(R.id.mta_recycle_pb); //圆形进度条
 
         //播放按钮
@@ -176,8 +182,9 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
         back.setOnClickListener(this);
         Button screenshot = (Button) findViewById(R.id.mta_screenshot);  //截图
         screenshot.setOnClickListener(this);
+        VideoRecord.setOnClickListener(this);
 
-        glSurfaceView = (GLSurfaceView) findViewById(R.id.play_view);
+        glSurfaceView = (MyGLSurfaceView) findViewById(R.id.play_view);
 
         DisplayMetrics display = new DisplayMetrics();  //窗口适配信息
         getWindowManager().getDefaultDisplay().getMetrics(display);//将当前窗口的一些信息放在DisplayMetrics类中，
@@ -266,6 +273,11 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
     protected void onRestart() {
         super.onRestart();
         mCycleProgressBar.setVisibility(View.VISIBLE);
@@ -340,6 +352,43 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
             System.out.println("截图设置为真");
         } else if (id == R.id.mta_btn_back) { //返回
             finish();
+        }else if (id == R.id.ffmpeg_record){    //视频录制
+
+            GLRecorder recorder = glSurfaceView.getRecorder();
+
+            // 设置视频的最大尺寸
+            recorder.setMaxFrameSize(Recorder.LevelMaxFrameSize.LEVEL_1280_720);
+            // 设置视频的质量（高、中、低）
+            recorder.setVideoQuality(Recorder.LevelVideoQuality.LEVEL_HIGH);
+            // 设置视频的最短时长
+            recorder.setMinDuration(10 * 1000);
+
+            File zivFile = new File(Environment.getExternalStorageDirectory(), "Ziv"); //创建Ziv文件夹
+            File videoFile = new File(zivFile, "video");
+            String aa = videoFile.getAbsolutePath();
+            System.out.println("录制文件地址" + aa);
+            // 设置视频的输出路径
+            recorder.setCacheFolder(aa);
+            // 设置是否强制使用软件编码器对视频进行编码（兼容性更高）
+            recorder.setForceSoftwareEncoding(true, true);
+
+            if (recorder.isAvailable()){
+                if (videoRecordTemp == 0){
+                    //开启录制
+                    System.out.println("开启录制");
+                    recorder.startRecorder();
+                    VideoRecord.setText("停止录制");
+                    videoRecordTemp = 1;
+                }else if (videoRecordTemp == 1){
+                    videoRecordTemp = 0;
+                    recorder.stopRecorder();
+                    System.out.println("停止录制");
+                    VideoRecord.setText("开始录制");
+
+                    recorder.showShare();
+                }
+
+            }
         }
     }
 

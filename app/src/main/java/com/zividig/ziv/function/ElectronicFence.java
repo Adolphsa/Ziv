@@ -99,7 +99,7 @@ public class ElectronicFence extends BaseActivity {
 
         // 标题
         TextView txtTitle = (TextView) findViewById(R.id.tv_title);
-        txtTitle.setText("电子围栏");
+        txtTitle.setText(R.string.fence_title);
 
         //返回按钮
         Button btnBack = (Button) findViewById(R.id.btn_back);
@@ -137,7 +137,7 @@ public class ElectronicFence extends BaseActivity {
     public void initMap(Double lat,Double lon){
         if (lat == 0 && lon == 0){
             if (once){
-                ToastShow.showToast(ElectronicFence.this,"暂无地图数据");
+                ToastShow.showToast(ElectronicFence.this,getString(R.string.fence_no_map_data));
                 once = false;
             }
 
@@ -173,7 +173,7 @@ public class ElectronicFence extends BaseActivity {
      */
     private void setFenceCentrePoint(){
 
-        ToastShow.showToast(this,"请点击地图选择围栏中心点");
+        ToastShow.showToast(this,getString(R.string.fence_choose_centre));
         mBaiduMap.setOnMapClickListener(new BaiduMap.OnMapClickListener() {
             @Override
             public void onMapClick(final LatLng latLng) {
@@ -187,9 +187,9 @@ public class ElectronicFence extends BaseActivity {
                 //中心点确认对话框
                 if (!ElectronicFence.this.isFinishing()) {
                     DialogUtils.showPrompt2(ElectronicFence.this,
-                            "提示",
-                            "电子围栏中心点确认",
-                            "确定",
+                            getString(R.string.add_device_tips),
+                            getString(R.string.fence_ensure_center),
+                            getString(R.string.add_device_ensure),
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -202,7 +202,7 @@ public class ElectronicFence extends BaseActivity {
                                     System.out.println("地图点击的lat---" + lat + "\n---lon" + lon);
                                 }
                             },
-                            "取消",
+                            getString(R.string.add_device_cancle),
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -228,12 +228,12 @@ public class ElectronicFence extends BaseActivity {
     private void showFenceDialog(){
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(false);
-        builder.setTitle("设置半径和围栏名称");//设置标题
+        builder.setTitle(R.string.fence_setting_radius);//设置标题
         View view = LayoutInflater.from(this).inflate(R.layout.layout_fence_dialog,null);
         final EditText etFenceRadius = (EditText) view.findViewById(R.id.et_fence_radius);//围栏半径
         final EditText etFenceName = (EditText) view.findViewById(R.id.et_fence_name);//围栏名称
         builder.setView(view);//给对话框设置布局
-        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getString(R.string.add_device_ensure), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
 
@@ -254,7 +254,7 @@ public class ElectronicFence extends BaseActivity {
 
             }
         });
-        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(getString(R.string.add_device_cancle), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 System.out.println("取消设置围栏半径和名称");
@@ -271,11 +271,11 @@ public class ElectronicFence extends BaseActivity {
      */
     private boolean checkFenceMessage(String fenceRadius,String fenceName){
         if (TextUtils.isEmpty(fenceRadius)){
-            ToastShow.showToast(ElectronicFence.this,"围栏半径不能为空");
+            ToastShow.showToast(ElectronicFence.this,getString(R.string.fence_no_radius));
             return false;
         }
         if (TextUtils.isEmpty(fenceName)){
-            ToastShow.showToast(ElectronicFence.this,"围栏名称不能为空");
+            ToastShow.showToast(ElectronicFence.this,getString(R.string.fence_no_name));
             return false;
         }
         return true;
@@ -317,7 +317,7 @@ public class ElectronicFence extends BaseActivity {
                         JSONObject json = new JSONObject(result);
                         int status = json.getInt("status");
                         if (200 == status){
-                            ToastShow.showToast(ElectronicFence.this,"电子围栏设置成功");
+                            ToastShow.showToast(ElectronicFence.this,getString(R.string.fence_setting_ok));
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -392,7 +392,7 @@ public class ElectronicFence extends BaseActivity {
                             showCircleOverlay(new LatLng(latTemp,lonTemp),radius);
 
                         }else {
-                            ToastShow.showToast(ElectronicFence.this,"还没有设置围栏");
+                            ToastShow.showToast(ElectronicFence.this,getString(R.string.fence_no_fence));
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -495,7 +495,7 @@ public class ElectronicFence extends BaseActivity {
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        ToastShow.showToast(ElectronicFence.this,"暂无定位数据");
+                        ToastShow.showToast(ElectronicFence.this,getString(R.string.fence_no_location_data));
                     }
                 });
     }

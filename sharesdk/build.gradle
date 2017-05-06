@@ -21,5 +21,5 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile files('libs/MobCommons-2016.0623.1641.jar')
+    compile files('libs/MobCommons-2017.0412.1554.jar')
 }

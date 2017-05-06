@@ -22,7 +22,7 @@ public class About extends BaseActivity {
 
         // 标题
         TextView txtTitle = (TextView) findViewById(R.id.tv_title);
-        txtTitle.setText("关于");
+        txtTitle.setText(R.string.about_title);
 
         //返回按钮
         Button btnBack = (Button) findViewById(R.id.btn_back);

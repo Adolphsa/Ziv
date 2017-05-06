@@ -44,6 +44,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import cn.sharesdk.framework.ShareSDK;
+import cn.sharesdk.onekeyshare.OnekeyShare;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
@@ -69,6 +71,7 @@ public class RealTimeShow extends BaseActivity {
 
     private Button btRefresh;
     private Button btDownImage;
+    private Button btShraeImage;
 
     private String devid;
 
@@ -85,16 +88,21 @@ public class RealTimeShow extends BaseActivity {
     private SharedPreferences mSpf;
     private Dialog mDialog;
 
+    private String shareImageUrl;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         SDKInitializer.initialize(ZivApp.getInstance());
         setContentView(R.layout.acticity_real_time_show);
 
+        ShareSDK.initSDK(this); //初始化ShareSDK
+
         mContext = RealTimeShow.this;
+
         // 标题
-        TextView txtTitle = (TextView) findViewById(R.id.tv_title);
-        txtTitle.setText("图片抓拍");
+        TextView txtTitle = (TextView) findViewById(R.id.rts_tv_title);
+        txtTitle.setText(R.string.rts_title);
 
         mSpf = getSharedPreferences("config",MODE_PRIVATE);
         devid = mSpf.getString("devid","");
@@ -103,7 +111,7 @@ public class RealTimeShow extends BaseActivity {
         mSpf.edit().putBoolean("is_keeping_get_device_state",true).apply();
 
         //返回按钮
-        Button btnBack = (Button) findViewById(R.id.btn_back);
+        Button btnBack = (Button) findViewById(R.id.rts_btn_back);
         btnBack.setVisibility(View.VISIBLE);
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,9 +130,11 @@ public class RealTimeShow extends BaseActivity {
 
         btRefresh = (Button) findViewById(R.id.bt_refresh); //图片刷新
         btDownImage = (Button) findViewById(R.id.bt_downImage);  //图片下载
+        btShraeImage = (Button) findViewById(R.id.rts_share_image); //图片分享
 
         btRefresh.setOnClickListener(listener);
         btDownImage.setOnClickListener(listener);
+        btShraeImage.setOnClickListener(listener);
 
         RxgetDeviceState();
 
@@ -209,7 +219,7 @@ public class RealTimeShow extends BaseActivity {
                     @Override
                     public void call(Throwable throwable) {
                         if (!RealTimeShow.this.isFinishing()){
-                            DialogUtils.showPrompt(RealTimeShow.this, "提示", "设备不在线", "确定", new DialogInterface.OnClickListener() {
+                            DialogUtils.showPrompt(RealTimeShow.this, getString(R.string.add_device_tips), getString(R.string.rts_device_offline), getString(R.string.add_device_ensure), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
@@ -325,6 +335,7 @@ public class RealTimeShow extends BaseActivity {
                         String url = snapResponse.getUrl();
                         if (!TextUtils.isEmpty(url)){
                             System.out.println("停止轮询");
+                            shareImageUrl = url;
                             return true;
                         }
                         return false;
@@ -391,7 +402,7 @@ public class RealTimeShow extends BaseActivity {
                         progressBar.setVisibility(View.INVISIBLE);
                         closeDialog();
                         if (!RealTimeShow.this.isFinishing()) {
-                            DialogUtils.showPrompt(RealTimeShow.this, "提示", "抓图失败", "确定", new DialogInterface.OnClickListener() {
+                            DialogUtils.showPrompt(RealTimeShow.this, getString(R.string.add_device_tips), getString(R.string.rts_snap_fail), getString(R.string.add_device_ensure), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
@@ -408,7 +419,7 @@ public class RealTimeShow extends BaseActivity {
                             progressBar.setVisibility(View.INVISIBLE);
                             closeDialog();
                             if (!RealTimeShow.this.isFinishing()) {
-                                DialogUtils.showPrompt(RealTimeShow.this, "提示", "抓图失败", "确定", new DialogInterface.OnClickListener() {
+                                DialogUtils.showPrompt(RealTimeShow.this, getString(R.string.add_device_tips), getString(R.string.rts_snap_fail), getString(R.string.add_device_ensure), new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         dialog.dismiss();
@@ -430,7 +441,7 @@ public class RealTimeShow extends BaseActivity {
             long freeSpace = Environment.getExternalStorageDirectory().getFreeSpace();
             System.out.println("可用空间:" + freeSpace / 1000000 + "MB");
             if ((freeSpace / 1000000.0) < 1) {
-                Toast.makeText(RealTimeShow.this, "存储空间不足", Toast.LENGTH_SHORT).show();
+                Toast.makeText(RealTimeShow.this, R.string.rts_no_storage, Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -452,11 +463,11 @@ public class RealTimeShow extends BaseActivity {
 
             if (mBitmap != null){
                 Others.saveImageToGallery(mContext,mBitmap,file,target);
-                ToastShow.showToast(RealTimeShow.this,"图片已保存");
+                ToastShow.showToast(RealTimeShow.this,getString(R.string.rts_image_has_saved));
                 updateImage();
             }
         } else {
-            ToastShow.showToast(RealTimeShow.this,"请先刷新图片");
+            ToastShow.showToast(RealTimeShow.this,getString(R.string.rts_refresh_image));
         }
 
     }
@@ -478,7 +489,7 @@ public class RealTimeShow extends BaseActivity {
      */
     private void showProgressDialog(){
         if (mDialog == null && !RealTimeShow.this.isFinishing()){
-            mDialog = LoadingProgressDialog.createLoadingDialog(RealTimeShow.this,"正在抓图中...",true,false,null);
+            mDialog = LoadingProgressDialog.createLoadingDialog(RealTimeShow.this,getString(R.string.rts_snaping),true,false,null);
             mDialog.show();
         }
     }
@@ -508,14 +519,32 @@ public class RealTimeShow extends BaseActivity {
                 case R.id.bt_downImage:
                     downImage();
                     break;
+                case R.id.rts_share_image:
+                    shareImage();
+                    break;
             }
         }
     }
 
 
+    private void shareImage(){
+        if (TextUtils.isEmpty(shareImageUrl)){
+            ToastShow.showToast(this,"图片不存在，无法分享");
+        }else {
+            System.out.println("分享链接---" + shareImageUrl);
+            OnekeyShare oks = new OnekeyShare();
+            //关闭sso授权
+            oks.disableSSOWhenAuthorize();
+            oks.setImageUrl(shareImageUrl);//网络图片rul
+            // 启动分享GUI
+            oks.show(this);
+        }
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        ShareSDK.stopSDK(this);
         if (mSubscription != null){
             mSubscription.unsubscribe();
         }

@@ -8,7 +8,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <android.opengl.GLSurfaceView
+        <com.zivdigi.helloffmpeg.MyGLSurfaceView
             android:id="@+id/play_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -41,6 +41,19 @@
                 android:textColor="@android:color/holo_green_light"
                 android:visibility="visible"
                 android:layout_centerHorizontal="true"
+                />
+
+            <Button
+                android:id="@+id/ffmpeg_record"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="开始录制"
+                android:layout_alignParentRight="true"
+                android:background="@null"
+                android:layout_marginRight="10dp"
+                android:textSize="14.0sp"
+                android:textColor="@android:color/white"
+                android:visibility="visible"
                 />
         </RelativeLayout>
 
