@@ -46,9 +46,14 @@
 #shareSdk
 -keep class android.net.http.SslError
 -keep class android.webkit.**{*;}
+-dontwarn cn.sharesdk.**
 -keep class cn.sharesdk.**{*;}
 -keep class com.sina.**{*;}
 -keep class m.framework.**{*;}
+-dontwarn com.mob.**
+-keep class com.mob.**{*;}
+-dontwarn cn.sharerec.**
+-keep class cn.sharerec.**{*;}
 
 #百度地图
 -keep class com.baidu.** { *; }

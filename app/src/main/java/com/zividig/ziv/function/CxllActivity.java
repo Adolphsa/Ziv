@@ -1,8 +1,10 @@
 package com.zividig.ziv.function;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -17,6 +19,7 @@ import com.zividig.ziv.utils.SignatureUtils;
 public class CxllActivity extends BaseActivity {
 
     private WebView mWebView;
+    private SharedPreferences mSpf;
 
     Handler mHandler = new Handler(){
         @Override
@@ -35,6 +38,8 @@ public class CxllActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cxll);
+
+        mSpf = getSharedPreferences("config",MODE_PRIVATE);
 
         initView();
         initWebview();
@@ -60,6 +65,7 @@ public class CxllActivity extends BaseActivity {
     }
 
     private void initWebview(){
+
         mWebView.setWebViewClient(new WebViewClient(){
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -75,7 +81,7 @@ public class CxllActivity extends BaseActivity {
         // 设置缓存
         webSettings.setAppCacheEnabled(true);
         // 设置缓存模式,一共有四种模式
-        webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         // 设置缓存路径
 //        webSettings.setAppCachePath("");
         // 支持缩放(适配到当前屏幕)
@@ -92,8 +98,13 @@ public class CxllActivity extends BaseActivity {
         // 设置默认字体大小
         webSettings.setDefaultFontSize(12);
 
-        mWebView.loadUrl("http://api.zivdigi.com/app/flow/?devid=ZIV3C00010000AD0D43&token=" + SignatureUtils.token);
+        String devid = mSpf.getString("devid", null);
+        if (!TextUtils.isEmpty(devid)){
+            mWebView.loadUrl("http://api.zivdigi.com/app/flow/?devid=" + devid + "&token=" + SignatureUtils.token);
+            mWebView.addJavascriptInterface(new injectedObject(mHandler), "injectedObject");
+        }else {
+            System.out.println("设备ID为空");
+        }
 
-        mWebView.addJavascriptInterface(new injectedObject(mHandler), "injectedObject");
     }
 }

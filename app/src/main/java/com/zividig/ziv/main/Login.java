@@ -237,7 +237,7 @@ public class Login extends BaseActivity {
 
         final String user =  etUser.getText().toString().trim();  //获取账号
         final String password = etPassword.getText().toString().trim();  //获取密码
-       String getuiId = getCid();
+        String getuiId = getCid();
         System.out.println("clientID---" + getuiId);
 
         while (getuiId == null){
@@ -282,6 +282,7 @@ public class Login extends BaseActivity {
             //发起请求
             RequestParams params = HttpParamsUtils.setParams(Urls.LOGIN_URL,timestamp,noncestr,signature);
             params.setBodyContent(json.toString());
+            params.setConnectTimeout(1000*5);
             x.http().post(params, new Callback.CommonCallback<String>() {
 
                 @Override
@@ -369,6 +370,16 @@ public class Login extends BaseActivity {
      */
     public void getDeviceInfo(String user, final SharedPreferences configs){
         System.out.println("执行获取设备信息");
+
+        if (TextUtils.isEmpty(user)){
+            System.out.println("获取设备时user为空");
+            return;
+        }
+
+        if (TextUtils.isEmpty(SignatureUtils.token)){
+            System.out.println("获取设备时token为空");
+            return;
+        }
 
         //配置json数据
         JSONObject json = new JSONObject();

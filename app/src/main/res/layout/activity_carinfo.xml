@@ -157,7 +157,7 @@
             android:layout_height="wrap_content"
             android:padding="6dp"
             android:text="电压:   12V"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:textColor="@android:color/white"
             android:layout_marginLeft="30dp"
             />
@@ -167,8 +167,8 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/tv_voltage"
             android:padding="6dp"
-            android:text="水温:   15℃"
-            android:textSize="20sp"
+            android:text="水温:15℃"
+            android:textSize="18sp"
             android:textColor="@android:color/white"
             android:layout_marginLeft="90dp"
             />
