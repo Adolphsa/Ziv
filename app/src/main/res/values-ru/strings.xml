@@ -1,0 +1,106 @@
+<resources>
+    <string name="app_version">1.0.0.1.0512</string>
+
+    <!--mainActivity-->
+    <string name="main_tab_bar_one">Моя машина</string>
+    <string name="main_tab_bar_two">Сообщение</string>
+    <string name="main_tab_bar_three">Настройка</string>
+    <string name="main_tab_bar_four">Я</string>
+    <string name="main_exit">Нажимать один раз выйти из программы</string>
+
+    <!--findPassword-->
+    <string name="find_password_yzm">Получить код проверки</string>
+    <string name="find_password_reset">Сбросить пароль</string>
+    <string name="find_password_input_phone">Пожалуйста.Введите номер телефона </string>
+    <string name="find_password_input_password">Пожалуйста.Введите новую парль</string>
+    <string name="find_password_get_yzm_fail">Не удалось получить код проверки</string>
+    <string name="find_password_input_yzm">Пожалуйста. Введите код проверки</string>
+    <string name="find_password_reset_pwd_ok">Удалось сборить пароль</string>
+    <string name="find_password_reset_pwd_fail">Не удалось сборить пароль</string>
+    <string name="find_password_yzm_no_ok">Код проверки не верен，пожалуйста снова введите</string>
+
+    <!--register-->
+    <string name="register_title">Зарегистрация</string>
+    <string name="register_pwd">Пожалуйста. Введите пароль</string>
+    <string name="register_ok">Удалось зарегистрировать</string>
+    <string name="register_phone_is_exist">Номер телефона был зарегистрирован</string>
+    <string name="register_data_error">База данных не верна</string>
+    <string name="about_title">О</string>
+
+    <!--add_device-->
+    <string name="add_device_title">Добавить устройство</string>
+    <string name="add_device_two_code">Пожалуйста.сначала добавить QR-код</string>
+    <string name="add_device_tips">Внимание</string>
+    <string name="add_device_bind_ok">Успешно!Пожалуйста настроить номер машины и название</string>
+    <string name="add_device_ensure">ДА</string>
+    <string name="add_device_token">Не удалось добавить устройство.не исеет правно token не верно</string>
+    <string name="add_device_no_user">Не удалось добавить устройство. Пользователя не существует или устройства не существует </string>
+    <string name="add_device_error_two_code">Не удалось добавить устройство.QR-код не верен</string>
+    <string name="add_device_has_binded">Не удалось добавить устройство. Устройство был зарегистрирован </string>
+    <string name="add_device_database_error">Не удалось добавить устройство. база данных не верна</string>
+    <string name="add_device_json_error">Не удалось добавить устройство.Не удалось анализировать данные</string>
+    <string name="add_device_network_error">Не удалось добавить устройство.Интернер неправильный проверьте интернет. </string>
+    <string name="add_device_setting_carid">Настроить номер машины или название </string>
+    <string name="add_device_cancle">Отмена</string>
+    <string name="add_device_setting_ok">Успешно настроить номер машины и название</string>
+    <string name="add_device_setting_fail">Не удалось настроить номер машины</string>
+
+    <!--car_info-->
+    <string name="car_info_title">Информация о машине</string>
+    <string name="car_info_voltage">"Направление:   "</string>
+
+    <!--car_location-->
+    <string name="car_location_title">Автомобильное расположение</string>
+    <string name="car_location_no_data">Данных не существует</string>
+
+    <!--fence-->
+    <string name="fence_title">Электронный забор</string>
+    <string name="fence_no_map_data">Данных карты не существует</string>
+    <string name="fence_choose_centre">Пожалуйста.нажмите карту и выберите центр забора</string>
+    <string name="fence_ensure_center">Подтверждание центра забора</string>
+    <string name="fence_setting_radius">Установить радиус и название забора</string>
+    <string name="fence_no_radius">Радиус забора не может быть пустым</string>
+    <string name="fence_no_name">Радиус названия не может быть пустым</string>
+    <string name="fence_setting_ok">Удалось установить электронный забор</string>
+    <string name="fence_no_fence">Еще не установить электронный забор</string>
+    <string name="fence_no_location_data">Данных о расположении не существует</string>
+
+    <!--light_color-->
+    <string name="light_title">Освещение настройки</string>
+
+    <!--message_map_show-->
+    <string name="mms_title">Информация о детали</string>
+    <string name="mms_shock_type">"Типы вибрации : "</string>
+    <string name="mms_address">"Адрес : "</string>
+    <string name="mms_add">"Полный адрес : "</string>
+    <string name="mms_time">"Время : "</string>
+    <string name="my_account_title">Мой аккаунт</string>
+    <string name="my_device_title">МОе устройство</string>
+    <string name="my_device_unbind_device">Отвязать устройство</string>
+    <string name="my_device_setting_carid">Установить номер машины</string>
+    <string name="my_device_has_changed">Уже переключение已切换</string>
+    <string name="my_device_unbind_ok">Успешно отвязать</string>
+    <string name="my_device_unbind_fail">Не удалось отвязать.Пользователя не существуетили устройства не существует</string>
+    <string name="my_device_json_error">Не удалось отвязать，json анализа или интернет не верны</string>
+    <string name="my_device_setting_alias">Установить номер машины и название </string>
+    <string name="my_device_setting_alias_ok">Удалось установить номер машины и название</string>
+    <string name="my_device_carid_fail">Не удалось установить номер машины</string>
+    <string name="my_device_error">Ошибка</string>
+    <string name="my_picture_title">Мое фото</string>
+    <string name="my_picture_year">Год</string>
+    <string name="my_picture_month">Месяц</string>
+    <string name="my_picture_day">День</string>
+    <string name="rts_title">Снимок фотографии</string>
+    <string name="rts_device_offline">Оборудование не оплайн</string>
+    <string name="rts_snap_fail">Не удалось снимок фотографии</string>
+    <string name="rts_no_storage">Место недостаток для хранения</string>
+    <string name="rts_image_has_saved">Фото сохранены</string>
+    <string name="rts_refresh_image">Обновите фото </string>
+    <string name="rts_snaping">Снимает фото...</string>
+    <string name="tq_title">Отслеживает орбиту</string>
+    <string name="tq_no_data">В настоящее время нет данных поиска</string>
+    <string name="tq_data_no">Нет данных</string>
+    <string name="tqdc_title">Выбор времени поиска</string>
+
+
+</resources>

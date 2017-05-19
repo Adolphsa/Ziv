@@ -18,8 +18,9 @@ android {
         minSdkVersion 16
         targetSdkVersion 22
         versionCode 3
-        versionName "1.0.0.1-0221"
+        versionName "1.0.0.1-0512"
         signingConfig signingConfigs.config
+
         //参数说明
         manifestPlaceholders = [
                 GETUI_APP_ID : "Zalajf6AQ36E3Xw4c8YBq6",
@@ -43,7 +44,59 @@ android {
             signingConfig signingConfigs.config
         }
     }
+
     productFlavors {
+
+        ziv{
+            manifestPlaceholders = [str: "releaseStr", package_name: "com.zividig.ziv"]
+            applicationId "com.zividig.ziv"
+            resValue "string", "app_name", "360车宝"
+            resValue "bool", "isrRank", 'true'
+            manifestPlaceholders = [ENVIRONMENT: "app1",
+                                    app_icon   : "@mipmap/ziv_ic_icon",
+                                    BaiDu_Api_key_value: "siDzHaqLxC9hD6UIWLbqbUyBVmPx3Bm8"]
+
+        }
+
+        carboloo{
+            manifestPlaceholders = [str: "releaseStr", package_name: "com.zividig.carboloo"]
+            applicationId "com.zividig.carboloo"
+            resValue "string", "app_name", "车泊乐车宝"
+            resValue "bool", "isrRank", 'true'
+            manifestPlaceholders = [ENVIRONMENT: "app1",
+                                    app_icon   : "@mipmap/carboloo_icon",
+                                    BaiDu_Api_key_value: "PDS5HFw7UTjPX88tPaui1QLrwiL3LV7o"]
+
+        }
+
+        yca{
+            manifestPlaceholders = [str: "releaseStr", package_name: "com.zividig.yca"]
+            applicationId "com.zividig.yca"
+            resValue "string", "app_name", "亿车安车宝"
+            resValue "bool", "isrRank", 'true'
+            manifestPlaceholders = [ENVIRONMENT: "app1",
+                                    app_icon   : "@mipmap/yca_icon",
+                                    BaiDu_Api_key_value: "kidIEbuitWEeL1m0XS2mvyOj6EmCenDL"]
+
+        }
+
+        ht{
+            manifestPlaceholders = [str: "releaseStr", package_name: "com.zividig.ht"]
+            applicationId "com.zividig.ht"
+            resValue "string", "app_name", "航图视讯"
+            resValue "bool", "isrRank", 'true'
+            manifestPlaceholders = [ENVIRONMENT: "app1",
+                                    app_icon   : "@mipmap/ziv_ic_icon",
+                                    BaiDu_Api_key_value: "yHL3o5ZUiTRqqIvcAIWQSSW1ywg2l8Aw"]
+
+        }
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
     }
 
     greendao{

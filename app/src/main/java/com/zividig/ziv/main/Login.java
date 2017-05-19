@@ -93,6 +93,8 @@ public class Login extends BaseActivity {
         initGeTui();
     }
 
+
+
     private void initGeTui(){
         Log.d(TAG, "initializing sdk...");
 

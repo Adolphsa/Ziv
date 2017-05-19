@@ -49,9 +49,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
 
-import cn.sharerec.recorder.Recorder;
-import cn.sharerec.recorder.impl.GLRecorder;
-
 import static com.zivdigi.helloffmpeg.R.id.mta_fullScreen;
 
 public class MyTestActivity extends FragmentActivity implements View.OnClickListener {
@@ -88,7 +85,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
 
     private TestDecoder td;                 //jni数据传递类
     private MyGLRenderer myGLRenderer;      //Opengl ES  Render
-    private MyGLSurfaceView glSurfaceView;    //视频显示控件
+    private GLSurfaceView glSurfaceView;    //视频显示控件
     private TextView mTitle;
     private RelativeLayout playToolsBottom;
     private RelativeLayout playToolstop;
@@ -184,7 +181,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
         screenshot.setOnClickListener(this);
         VideoRecord.setOnClickListener(this);
 
-        glSurfaceView = (MyGLSurfaceView) findViewById(R.id.play_view);
+        glSurfaceView = (GLSurfaceView) findViewById(R.id.play_view);
 
         DisplayMetrics display = new DisplayMetrics();  //窗口适配信息
         getWindowManager().getDefaultDisplay().getMetrics(display);//将当前窗口的一些信息放在DisplayMetrics类中，
@@ -241,14 +238,10 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
 
         glSurfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
-            public void surfaceCreated(SurfaceHolder holder) {
-
-            }
+            public void surfaceCreated(SurfaceHolder holder) {}
 
             @Override
-            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
-            }
+            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
 
             @Override
             public void surfaceDestroyed(SurfaceHolder holder) {
@@ -314,9 +307,22 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mOrientation = newConfig.orientation;
+
+//        DisplayMetrics mDisplayMetrics = new DisplayMetrics();
+//        getWindowManager().getDefaultDisplay().getMetrics(mDisplayMetrics);
+//        int W = mDisplayMetrics.widthPixels;
+//        int H = mDisplayMetrics.heightPixels;
+
         if (mOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+//            System.out.println("横屏W---" + W + "H---" + H);
+//            glSurfaceView.getLayoutParams().width = W;
+//            glSurfaceView.getLayoutParams().height = H;
             show_tools();
         } else {
+//            System.out.println("竖屏W---" + W + "H---" + H);
+//            glSurfaceView.getLayoutParams().width = W;
+//            glSurfaceView.getLayoutParams().height = H;
+
             playToolstop.setVisibility(View.VISIBLE);
             playToolsBottom.setVisibility(View.VISIBLE);
             playToolsBottom.getLayoutParams().width = RelativeLayout.LayoutParams.MATCH_PARENT;
@@ -354,41 +360,41 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
             finish();
         }else if (id == R.id.ffmpeg_record){    //视频录制
 
-            GLRecorder recorder = glSurfaceView.getRecorder();
-
-            // 设置视频的最大尺寸
-            recorder.setMaxFrameSize(Recorder.LevelMaxFrameSize.LEVEL_1280_720);
-            // 设置视频的质量（高、中、低）
-            recorder.setVideoQuality(Recorder.LevelVideoQuality.LEVEL_HIGH);
-            // 设置视频的最短时长
-            recorder.setMinDuration(10 * 1000);
-
-            File zivFile = new File(Environment.getExternalStorageDirectory(), "Ziv"); //创建Ziv文件夹
-            File videoFile = new File(zivFile, "video");
-            String aa = videoFile.getAbsolutePath();
-            System.out.println("录制文件地址" + aa);
-            // 设置视频的输出路径
-            recorder.setCacheFolder(aa);
-            // 设置是否强制使用软件编码器对视频进行编码（兼容性更高）
-            recorder.setForceSoftwareEncoding(true, true);
-
-            if (recorder.isAvailable()){
-                if (videoRecordTemp == 0){
-                    //开启录制
-                    System.out.println("开启录制");
-                    recorder.startRecorder();
-                    VideoRecord.setText("停止录制");
-                    videoRecordTemp = 1;
-                }else if (videoRecordTemp == 1){
-                    videoRecordTemp = 0;
-                    recorder.stopRecorder();
-                    System.out.println("停止录制");
-                    VideoRecord.setText("开始录制");
-
-                    recorder.showShare();
-                }
-
-            }
+//            GLRecorder recorder = glSurfaceView.getRecorder();
+//
+//            // 设置视频的最大尺寸
+//            recorder.setMaxFrameSize(Recorder.LevelMaxFrameSize.LEVEL_1280_720);
+//            // 设置视频的质量（高、中、低）
+//            recorder.setVideoQuality(Recorder.LevelVideoQuality.LEVEL_HIGH);
+//            // 设置视频的最短时长
+//            recorder.setMinDuration(5 * 1000);
+//
+//            File zivFile = new File(Environment.getExternalStorageDirectory(), "Ziv"); //创建Ziv文件夹
+//            File videoFile = new File(zivFile, "video");
+//            String aa = videoFile.getAbsolutePath();
+//            System.out.println("录制文件地址" + aa);
+//            // 设置视频的输出路径
+//            recorder.setCacheFolder(aa);
+//            // 设置是否强制使用软件编码器对视频进行编码（兼容性更高）
+//            recorder.setForceSoftwareEncoding(true, true);
+//
+//            if (recorder.isAvailable()){
+//                if (videoRecordTemp == 0){
+//                    //开启录制
+//                    System.out.println("开启录制");
+//                    recorder.startRecorder();
+//                    VideoRecord.setText("停止录制");
+//                    videoRecordTemp = 1;
+//                }else if (videoRecordTemp == 1){
+//                    videoRecordTemp = 0;
+//                    recorder.stopRecorder();
+//                    System.out.println("停止录制");
+//                    VideoRecord.setText("开始录制");
+//
+//                    recorder.showShare();
+//                }
+//
+//            }
         }
     }
 
@@ -517,8 +523,9 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
                     }
                     surfaceChanged = false;
                     myGLRenderer.update(fb.pix, fb.width, fb.height);//更新视频数据(刷新GLSufaceView)
+//                    System.out.println("视频宽---" + fb.width + "视频高---" + fb.height);
                 } else {
-                    SystemClock.sleep(60);
+                    SystemClock.sleep(10);
                 }
             }
         }
@@ -633,10 +640,12 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
                             hide_tools();
                             Log.i(TAG, "onTouch: 隐藏");
                         } else {
-                            if (MyGLRenderer.ChangeScale == 0.5f) {
-                                show_tools();
-                                Log.i(TAG, "onTouch: 显示");
-                            }
+                            Log.i(TAG, "onTouch: 显示");
+                            show_tools();
+//                            if (MyGLRenderer.ChangeScale == 0.5f) {
+//
+//                                Log.i(TAG, "onTouch: 显示");
+//                            }
                         }
 
                     }

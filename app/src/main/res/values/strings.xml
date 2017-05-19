@@ -1,6 +1,29 @@
 <resources>
-    <string name="app_name">360车宝</string>
-    <string name="app_version">1.0.0.1.0506</string>
+    <string name="app_version">1.0.0.1.0512</string>
+
+    <!--MyCarFragment-->
+    <string name="mcf_snap">图片抓拍</string>
+    <string name="mcf_video">实时视频</string>
+    <string name="mcf_car_info">车辆信息</string>
+    <string name="mcf_car_location">车辆定位</string>
+    <string name="mcf_fence">电子围栏</string>
+    <string name="mcf_weizhang">违章查询</string>
+    <string name="mcf_track">轨迹查询</string>
+    <string name="mcf_liuliang">流量充值</string>
+    <string name="mcf_my_car">我的车</string>
+    <string name="mcf_add_device">请先添加设备</string>
+    <string name="mcf_stdby">休眠</string>
+    <string name="mcf_device_off">设备不在线</string>
+    <string name="mcf_token_error">token错误</string>
+    <string name="mcf_device_no_exist">设备不存在</string>
+    <string name="mcf_connect_error">连接异常</string>
+    <string name="mcf_query_fail">查询失败</string>
+    <string name="mcf_id_null">ID为空</string>
+    <string name="mcf_normal">在线</string>
+    <string name="mcf_offing">下线中</string>
+    <string name="mcf_off">离线</string>
+    <string name="mcf_unknow">未知</string>
+    <string name="mcf_booting">启动中</string>
 
     <!--mainActivity-->
     <string name="main_tab_bar_one">我的车</string>
@@ -101,7 +124,7 @@
     <string name="tq_title">轨迹查询</string>
     <string name="tq_no_data">当前查询无数据</string>
     <string name="tq_data_no">无数据</string>
-    <string name="tqdc_title">选择查询时间</string>
+    <string name="tqdc_title" translatable="false">选择查询时间</string>
     <string name="rts_share_image">分享</string>
 
 </resources>

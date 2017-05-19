@@ -30,6 +30,7 @@ import com.zividig.ziv.bean.DeviceInfoBean;
 import com.zividig.ziv.function.AddDevice;
 import com.zividig.ziv.function.CarInfo;
 import com.zividig.ziv.function.CarLocation;
+import com.zividig.ziv.function.CxllActivity;
 import com.zividig.ziv.function.ElectronicFence;
 import com.zividig.ziv.function.RealTimeShow;
 import com.zividig.ziv.function.TrackQueryDateChoose;
@@ -78,7 +79,8 @@ public class MyCarFragment extends Fragment {
             "车辆定位",
             "电子围栏",
             "违章查询",
-            "轨迹查询"};
+            "轨迹查询",
+            "流量充值"};
 
     private int[] itemImages = {R.drawable.selector_real_time,
             R.drawable.select_real_video,
@@ -86,7 +88,8 @@ public class MyCarFragment extends Fragment {
             R.drawable.selector_car_location,
             R.drawable.selector_electric_fence,
             R.drawable.selector_car_manage,
-            R.drawable.selector_history_back};
+            R.drawable.selector_history_back,
+            R.drawable.selector_liuliang_chaxun};
 
     private String devId;
 
@@ -162,7 +165,7 @@ public class MyCarFragment extends Fragment {
                 mTitle.setText(tmp2);
             }
         } else {
-            mTitle.setText("我的车");
+            mTitle.setText(R.string.mcf_my_car);
         }
     }
 
@@ -232,7 +235,7 @@ public class MyCarFragment extends Fragment {
                         if (!devId.equals("")) {
                             getDeviceStatus(position);
                         } else {
-                            ToastShow.showToast(getContext(), "请先添加设备");
+                            ToastShow.showToast(getContext(), getString(R.string.mcf_add_device));
                         }
                         break;
                     case 1:
@@ -248,7 +251,7 @@ public class MyCarFragment extends Fragment {
                                 }
                                 secondTime = System.currentTimeMillis();
                             } else {
-                                ToastShow.showToast(getContext(), "请先添加设备");
+                                ToastShow.showToast(getContext(), getString(R.string.mcf_add_device));
                             }
 //                        }
                         break;
@@ -265,7 +268,7 @@ public class MyCarFragment extends Fragment {
                                 startActivity(new Intent(getContext(), CarLocation.class));
                             }
                         } else {
-                            ToastShow.showToast(getContext(), "请先添加设备");
+                            ToastShow.showToast(getContext(), getString(R.string.mcf_add_device));
                         }
                         break;
                     case 4:
@@ -278,7 +281,7 @@ public class MyCarFragment extends Fragment {
                                 startActivity(new Intent(getContext(), ElectronicFence.class));
                             }
                         } else {
-                            ToastShow.showToast(getContext(), "请先添加设备");
+                            ToastShow.showToast(getContext(), getString(R.string.mcf_add_device));
                         }
                         break;
                     case 5:
@@ -290,7 +293,14 @@ public class MyCarFragment extends Fragment {
                         if (!devId.equals("")) {
                             startActivity(new Intent(getContext(), TrackQueryDateChoose.class));
                         } else {
-                            ToastShow.showToast(getContext(), "请先添加设备");
+                            ToastShow.showToast(getContext(), getString(R.string.mcf_add_device));
+                        }
+                        break;
+                    case 7:
+                        if (!TextUtils.isEmpty(devId)){
+                            startActivity(new Intent(getContext(), CxllActivity.class));
+                        }else {
+                            ToastShow.showToast(getContext(), getString(R.string.mcf_add_device));
                         }
                         break;
                 }
@@ -461,19 +471,19 @@ public class MyCarFragment extends Fragment {
                                         RxStartVideo();
                                     }
                                 }else if (deviceStatus.equals("STDBY")) {
-                                    deviceState.setText("休眠");
-                                    ToastShow.showToast(getContext(), "设备不在线");
+                                    deviceState.setText(R.string.mcf_stdby);
+                                    ToastShow.showToast(getContext(), getString(R.string.mcf_device_off));
                                 } else if (deviceStatus.equals("OFF")) {
                                     deviceState.setText("离线");
-                                    ToastShow.showToast(getContext(), "设备不在线");
+                                    ToastShow.showToast(getContext(), getString(R.string.mcf_device_off));
                                 }else {
-                                    ToastShow.showToast(getContext(), "设备不在线");
+                                    ToastShow.showToast(getContext(), getString(R.string.mcf_device_off));
                                 }
                             }
                         }else if (status == 403){
-                            ToastShow.showToast(getContext(), "token错误");
+                            ToastShow.showToast(getContext(), getString(R.string.mcf_token_error));
                         }else if (status == 404){
-                            ToastShow.showToast(getContext(), "设备不存在");
+                            ToastShow.showToast(getContext(), getString(R.string.mcf_device_no_exist));
                         }
                     }
                 }, new Action1<Throwable>() {
@@ -507,11 +517,11 @@ public class MyCarFragment extends Fragment {
                             TestDecoder.setUrl(url);
                             getActivity().startActivity(new Intent(getContext(), MyTestActivity.class));
                         }else if (402 == status){
-                            ToastShow.showToast(getContext(), "设备不在线");
+                            ToastShow.showToast(getContext(), getString(R.string.mcf_device_off));
                         }else if (403 == status){
-                            ToastShow.showToast(getContext(), "连接异常");
+                            ToastShow.showToast(getContext(), getString(R.string.mcf_connect_error));
                         }else if (404 == status){
-                            ToastShow.showToast(getContext(), "设备不存在");
+                            ToastShow.showToast(getContext(), getString(R.string.mcf_device_no_exist));
                         }
 
                     }
@@ -563,9 +573,9 @@ public class MyCarFragment extends Fragment {
                                 System.out.println("查询失败");
                                 String devid = mSpf.getString("devid", null);
                                 if (devid != null){
-                                    deviceState.setText("查询失败");
+                                    deviceState.setText(R.string.mcf_query_fail);
                                 }else {
-                                    deviceState.setText("ID为空");
+                                    deviceState.setText(R.string.mcf_id_null);
                                 }
                                 retryCount = 0;
                                 setTitle();
@@ -598,17 +608,17 @@ public class MyCarFragment extends Fragment {
             if (infoBean != null) {
                 String workMode = infoBean.getWorkmode();
                 if (workMode.equals("NORMAL")) {
-                    deviceState.setText("在线");
+                    deviceState.setText(R.string.mcf_normal);
                 } else if (workMode.equals("OFFING")) {
-                    deviceState.setText("下线中");
+                    deviceState.setText(R.string.mcf_offing);
                 } else if (workMode.equals("STDBY")) {
-                    deviceState.setText("休眠");
+                    deviceState.setText(R.string.mcf_stdby);
                 } else if (workMode.equals("OFF")) {
-                    deviceState.setText("离线");
+                    deviceState.setText(R.string.mcf_off);
                 } else if (workMode.equals("UNKNOWN")) {
-                    deviceState.setText("未知");
+                    deviceState.setText(R.string.mcf_unknow);
                 } else if (workMode.equals("BOOTING")) {
-                    deviceState.setText("启动中");
+                    deviceState.setText(R.string.mcf_booting);
                 }
             }
         }

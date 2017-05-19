@@ -1,6 +1,8 @@
 package com.zividig.ziv.function;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -27,8 +29,14 @@ public class CxllActivity extends BaseActivity {
             super.handleMessage(msg);
             switch (msg.what){
                 case 1:
+                    System.out.println("打开系统浏览器handler");
                     String url = (String) msg.obj;
-                    new WebView(CxllActivity.this).loadUrl(url);
+//                    mWebView.loadUrl(url);
+                    Intent intent = new Intent();
+                    intent.setAction("android.intent.action.VIEW");
+                    Uri content_url = Uri.parse(url);
+                    intent.setData(content_url);
+                    startActivity(intent);
                     break;
             }
         }
@@ -40,6 +48,8 @@ public class CxllActivity extends BaseActivity {
         setContentView(R.layout.activity_cxll);
 
         mSpf = getSharedPreferences("config",MODE_PRIVATE);
+        //设置获取设备状态为真，以便在Activity销毁时能重新获取设备状态
+        mSpf.edit().putBoolean("is_keeping_get_device_state",true).apply();
 
         initView();
         initWebview();
@@ -69,8 +79,14 @@ public class CxllActivity extends BaseActivity {
         mWebView.setWebViewClient(new WebViewClient(){
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                view.loadUrl(url);
-                return false;// 返回false
+                if( url.startsWith("http:") || url.startsWith("https:") ) {
+                    return false;
+                }
+                try{
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    startActivity( intent );
+                }catch(Exception e){}
+                return true;
             }
         });
         WebSettings webSettings = mWebView.getSettings();

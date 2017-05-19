@@ -171,6 +171,9 @@ public class SettingFragment extends Fragment {
                             LogUtils.i("设置成推送");
                         }
                         break;
+//                    case 2:
+//                        startActivity(new Intent(getContext(), Language.class));
+//                        break;
                     case 2:
                         LogUtils.i("关于" + position);
                         startActivity(new Intent(getContext(), About.class));
@@ -553,6 +556,11 @@ public class SettingFragment extends Fragment {
                         holder.RightIcon.setImageResource(R.mipmap.switch_on);
                     }
                     break;
+//                case 2:
+//                    holder.leftIcon.setImageResource(R.mipmap.about);
+//                    holder.itemText.setText("语言");
+//                    holder.RightIcon.setImageResource(R.mipmap.rights);
+//                    break;
                 case 2:
                     holder.leftIcon.setImageResource(R.mipmap.about);
                     holder.itemText.setText("关于");

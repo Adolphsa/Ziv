@@ -209,6 +209,7 @@ public class MessageFragment extends Fragment {
 
             @Override
             public void onSuccess(String result) {
+//                System.out.println("震动消息---" + result);
                 Gson gson = new Gson();
                 MessageBean mb = gson.fromJson(result, MessageBean.class);
                 int status = mb.getStatus();

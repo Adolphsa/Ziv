@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:id="@+id/activity_language"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.zividig.ziv.function.Language">
+
+    <include layout="@layout/layout_titlebar"/>
+
+    <RadioGroup
+        android:id="@+id/lan_rg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/lan_chinese"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="chinese"
+            android:textSize="20sp"
+            android:textColor="@android:color/black"
+            android:padding="8dp"
+            />
+        <RadioButton
+            android:id="@+id/lan_russian"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="russian"
+            android:textSize="20sp"
+            android:textColor="@android:color/black"
+            android:padding="8dp"
+            />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/lan_sure"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:layout_gravity="center"
+        android:text="确定"
+        />
+
+</LinearLayout>

@@ -19,6 +19,7 @@ public class injectedObject {
 
     @JavascriptInterface
     public void openURL(String url){
+        System.out.println("openURL");
         Message message = mHandler.obtainMessage();
         message.what = 1;
         message.obj = url;

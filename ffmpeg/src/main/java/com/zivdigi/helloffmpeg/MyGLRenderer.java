@@ -156,12 +156,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         }
     }
 
-    public void test(){
-        System.out.println("问你");
-        prog.createBuffers(new float[]{-1.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f,
-               1.0f,});
-    }
-
     private int maxOffset = 100;
     private int viewportOffset;
     private int ScanlteX, ScanlteY;

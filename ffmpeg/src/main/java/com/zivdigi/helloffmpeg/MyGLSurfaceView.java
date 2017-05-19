@@ -29,4 +29,9 @@ public class MyGLSurfaceView extends SrecGLSurfaceView {
     protected String getShareRecAppSecret() {
         return "84d8ec628266535c0f6d9f16088affac";
     }
+
+    @Override
+    protected void onSizeChanged(int i, int i1, int i2, int i3) {
+        super.onSizeChanged(i, i1, i2, i3);
+    }
 }
