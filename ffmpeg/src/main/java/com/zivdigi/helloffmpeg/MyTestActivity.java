@@ -110,6 +110,8 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
                 case PLAY:
                     mCycleProgressBar.setVisibility(View.INVISIBLE);
                     mPlay.setText("暂停");
+                    playToolstop.setVisibility(View.VISIBLE);
+                    playToolsBottom.setVisibility(View.VISIBLE);
                     break;
 
                 case SHOW_TOOLS:
@@ -553,8 +555,8 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
         public boolean onTouch(View v, MotionEvent event) {
             mGestureDetector.onTouchEvent(event);
             boolean ret = false;
-            if (!isPlaying)
-                return ret;
+//            if (!isPlaying)
+//                return ret;
 
             switch (event.getAction() & MotionEvent.ACTION_MASK) {
                 //单点触碰按下动作
@@ -770,7 +772,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
             public void run() {
                 startVideo();
             }
-        }, 20 * 1000, 40 * 1000);
+        }, 20 * 1000, 20 * 1000);
 
         mVideoTimer.schedule(new TimerTask() {
             @Override

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_socket_test"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ffmpeg.SocketTest">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <android.opengl.GLSurfaceView
+            android:id="@+id/glview"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            />
+
+        <RelativeLayout
+            android:id="@+id/st_rl_top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#a0000000"
+            >
+            <Button
+                android:id="@+id/st_btn_back"
+                android:layout_width="55dp"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/ffmpeg_selector_back_button"
+                android:background="@null"
+                android:layout_marginLeft="5dp"
+                android:text="返回"
+                android:gravity="center_vertical"
+                android:textColor="@android:color/white"
+                android:textSize="14.0sp"
+                />
+            <TextView
+                android:id="@+id/st_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="WIFI直连"
+                android:textSize="22sp"
+                android:padding="10dp"
+                android:textColor="@android:color/holo_green_light"
+                android:visibility="visible"
+                android:layout_centerHorizontal="true"
+                />
+            <Button
+                android:id="@+id/st_fullScreen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="全屏"
+                android:textColor="@color/white"
+                android:layout_alignParentRight="true"
+                android:background="@android:color/transparent"
+                />
+        </RelativeLayout>
+
+    </FrameLayout>
+
+
+
+    <!--<Button-->
+        <!--android:id="@+id/bt_socket"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="连接"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:visibility="gone"-->
+        <!--/>-->
+    <!---->
+    <!--<Button-->
+        <!--android:id="@+id/bt_stop"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="停止"-->
+        <!--android:layout_toRightOf="@+id/read_file"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:visibility="gone"-->
+        <!--/>-->
+
+</RelativeLayout>

@@ -116,7 +116,7 @@ public class CxllActivity extends BaseActivity {
 
         String devid = mSpf.getString("devid", null);
         if (!TextUtils.isEmpty(devid)){
-            mWebView.loadUrl("http://api.zivdigi.com/app/flow/?devid=" + devid + "&token=" + SignatureUtils.token);
+            mWebView.loadUrl("https://api.zivdigi.com/app/flow/?devid=" + devid + "&token=" + SignatureUtils.token);
             mWebView.addJavascriptInterface(new injectedObject(mHandler), "injectedObject");
         }else {
             System.out.println("设备ID为空");

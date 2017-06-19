@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_version">1.0.0.1.0512</string>
+    <string name="app_version">1.0.0.1.0616</string>
 
     <!--MyCarFragment-->
     <string name="mcf_snap">图片抓拍</string>

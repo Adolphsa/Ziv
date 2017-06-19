@@ -96,6 +96,9 @@ public class CarLocation extends BaseActivity {
         mBaiduMap = mMapView.getMap();
         mBuilder = new MapStatus.Builder();
 
+//        LatLng tempTets = GPSConverterUtils.gpsToBaidu(new LatLng(22.549467,113.920565));
+//        System.out.println("测试经纬度---" + "lat---" + tempTets.latitude + "lon---" + tempTets.longitude);
+
         //设定地图的初始中心
         String stringLat = SharedPreferencesUtils.getString(CarLocation.this, "ziv_lat", "0.0");
         String stringLon = SharedPreferencesUtils.getString(CarLocation.this, "ziv_lon", "0.0");

@@ -107,6 +107,11 @@ public class SettingFragment extends Fragment {
                 switch (position){
                     case 0:
                         System.out.println("主机唤醒" + position);
+                        String devid = sp.getString("devid", null);
+                        if (TextUtils.isEmpty(devid)){
+                            ToastShow.showToast(getContext(),"设备ID为空");
+                            break;
+                        }
                         //连续点击不生效
                         if ((System.currentTimeMillis()- secondTime) > (2 * 1000)){
                             if (!SettingFragment.this.isHidden()){
@@ -349,6 +354,12 @@ public class SettingFragment extends Fragment {
                         String deviceState = infoBean.getWorkmode();
                         if (deviceState.equals("BOOTING")) {
                             LoadingProgressDialog.setTipText("主机正在启动中……");
+                            String voltage = infoBean.getVoltage();
+                            float voltageF = Float.parseFloat(voltage);
+                            if (voltageF < 11.6){
+                                System.out.println("车辆电瓶电压过低，可能无法唤醒主机");
+                                LoadingProgressDialog.setTipText("车辆电瓶电压过低，\n可能无法唤醒主机...");
+                            }
                             LogUtils.i("主机正在启动中……");
                         } else if (deviceState.equals("NORMAL")) {
                             LogUtils.d("onNext---主机在线了");
@@ -357,7 +368,7 @@ public class SettingFragment extends Fragment {
                                 mSubscription.unsubscribe();
                             }
                         } else if (deviceState.equals("WAKEFAIL")) {
-                            LoadingProgressDialog.setTipText("主机唤醒失败");
+                            LoadingProgressDialog.setTipText("车辆电瓶电压过低，无法唤醒");
                             LogUtils.i("主机唤醒失败");
                             isGetDeviceState = false;
                         }
@@ -366,6 +377,7 @@ public class SettingFragment extends Fragment {
                     @Override
                     public void call(Throwable throwable) {
                         LogUtils.i("RXJAVA---设备状态出错---" + throwable.getMessage());
+                        showStateInfo("网络异常");
                     }
                 }, new Action0() {
                     @Override

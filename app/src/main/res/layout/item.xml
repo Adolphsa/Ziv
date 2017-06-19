@@ -9,7 +9,9 @@
         android:id="@+id/iv_icon"
         android:layout_width="@dimen/item_height"
         android:layout_height="@dimen/item_height"
-        android:src="@mipmap/device" />
+        android:src="@mipmap/device"
+        android:layout_centerVertical="true"
+        />
 
     <!--设备ID-->
     <LinearLayout

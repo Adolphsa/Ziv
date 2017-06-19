@@ -27,6 +27,7 @@ import com.zivdigi.helloffmpeg.TestDecoder;
 import com.zividig.ndk_test.weizhang.activity.ViolationActivity;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.DeviceInfoBean;
+import com.zividig.ziv.ffmpeg.SocketTest;
 import com.zividig.ziv.function.AddDevice;
 import com.zividig.ziv.function.CarInfo;
 import com.zividig.ziv.function.CarLocation;
@@ -241,9 +242,9 @@ public class MyCarFragment extends Fragment {
                     case 1:
                         System.out.println("实时视频" + position);
                         //判断是否是设备WIFI
-//                        if (NetworkTypeUtils.getConnectWifiSsid(ZivApp.getInstance()).contains("ziv_")) {
-//                            WifiDirectUtils.WifiDirect(getContext(), MyTestActivity.class);
-//                        } else {
+                        if (NetworkTypeUtils.getConnectWifiSsid(ZivApp.getInstance()).contains("ziv_box_")) {
+                            startActivity(new Intent(getContext(), SocketTest.class));
+                        } else {
                             if (!devId.equals("")) {
                                 if ((System.currentTimeMillis() - secondTime) > (2 * 1000)) {
                                     System.out.println("大于2秒");
@@ -253,7 +254,7 @@ public class MyCarFragment extends Fragment {
                             } else {
                                 ToastShow.showToast(getContext(), getString(R.string.mcf_add_device));
                             }
-//                        }
+                       }
                         break;
                     case 2:
                         System.out.println("车辆信息" + position);

@@ -3,7 +3,6 @@ package com.zividig.ziv.main;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Process;
 
@@ -11,7 +10,6 @@ import com.baidu.mapapi.SDKInitializer;
 import com.xiaomi.mipush.sdk.MiPushClient;
 import com.zividig.ziv.bean.DaoMaster;
 import com.zividig.ziv.bean.DaoSession;
-import com.zividig.ziv.service.LogService;
 
 import org.xutils.x;
 
@@ -48,7 +46,7 @@ public class ZivApp extends Application{
         }
 
         //日志服务
-        startService(new Intent(this, LogService.class));
+//        startService(new Intent(this, LogService.class));
 
         System.out.println("application");
         if (instance == null) {

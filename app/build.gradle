@@ -50,7 +50,7 @@ android {
         ziv{
             manifestPlaceholders = [str: "releaseStr", package_name: "com.zividig.ziv"]
             applicationId "com.zividig.ziv"
-            resValue "string", "app_name", "360车宝"
+            resValue "string", "app_name", "智威路宝"
             resValue "bool", "isrRank", 'true'
             manifestPlaceholders = [ENVIRONMENT: "app1",
                                     app_icon   : "@mipmap/ziv_ic_icon",
@@ -86,8 +86,19 @@ android {
             resValue "string", "app_name", "航图视讯"
             resValue "bool", "isrRank", 'true'
             manifestPlaceholders = [ENVIRONMENT: "app1",
-                                    app_icon   : "@mipmap/ziv_ic_icon",
+                                    app_icon   : "@mipmap/ht_ic_icon",
                                     BaiDu_Api_key_value: "yHL3o5ZUiTRqqIvcAIWQSSW1ywg2l8Aw"]
+
+        }
+
+        smj{
+            manifestPlaceholders = [str: "releaseStr", package_name: "com.zividig.smj"]
+            applicationId "com.zividig.smj"
+            resValue "string", "app_name", "硕美嘉"
+            resValue "bool", "isrRank", 'true'
+            manifestPlaceholders = [ENVIRONMENT: "app1",
+                                    app_icon   : "@mipmap/ziv_ic_icon",
+                                    BaiDu_Api_key_value: "YOFd6UEPXVhgaxL5adlqwgPt4VIPwVDq"]
 
         }
     }

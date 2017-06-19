@@ -416,41 +416,49 @@ public class Login extends BaseActivity {
 
                     if (status == Urls.STATUS_CODE_200){
                         devinfoList = deviceInfoBean.getDevinfo(); //设备列表
-                        configs.edit().putString("device_info",result).apply();
-                        System.out.println("设备列表长度" + devinfoList.size());
-
-                        //如果devid为空则去获取设备列表的设备，否则读取本地缓存的devid
-                        if (configs.getString("devid","").equals("")){
-                            if (devinfoList.size() > 0){
-                                devid =   deviceInfoBean.getDevinfo().get(0).getDevid(); //设备ID
-                                configs.edit().putString("devid",devid).apply();
-                                System.out.println("devid为空的时候");
-                            }
-
+                        if (devinfoList.size() == 0){
+                            config.edit().remove("devid").apply();
+                            config.edit().remove("alarm_state").apply();
+                            config.edit().remove("device_info").apply();
                         }else {
-                            devid = configs.getString("devid","");
-                            String tmp;
-                            int count = 0;
-                            for (DeviceInfoBean.DevinfoBean devinfoBean: devinfoList){
-                                tmp = devinfoBean.getDevid();
-                                if (devid.equals(tmp)){
-                                    System.out.println("找到相等的");
-                                    break;
-                                }else {
-                                    count++;
-                                    System.out.println("没有相等的");
-                                    if (count == devinfoList.size()){
-                                        if (devinfoList.size() > 0){
-                                            devid =   deviceInfoBean.getDevinfo().get(0).getDevid(); //设备ID
-                                            configs.edit().putString("devid",devid).apply();
-                                        }else {
-                                            configs.edit().putString("devid","").apply();
-                                        }
+                            configs.edit().putString("device_info",result).apply();
+                            System.out.println("设备列表长度" + devinfoList.size());
 
+                            //如果devid为空则去获取设备列表的设备，否则读取本地缓存的devid
+                            if (configs.getString("devid","").equals("")){
+                                if (devinfoList.size() > 0){
+                                    devid =   deviceInfoBean.getDevinfo().get(0).getDevid(); //设备ID
+                                    configs.edit().putString("devid",devid).apply();
+                                    System.out.println("devid为空的时候");
+                                }
+
+                            }else {
+                                System.out.println("devid有缓存");
+                                devid = configs.getString("devid","");
+                                String tmp;
+                                int count = 0;
+                                for (DeviceInfoBean.DevinfoBean devinfoBean: devinfoList){
+                                    tmp = devinfoBean.getDevid();
+                                    if (devid.equals(tmp)){
+                                        System.out.println("找到相等的");
+                                        break;
+                                    }else {
+                                        count++;
+                                        System.out.println("没有相等的");
+                                        if (count == devinfoList.size()){
+                                            if (devinfoList.size() > 0){
+                                                devid =   deviceInfoBean.getDevinfo().get(0).getDevid(); //设备ID
+                                                configs.edit().putString("devid",devid).apply();
+                                            }else {
+                                                configs.edit().putString("devid","").apply();
+                                            }
+
+                                        }
                                     }
                                 }
                             }
                         }
+
                     }else if (status == Urls.STATUS_CODE_404){
                         System.out.println("用户不存在");
                     }
