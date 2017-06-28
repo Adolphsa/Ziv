@@ -50,7 +50,7 @@ android {
         ziv{
             manifestPlaceholders = [str: "releaseStr", package_name: "com.zividig.ziv"]
             applicationId "com.zividig.ziv"
-            resValue "string", "app_name", "智威路宝"
+            resValue "string", "app_name", "360车宝"
             resValue "bool", "isrRank", 'true'
             manifestPlaceholders = [ENVIRONMENT: "app1",
                                     app_icon   : "@mipmap/ziv_ic_icon",

@@ -3,6 +3,7 @@ package com.zividig.ziv.rxjava;
 import com.zividig.ziv.rxjava.model.DeviceStateResponse;
 import com.zividig.ziv.rxjava.model.DeviceWakeResponse;
 import com.zividig.ziv.rxjava.model.LocationResponse;
+import com.zividig.ziv.rxjava.model.LoginResponse;
 import com.zividig.ziv.rxjava.model.SnapResponse;
 import com.zividig.ziv.rxjava.model.VideoResponse;
 
@@ -24,6 +25,11 @@ import rx.Observable;
  */
 
 public interface ZivApi {
+
+    //登录
+    @Headers({"Content-Type: application/json","Accept: application/json"})
+    @POST("user/login")
+    Observable<LoginResponse> doLogin(@QueryMap Map<String, String> options, @Body RequestBody body);
 
     //获取设备状态
     @Headers({"Content-Type: application/json","Accept: application/json"})

@@ -117,7 +117,7 @@ public class MyDevice extends BaseActivity {
                     .setImage(R.mipmap.ic_action_close) // 图标。
                     .setText(getString(R.string.my_device_unbind_device)) // 文字。
                     .setTextColor(Color.WHITE) // 文字颜色。
-                    .setTextSize(15) // 文字大小。
+                    .setTextSize(13) // 文字大小。
                     .setWidth(width)
                     .setHeight(height);
             swipeRightMenu.addMenuItem(deleteItem);// 添加一个按钮到右侧侧菜单。
@@ -128,7 +128,7 @@ public class MyDevice extends BaseActivity {
                     .setImage(R.mipmap.ic_set_carid) // 图标。
                     .setText(getString(R.string.my_device_setting_carid)) // 文字。
                     .setTextColor(Color.WHITE) // 文字颜色。
-                    .setTextSize(15) // 文字大小。
+                    .setTextSize(13) // 文字大小。
                     .setWidth(width)
                     .setHeight(height);
             swipeRightMenu.addMenuItem(caridAndAliasItem);//添加第二个右侧按钮

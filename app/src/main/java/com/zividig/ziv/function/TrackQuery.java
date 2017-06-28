@@ -12,14 +12,13 @@ import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapStatus;
-import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
-import com.baidu.mapapi.model.LatLngBounds;
+import com.baidu.mapapi.utils.DistanceUtil;
 import com.google.gson.Gson;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.MapTrackBean;
@@ -47,6 +46,9 @@ import static com.zividig.ziv.utils.SignatureUtils.SIGNATURE_TOKEN;
  * 轨迹查询
  */
 public class TrackQuery extends BaseActivity {
+
+    private int[] distanceArr = new int[]{20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 25000, 50000, 100000, 200000, 500000, 1000000, 2000000, 5000000, 10000000};
+    private int[] levelArr = new int[]{21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3};
 
     BitmapDescriptor mapStart = BitmapDescriptorFactory
             .fromResource(R.mipmap.map_start);
@@ -211,22 +213,69 @@ public class TrackQuery extends BaseActivity {
      */
     private void showTrackInMap(List<MapTrackBean.LocationdataBean> locationdata){
 
-        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        LatLng sourceLatLng;
+        LatLng desLatLng;
+        boolean isSpilt = true;
+        List<LatLng> oneLatLng = new ArrayList<LatLng>();
+        List<LatLng> twoLatLng = new ArrayList<LatLng>();
 
-        for (MapTrackBean.LocationdataBean locationBean: locationdata) {
-//            System.out.println("lat:" + locationBean.getLat() + "--lon:" + locationBean.getLon());
-            LatLng sourceLatLng = new LatLng(locationBean.getLat(),locationBean.getLon());
-            //坐标转换
-            LatLng desLatLng = GPSConverterUtils.gpsToBaidu(sourceLatLng);
-            builder.include(desLatLng);
-            overLatLng.add(desLatLng);
+        for (int i = 0; i < locationdata.size()-1; i++) {
+
+                if ((Math.abs(locationdata.get(i).getTi() - locationdata.get(i+1).getTi()) < 600) && isSpilt)
+                {
+                    if (twoLatLng.size() > 2){
+                        splitData(twoLatLng);
+                        twoLatLng.clear();
+                    }
+                    sourceLatLng = new LatLng(locationdata.get(i).getLat(),locationdata.get(i).getLon());
+                    //坐标转换
+                    desLatLng = GPSConverterUtils.gpsToBaidu(sourceLatLng);
+                    oneLatLng.add(desLatLng);
+
+                }else {
+
+                    if (oneLatLng.size() > 2){
+                        sourceLatLng = new LatLng(locationdata.get(i).getLat(),locationdata.get(i).getLon());
+                        //坐标转换
+                        desLatLng = GPSConverterUtils.gpsToBaidu(sourceLatLng);
+                        oneLatLng.add(desLatLng);
+                        splitData(oneLatLng);
+                        oneLatLng.clear();
+                    }
+                    if (Math.abs(locationdata.get(i).getTi() - locationdata.get(i+1).getTi()) < 600){
+                        sourceLatLng = new LatLng(locationdata.get(i+1).getLat(),locationdata.get(i+1).getLon());
+                        //坐标转换
+                        desLatLng = GPSConverterUtils.gpsToBaidu(sourceLatLng);
+                        twoLatLng.add(desLatLng);
+                        isSpilt = false;
+                    }else {
+                        sourceLatLng = new LatLng(locationdata.get(i+1).getLat(),locationdata.get(i+1).getLon());
+                        //坐标转换
+                        desLatLng = GPSConverterUtils.gpsToBaidu(sourceLatLng);
+                        twoLatLng.add(desLatLng);
+                        isSpilt = true;
+                    }
+
+                }
         }
+        if (oneLatLng.size() > 2){
+            splitData(oneLatLng);
+            oneLatLng.clear();
+        }
+        if (twoLatLng.size() > 2){
+            splitData(twoLatLng);
+            twoLatLng.clear();
+        }
+        int tempLength = locationdata.size()/2;
+        setLevel(new LatLng(locationdata.get(0).getLat(),locationdata.get(0).getLon()),
+                new LatLng(locationdata.get(tempLength).getLat(),locationdata.get(tempLength).getLon()));
+    }
+
+    private void splitData(List<LatLng> overLatLng){
 
         System.out.println("标注的长度：" + overLatLng.size());
-        LatLng firstLatLng = GPSConverterUtils.gpsToBaidu(new LatLng(latitude,longitude));
+        LatLng firstLatLng = overLatLng.get(0);
         LatLng lastLatLng = overLatLng.get(overLatLng.size() - 1);
-        MapStatusUpdate u = MapStatusUpdateFactory.newLatLng(firstLatLng);
-        mBaiduMap.animateMapStatus(u);
 
         //构建用户绘制折线的Option对象
         polylineOption = new PolylineOptions()
@@ -248,14 +297,32 @@ public class TrackQuery extends BaseActivity {
                 .position(lastLatLng)
                 .icon(mapEnd).zIndex(9).draggable(true);
         mBaiduMap.addOverlay(markerEnd);
-
-        //缩放地图到合适的比例
-        LatLngBounds lngBounds = builder.build();
-        System.out.println("缩放地图");
-        u = MapStatusUpdateFactory.newLatLngBounds(lngBounds,mMapView.getWidth(),mMapView.getHeight());
-        mBaiduMap.animateMapStatus(u);
     }
 
+    //设置地图缩放级别
+    private void setLevel(LatLng llStart,LatLng llEnd) {
+        //起点： latitude纬度           longitude经度
+        if (llStart != null ) {
+            int distance = (int) DistanceUtil.getDistance(llStart, llEnd);
+            System.out.println("距离约" + distance + "米");
+            int level = getLevel(distance);
+            //设置缩放级别
+            mBaiduMap.setMapStatus(MapStatusUpdateFactory.newMapStatus(new MapStatus.Builder().zoom(levelArr[level]).build()));
+        }
+    }
+
+    //根据距离计算出差值数组,并排序（取正数）
+    private int getLevel(int distance) {
+        int level = -1;
+        int min = 10000000;
+        for (int i = 0; i < distanceArr.length; i++) {
+            if (distanceArr[i] - distance > 0 && distanceArr[i] - distance < min) {
+                min = distanceArr[i] - distance;
+                level = i;
+            }
+        }
+        return level;
+    }
 
     @Override
     protected void onPause() {

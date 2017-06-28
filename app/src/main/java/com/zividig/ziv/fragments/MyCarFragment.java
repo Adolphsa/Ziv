@@ -241,20 +241,27 @@ public class MyCarFragment extends Fragment {
                         break;
                     case 1:
                         System.out.println("实时视频" + position);
-                        //判断是否是设备WIFI
-                        if (NetworkTypeUtils.getConnectWifiSsid(ZivApp.getInstance()).contains("ziv_box_")) {
-                            startActivity(new Intent(getContext(), SocketTest.class));
-                        } else {
-                            if (!devId.equals("")) {
-                                if ((System.currentTimeMillis() - secondTime) > (2 * 1000)) {
-                                    System.out.println("大于2秒");
-                                    RxStartVideo();
-                                }
-                                secondTime = System.currentTimeMillis();
-                            } else {
-                                ToastShow.showToast(getContext(), getString(R.string.mcf_add_device));
+                        if (!devId.equals("")) {
+                            String devid = mSpf.getString("devid", null);
+                            String tmp = "";
+                            if (!TextUtils.isEmpty(devid)){
+                                tmp = devid.substring(devid.length() - 4, devid.length());
                             }
-                       }
+                            //判断是否是设备WIFI
+                            if (NetworkTypeUtils.getConnectWifiSsid(ZivApp.getInstance()).contains("ziv_box_"+tmp)) {
+                                startActivity(new Intent(getContext(), SocketTest.class));
+                            } else {
+
+                                    if ((System.currentTimeMillis() - secondTime) > (2 * 1000)) {
+                                        System.out.println("大于2秒");
+                                        RxStartVideo();
+                                    }
+                                    secondTime = System.currentTimeMillis();
+
+                           }
+                        } else {
+                            ToastShow.showToast(getContext(), getString(R.string.mcf_add_device));
+                        }
                         break;
                     case 2:
                         System.out.println("车辆信息" + position);

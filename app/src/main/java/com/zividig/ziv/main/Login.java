@@ -26,21 +26,32 @@ import com.zividig.ziv.bean.UsersDao;
 import com.zividig.ziv.customView.DropEditText;
 import com.zividig.ziv.customView.LoadingProgressDialog;
 import com.zividig.ziv.getui.GetuiPushService;
+import com.zividig.ziv.rxjava.ZivApiManage;
+import com.zividig.ziv.rxjava.model.LoginBody;
+import com.zividig.ziv.rxjava.model.LoginResponse;
 import com.zividig.ziv.utils.HttpParamsUtils;
+import com.zividig.ziv.utils.JsonUtils;
 import com.zividig.ziv.utils.MD5;
 import com.zividig.ziv.utils.SignatureUtils;
 import com.zividig.ziv.utils.ToastShow;
 import com.zividig.ziv.utils.Urls;
 import com.zividig.ziv.utils.UtcTimeUtils;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 import static com.zividig.ziv.utils.SignatureUtils.SIGNATURE_TOKEN;
 
@@ -63,6 +74,8 @@ public class Login extends BaseActivity {
     private SharedPreferences config;
     private CheckBox cbUser;
     private CheckBox cbPwd;
+    private String user;
+    private String password;
 
     private DeviceInfoBean deviceInfoBean;
     private static String devid;
@@ -206,7 +219,8 @@ public class Login extends BaseActivity {
         btLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    login();
+//                    login();
+             rxLogin();
             }
         });
 
@@ -232,138 +246,123 @@ public class Login extends BaseActivity {
         });
     }
 
-    /**
-     * 登录
-     */
-    private void login(){
+    //登录
+    private void rxLogin(){
 
-        final String user =  etUser.getText().toString().trim();  //获取账号
-        final String password = etPassword.getText().toString().trim();  //获取密码
+        //显示progress
+        showProgressDialog();
+
+        user =  etUser.getText().toString().trim();  //获取账号
+        if (TextUtils.isEmpty(user)){
+            ToastShow.showToast(Login.this,"用户名不能为空");
+            return;
+        }
+        password = etPassword.getText().toString().trim();  //获取密码
+        if (TextUtils.isEmpty(password)){
+            ToastShow.showToast(Login.this,"密码不能为空");
+            return;
+        }
         String getuiId = getCid();
         System.out.println("clientID---" + getuiId);
-
-        while (getuiId == null){
-            getuiCount++;
-            System.out.println("重复获取clienid" + getuiCount);
-            getuiId = getCid();
-            if (getuiCount > 5){
-                getuiCount = 0;
-                break;
-            }
-
-        }
 
         if (getuiId == null){
             ToastShow.showToast(this,"无法获取clientId,请退出应用重新登录");
             return;
         }
 
-        if (!TextUtils.isEmpty(user) && !TextUtils.isEmpty(password)){
-            //配置json数据
-            JSONObject json = new JSONObject();
-            try {
-                json.put("username",user);
-                json.put("password", MD5.getMD5(password));
-                json.put("getuiid",getuiId);
-            } catch (Exception e) {
-                e.printStackTrace();
+        //计算signature
+        String timestamp = UtcTimeUtils.getTimestamp();
+        String noncestr = HttpParamsUtils.getRandomString(10);
+        String signature = SignatureUtils.getSinnature(timestamp,
+                noncestr,
+                Urls.APP_KEY,
+                user,
+                MD5.getMD5(password),
+                getuiId);
+
+        //配置请求头
+        Map<String, String> options = new HashMap<>();
+        options.put(SignatureUtils.SIGNATURE_APP_KEY, Urls.APP_KEY);
+        options.put(SignatureUtils.SIGNATURE_TIMESTAMP, timestamp);
+        options.put(SignatureUtils.SIGNATURE_NONCESTTR, noncestr);
+        options.put(SignatureUtils.SIGNATURE_STRING, signature);
+
+        //配置请求体
+        LoginBody bodyObject = new LoginBody();
+        bodyObject.userName = user;
+        bodyObject.password = MD5.getMD5(password);
+        bodyObject.getuiId = getuiId;
+        String loginBody = JsonUtils.serialize(bodyObject);
+        RequestBody jsonBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), loginBody);
+
+        ZivApiManage.getInstance().getZivApiService()
+                .doLogin(options,jsonBody)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<LoginResponse>() {
+                    @Override
+                    public void call(LoginResponse loginResponse) {
+                        handleLoginResponse(loginResponse);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        System.out.println("登录请求错误" + throwable.getMessage());
+                        closeDialog();
+                        ToastShow.showToast(Login.this,"登录请求失败");
+                    }
+                });
+    }
+
+
+    //登录后的处理
+    private void handleLoginResponse(LoginResponse loginResponse){
+        int status = loginResponse.getStatus();
+        if ( Urls.STATUS_CODE_200 == status){
+            userNameIsChange(); //判断账号是否改换
+
+            //保存账号密码
+            config.edit().putString(ET_USER,user).apply();
+            config.edit().putString(ET_PWD,password).apply();
+
+            //保存在数据库，如果查询不到用户名就添加，否则值修改密码
+            Users users = mUsersDao.queryBuilder()
+                    .where(UsersDao.Properties.Username.eq(user))
+                    .build().unique();
+            if (users == null){
+                Users users1 = new Users(null,user,password);
+                mUsersDao.insert(users1);
+                System.out.println("添加账号密码到数据库");
+            }else {
+                users.setPassword(password);
+                mUsersDao.update(users);
+                System.out.println("只修改密码");
             }
 
-            showProgressDialog();
+            //保存token
+            SignatureUtils.token = loginResponse.getToken();
+            config.edit().putString("token",SignatureUtils.token).apply();
+            System.out.println("token---" + SignatureUtils.token);
 
-            //计算signature
-            String timestamp = UtcTimeUtils.getTimestamp();
-            String noncestr = HttpParamsUtils.getRandomString(10);
-            String signature = SignatureUtils.getSinnature(timestamp,
-                    noncestr,
-                    Urls.APP_KEY,
-                    user,
-                    MD5.getMD5(password),
-                    getuiId);
+            //保存推送免打扰开关状态
+            String alarmSwitchState = loginResponse.getAlarmStatus();
+            config.edit().putString("alarm_status",alarmSwitchState).apply();
 
-            //发起请求
-            RequestParams params = HttpParamsUtils.setParams(Urls.LOGIN_URL,timestamp,noncestr,signature);
-            params.setBodyContent(json.toString());
-            params.setConnectTimeout(1000*5);
-            x.http().post(params, new Callback.CommonCallback<String>() {
+            //进入主界面
+            enterMainActivity();
+            //获取设备信息
+            getDeviceInfo(user,config);
 
-                @Override
-                public void onSuccess(String result) {
-                    System.out.println("登录" + result);
-                    try {
-                        JSONObject json = new JSONObject(result);
-                        int status = json.getInt("status");
-                        if (status == Urls.STATUS_CODE_200){
-                            System.out.println("登录成功");
-
-                            userNameIsChange(); //判断账号是否改换
-
-                            //保存账号密码
-                            config.edit().putString(ET_USER,user).apply();
-                            config.edit().putString(ET_PWD,password).apply();
-
-                            //保存在数据库，如果查询不到用户名就添加，否则值修改密码
-                            Users users = mUsersDao.queryBuilder()
-                                    .where(UsersDao.Properties.Username.eq(user))
-                                    .build().unique();
-                            if (users == null){
-                                Users users1 = new Users(null,user,password);
-                                mUsersDao.insert(users1);
-                                System.out.println("添加账号密码到数据库");
-                            }else {
-                                users.setPassword(password);
-                                mUsersDao.update(users);
-                                System.out.println("只修改密码");
-                            }
-
-                            //保存token
-                            SignatureUtils.token = json.getString(SignatureUtils.SIGNATURE_TOKEN);
-                            config.edit().putString("token",SignatureUtils.token).apply();
-                            System.out.println("token---" + SignatureUtils.token);
-
-                            //保存推送免打扰开关状态
-                            String alarmSwitchState = json.getString("alarm_status");
-                            config.edit().putString("alarm_status",alarmSwitchState).apply();
-
-                            //进入主界面
-                            enterMainActivity();
-
-                        }else if (status == Urls.STATUS_CODE_403){
-                            System.out.println("登录失败");
-                            closeDialog();
-                            ToastShow.showToast(Login.this,"账号或密码错误");
-                        }else if (status == Urls.STATUS_CODE_404){
-                            closeDialog();
-                            ToastShow.showToast(Login.this,"手机号不存在");
-                        }else if (status == Urls.STATUS_CODE_500){
-                            closeDialog();
-                            ToastShow.showToast(Login.this,"数据库不存在");
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-
-                @Override
-                public void onError(Throwable ex, boolean isOnCallback) {
-                    System.out.println("登录请求错误" + ex);
-                    closeDialog();
-                    ToastShow.showToast(Login.this,"登录请求失败");
-
-                }
-
-                @Override
-                public void onCancelled(CancelledException cex) {}
-
-                @Override
-                public void onFinished() {
-                    //获取设备信息
-                    getDeviceInfo(user,config);
-                }
-            });
-        }else {
-            ToastShow.showToast(Login.this,"用户名或密码不能为空");
+        }else if (status == Urls.STATUS_CODE_403){
+            System.out.println("登录失败");
+            closeDialog();
+            ToastShow.showToast(Login.this,"账号或密码错误");
+        }else if (status == Urls.STATUS_CODE_404){
+            closeDialog();
+            ToastShow.showToast(Login.this,"手机号不存在");
+        }else if (status == Urls.STATUS_CODE_500){
+            closeDialog();
+            ToastShow.showToast(Login.this,"数据库不存在");
         }
     }
 

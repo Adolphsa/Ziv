@@ -52,6 +52,7 @@ public class DeviceStateResponse {
         private String workmode;
         private String voltage;
         private String csq;
+        private String type;
 
         public String getWorkmode() {
             return workmode;
@@ -77,13 +78,17 @@ public class DeviceStateResponse {
             this.csq = csq;
         }
 
+        public String getType() {return type;}
+
+        public void setType(String type) {this.type = type;}
+
         @Override
         public String toString() {
             return "InfoBean{" +
                     "workmode='" + workmode + '\'' +
                     ", voltage='" + voltage + '\'' +
-                    ", csq='" + csq + '\'' +
-                    '}';
+                    ", csq='" + csq + '\'' + ", type='" +
+                    type + '\'' + '}';
         }
     }
 }
