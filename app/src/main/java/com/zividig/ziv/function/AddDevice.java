@@ -259,7 +259,7 @@ public class AddDevice extends BaseActivity {
             public void onClick(DialogInterface dialogInterface, int i) {
                 System.out.println("设置车牌号和别名取消");
                 //获取设备列表信息
-                mLogin.getDeviceInfo(usrname,spf);
+                mLogin.getDeviceInfo();
                 startActivity(new Intent(AddDevice.this, MainActivity.class));
 
             }
@@ -316,7 +316,7 @@ public class AddDevice extends BaseActivity {
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
                                     //获取设备列表信息
-                                    mLogin.getDeviceInfo(username,spf);
+                                    mLogin.getDeviceInfo();
                                     spf.edit().putString("devid",devid).apply();
                                     startActivity(new Intent(AddDevice.this, MainActivity.class));
                                 }

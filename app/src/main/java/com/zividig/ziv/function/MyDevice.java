@@ -219,7 +219,7 @@ public class MyDevice extends BaseActivity {
                         mMenuAdapter.notifyItemRemoved(adapterPosition);
 
                         //重新获取设备信息列表
-                        mLogin.getDeviceInfo(username,spf);
+                        mLogin.getDeviceInfo();
 
                     }else if (400 == status){
                         ToastShow.showToast(MyDevice.this,getString(R.string.my_device_unbind_fail));

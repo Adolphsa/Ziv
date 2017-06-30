@@ -54,6 +54,7 @@ import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 import static com.zividig.ziv.utils.SignatureUtils.SIGNATURE_TOKEN;
+import static com.zividig.ziv.utils.SignatureUtils.token;
 
 /**
  * 登录界面
@@ -105,8 +106,6 @@ public class Login extends BaseActivity {
         initView();
         initGeTui();
     }
-
-
 
     private void initGeTui(){
         Log.d(TAG, "initializing sdk...");
@@ -219,8 +218,7 @@ public class Login extends BaseActivity {
         btLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                    login();
-             rxLogin();
+                rxLogin();
             }
         });
 
@@ -317,6 +315,7 @@ public class Login extends BaseActivity {
 
     //登录后的处理
     private void handleLoginResponse(LoginResponse loginResponse){
+
         int status = loginResponse.getStatus();
         if ( Urls.STATUS_CODE_200 == status){
             userNameIsChange(); //判断账号是否改换
@@ -340,9 +339,9 @@ public class Login extends BaseActivity {
             }
 
             //保存token
-            SignatureUtils.token = loginResponse.getToken();
-            config.edit().putString("token",SignatureUtils.token).apply();
-            System.out.println("token---" + SignatureUtils.token);
+            token = loginResponse.getToken();
+            config.edit().putString("token", token).apply();
+            System.out.println("token---" + token);
 
             //保存推送免打扰开关状态
             String alarmSwitchState = loginResponse.getAlarmStatus();
@@ -351,7 +350,7 @@ public class Login extends BaseActivity {
             //进入主界面
             enterMainActivity();
             //获取设备信息
-            getDeviceInfo(user,config);
+            getDeviceInfo();
 
         }else if (status == Urls.STATUS_CODE_403){
             System.out.println("登录失败");
@@ -369,7 +368,7 @@ public class Login extends BaseActivity {
     /**
      * 获取设备信息
      */
-    public void getDeviceInfo(String user, final SharedPreferences configs){
+    public void getDeviceInfo(){
         System.out.println("执行获取设备信息");
 
         if (TextUtils.isEmpty(user)){
@@ -377,7 +376,7 @@ public class Login extends BaseActivity {
             return;
         }
 
-        if (TextUtils.isEmpty(SignatureUtils.token)){
+        if (TextUtils.isEmpty(token)){
             System.out.println("获取设备时token为空");
             return;
         }
@@ -386,7 +385,7 @@ public class Login extends BaseActivity {
         JSONObject json = new JSONObject();
         try {
             json.put("username",user);
-            json.put(SIGNATURE_TOKEN, SignatureUtils.token);
+            json.put(SIGNATURE_TOKEN, token);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -398,11 +397,10 @@ public class Login extends BaseActivity {
                 noncestr,
                 Urls.APP_KEY,
                 user,
-                SignatureUtils.token);
+                token);
 
         RequestParams params = HttpParamsUtils.setParams(Urls.GET_DEVICE_LIST,timestamp,noncestr,signature);
         params.setBodyContent(json.toString());
-//        System.out.println(params.toString());
 
         x.http().post(params, new Callback.CommonCallback<String>() {
 
@@ -420,20 +418,20 @@ public class Login extends BaseActivity {
                             config.edit().remove("alarm_state").apply();
                             config.edit().remove("device_info").apply();
                         }else {
-                            configs.edit().putString("device_info",result).apply();
+                            config.edit().putString("device_info",result).apply();
                             System.out.println("设备列表长度" + devinfoList.size());
 
                             //如果devid为空则去获取设备列表的设备，否则读取本地缓存的devid
-                            if (configs.getString("devid","").equals("")){
+                            if (config.getString("devid","").equals("")){
                                 if (devinfoList.size() > 0){
                                     devid =   deviceInfoBean.getDevinfo().get(0).getDevid(); //设备ID
-                                    configs.edit().putString("devid",devid).apply();
+                                    config.edit().putString("devid",devid).apply();
                                     System.out.println("devid为空的时候");
                                 }
 
                             }else {
                                 System.out.println("devid有缓存");
-                                devid = configs.getString("devid","");
+                                devid = config.getString("devid","");
                                 String tmp;
                                 int count = 0;
                                 for (DeviceInfoBean.DevinfoBean devinfoBean: devinfoList){
@@ -447,9 +445,9 @@ public class Login extends BaseActivity {
                                         if (count == devinfoList.size()){
                                             if (devinfoList.size() > 0){
                                                 devid =   deviceInfoBean.getDevinfo().get(0).getDevid(); //设备ID
-                                                configs.edit().putString("devid",devid).apply();
+                                                config.edit().putString("devid",devid).apply();
                                             }else {
-                                                configs.edit().putString("devid","").apply();
+                                                config.edit().putString("devid","").apply();
                                             }
 
                                         }
