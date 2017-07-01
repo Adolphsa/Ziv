@@ -18,7 +18,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 22
         versionCode 3
-        versionName "1.0.0.1-0512"
+        versionName "1.0.0.1-0630"
         signingConfig signingConfigs.config
 
         //参数说明

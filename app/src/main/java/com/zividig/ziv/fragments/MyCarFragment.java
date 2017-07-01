@@ -27,6 +27,7 @@ import com.zivdigi.helloffmpeg.TestDecoder;
 import com.zividig.ndk_test.weizhang.activity.ViolationActivity;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.DeviceInfoBean;
+import com.zividig.ziv.customView.LoadingProgressDialog;
 import com.zividig.ziv.ffmpeg.SocketTest;
 import com.zividig.ziv.function.AddDevice;
 import com.zividig.ziv.function.CarInfo;
@@ -35,6 +36,7 @@ import com.zividig.ziv.function.CxllActivity;
 import com.zividig.ziv.function.ElectronicFence;
 import com.zividig.ziv.function.RealTimeShow;
 import com.zividig.ziv.function.TrackQueryDateChoose;
+import com.zividig.ziv.main.Login;
 import com.zividig.ziv.main.MainActivity;
 import com.zividig.ziv.main.ZivApp;
 import com.zividig.ziv.rxjava.ZivApiManage;
@@ -568,7 +570,7 @@ public class MyCarFragment extends Fragment {
                     .subscribe(new Action1<DeviceStateResponse>() {
                         @Override
                         public void call(DeviceStateResponse deviceStateResponse) {
-                            System.out.println("RXJAVA---设备状态---" + deviceStateResponse.getInfo().toString());
+//                            System.out.println("RXJAVA---设备状态---" + deviceStateResponse.getInfo().toString());
                             handDevideStateResponse(deviceStateResponse);
                             setTitle();
                         }
@@ -629,19 +631,21 @@ public class MyCarFragment extends Fragment {
                     deviceState.setText(R.string.mcf_booting);
                 }
             }
+        } else if (600 == status){
+            System.out.println("为600");
+            if (mSubscription != null){
+                mSubscription.unsubscribe();
+            }
+            mSpf.edit().putBoolean("is_keeping_get_device_state",true).apply();
+            dialog2 = LoadingProgressDialog.createLoadingDialog(getContext(), "账号已在其他地方登陆", false, true, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog2.dismiss();
+                    getContext().startActivity(new Intent(getContext(), Login.class));
+                }
+            });
+            dialog2.show();
         }
-//        else if (600 == status){
-//            dialog2 = LoadingProgressDialog.createLoadingDialog(getContext(), "账号已在其他地方登陆", false, true, new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    if (mSubscription != null){
-//                        mSubscription.unsubscribe();
-//                    }
-//                    dialog2.dismiss();
-//                    getContext().startActivity(new Intent(getContext(), Login.class));
-//                }
-//            });
-//        }
     }
 
     /**
