@@ -352,26 +352,40 @@ public class SettingFragment extends Fragment {
                         LogUtils.i("RXJAVA---设备状态---" + deviceStateResponse.getInfo().getWorkmode());
                         DeviceStateResponse.InfoBean infoBean = deviceStateResponse.getInfo();
                         String deviceState = infoBean.getWorkmode();
-                        if (deviceState.equals("BOOTING")) {
-                            LoadingProgressDialog.setTipText("主机正在启动中……");
-                            String voltage = infoBean.getVoltage();
-                            float voltageF = Float.parseFloat(voltage);
-                            if (voltageF < 11.6){
-                                System.out.println("车辆电瓶电压过低，可能无法唤醒主机");
-                                LoadingProgressDialog.setTipText("车辆电瓶电压过低，\n可能无法唤醒主机...");
+                        String voltage = infoBean.getVoltage();
+                        float voltageF = Float.parseFloat(voltage);
+                        if (voltageF < 11.6){
+                            System.out.println("车辆电瓶电压" + "(" + voltage + ")" + "过低，可能无法唤醒主机");
+                            if (deviceState.equals("STDBY")){
+                                LoadingProgressDialog.setTipText("车辆电瓶电压" + "(" + voltage + "V" + ")" + "过低\n\t\t\t可能无法唤醒主机...");
+                            }else if (deviceState.equals("BOOTING")){
+                                LoadingProgressDialog.setTipText("主机正在启动中……");
+                            }else if (deviceState.equals("NORMAL")) {
+                                showStateInfo("主机唤醒成功!");
+                                if (mSubscription != null){
+                                    mSubscription.unsubscribe();
+                                }
+                            } else if (deviceState.equals("WAKEFAIL")) {
+                                LoadingProgressDialog.setTipText("车辆电瓶电压过低，无法唤醒");
+                                isGetDeviceState = false;
                             }
-                            LogUtils.i("主机正在启动中……");
-                        } else if (deviceState.equals("NORMAL")) {
-                            LogUtils.d("onNext---主机在线了");
-                            showStateInfo("主机唤醒成功!");
-                            if (mSubscription != null){
-                                mSubscription.unsubscribe();
+                        }else {
+                            if (deviceState.equals("BOOTING")) {
+                                LoadingProgressDialog.setTipText("主机正在启动中……");
+                                LogUtils.i("主机正在启动中……");
+                            } else if (deviceState.equals("NORMAL")) {
+                                LogUtils.d("onNext---主机在线了");
+                                showStateInfo("主机唤醒成功!");
+                                if (mSubscription != null){
+                                    mSubscription.unsubscribe();
+                                }
+                            } else if (deviceState.equals("WAKEFAIL")) {
+                                LoadingProgressDialog.setTipText("车辆电瓶电压过低，无法唤醒");
+                                LogUtils.i("主机唤醒失败");
+                                isGetDeviceState = false;
                             }
-                        } else if (deviceState.equals("WAKEFAIL")) {
-                            LoadingProgressDialog.setTipText("车辆电瓶电压过低，无法唤醒");
-                            LogUtils.i("主机唤醒失败");
-                            isGetDeviceState = false;
                         }
+
                     }
                 }, new Action1<Throwable>() {
                     @Override

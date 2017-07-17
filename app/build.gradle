@@ -12,13 +12,13 @@ android {
         }
     }
     compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    buildToolsVersion '25.0.0'
     defaultConfig {
         applicationId "com.zividig.ziv"
         minSdkVersion 16
         targetSdkVersion 22
         versionCode 3
-        versionName "1.0.0.1-0630"
+        versionName "1.0.0.1-0707"
         signingConfig signingConfigs.config
 
         //参数说明
@@ -101,9 +101,73 @@ android {
                                     BaiDu_Api_key_value: "YOFd6UEPXVhgaxL5adlqwgPt4VIPwVDq"]
 
         }
+
+        careyes{
+            manifestPlaceholders = [str: "releaseStr", package_name: "com.zividig.careyes"]
+            applicationId "com.zividig.careyes"
+            resValue "string", "app_name", "车之眼"
+            resValue "bool", "isrRank", 'true'
+            manifestPlaceholders = [ENVIRONMENT: "app1",
+                                    app_icon   : "@mipmap/careyes_ic_icon",
+                                    BaiDu_Api_key_value: "t2pt7j39j9iaMoE4ozTOk5VNdIG5H6kR"]
+
+        }
     }
 
     lintOptions {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         checkReleaseBuilds false
         // Or, if you prefer, you can continue to check for errors in release builds,
         // but continue the build even when errors are found:

@@ -1,10 +1,8 @@
 package com.zividig.ziv.ffmpeg;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.net.wifi.WifiManager;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
@@ -318,8 +316,8 @@ public class SocketTest extends AppCompatActivity implements Runnable {
         mThreadPool = null;
         mGLFRenderer = null;
 
-        WifiManager wifiMgr = (WifiManager)getSystemService(Context.WIFI_SERVICE);
-        wifiMgr.setWifiEnabled(false);
+//        WifiManager wifiMgr = (WifiManager)getSystemService(Context.WIFI_SERVICE);
+//        wifiMgr.setWifiEnabled(false);
 //        wifiMgr.disconnect();
     }
 }

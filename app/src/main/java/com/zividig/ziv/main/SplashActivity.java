@@ -21,11 +21,10 @@ import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.zividig.ziv.R;
+import com.zividig.ziv.bean.VersionUpdateBean;
+import com.zividig.ziv.utils.JsonUtils;
 import com.zividig.ziv.utils.StreamUtils;
 import com.zividig.ziv.utils.Urls;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +32,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-
+import java.util.List;
 
 
 /**
@@ -56,6 +55,8 @@ public class SplashActivity extends BaseActivity {
     private int mVersionCode;// 版本号
     private String mDesc;// 版本描述
     private String mDownloadUrl;// 下载地址
+    private List<VersionUpdateBean.DownloadUrlBean> mDownloadUrlList;
+
 
     private Handler mHandler = new Handler() {
         @Override
@@ -98,7 +99,7 @@ public class SplashActivity extends BaseActivity {
         tvProgress = (TextView) findViewById(R.id.tv_progress);// 默认隐藏
 
         tvVersionName = (TextView) findViewById(R.id.tv_versionname);
-        tvVersionName.setText(getVersionName());
+        tvVersionName.setText(getCurrentVersionName());
 
         SharedPreferences config = getSharedPreferences("config",MODE_PRIVATE);
         boolean auto_update = config.getBoolean("auto_update", true); //自动更新默认false
@@ -113,11 +114,36 @@ public class SplashActivity extends BaseActivity {
     }
 
     /**
+     * 获取当前应用包名
+     * @return
+     */
+    private String getCurrentPackage(){
+
+        PackageManager packageManager = getPackageManager();
+        try {
+            PackageInfo packageInfo = packageManager.getPackageInfo(
+                    getPackageName(), 0);// 获取包的信息
+
+            String packageName = packageInfo.packageName; //包名
+
+            System.out.println("packageName---" + packageName);
+
+            return packageName;
+        } catch (PackageManager.NameNotFoundException e) {
+            // 没有找到包名的时候会走此异常
+            e.printStackTrace();
+        }
+
+        return "";
+    }
+
+
+    /**
      * 得到版本名称
      *
      * @return
      */
-    private String getVersionName() {
+    private String getCurrentVersionName() {
         PackageManager packageManager = getPackageManager();
         try {
             PackageInfo packageInfo = packageManager.getPackageInfo(
@@ -143,7 +169,7 @@ public class SplashActivity extends BaseActivity {
      *
      * @return
      */
-    private int getVersionCode() {
+    private int getCurrentVersionCode() {
         PackageManager packageManager = getPackageManager();
         try {
             PackageInfo packageInfo = packageManager.getPackageInfo(
@@ -184,15 +210,28 @@ public class SplashActivity extends BaseActivity {
                         String result = StreamUtils.readFromStream(inputStream);
                         System.out.println("网络返回:" + result);
 
-                        // 解析json
-                        JSONObject jo = new JSONObject(result);
-                        mVersionName = jo.getString("versionName");
-                        mVersionCode = jo.getInt("versionCode");
-                        mDesc = jo.getString("description");
-                        mDownloadUrl = jo.getString("downloadUrl");
+                        VersionUpdateBean versionUpdateBean = JsonUtils.deserialize(result,VersionUpdateBean.class);
+                        System.out.println("新的版本升级---" + versionUpdateBean.getDescription());
+
+                        mVersionName = versionUpdateBean.getVersionName();
+                        mVersionCode = versionUpdateBean.getVersionCode();
+                        mDesc = versionUpdateBean.getDescription();
+                        mDownloadUrlList = versionUpdateBean.getDownloadUrl();
+
+                        String currentPackageName = getCurrentPackage();
+                        String currentAppName = currentPackageName.substring(12,currentPackageName.length());
+                        System.out.println("当前APP名字---" + currentAppName);
+
+                        for (VersionUpdateBean.DownloadUrlBean downloadUrl:mDownloadUrlList) {
+                                if (downloadUrl.getLoadurl().contains(currentAppName)){
+                                    mDownloadUrl = downloadUrl.getLoadurl();
+                                    System.out.println("当前下载地址---" + mDownloadUrl);
+                                    break;
+                                }
+                        }
                         System.out.println("版本描述:" + mDesc);
 
-                        if (mVersionCode > getVersionCode()) {// 判断是否有更新
+                        if (mVersionCode > getCurrentVersionCode()) {// 判断是否有更新
                             // 服务器的VersionCode大于本地的VersionCode
                             // 说明有更新, 弹出升级对话框
                             msg.what = CODE_UPDATE_DIALOG;
@@ -209,7 +248,7 @@ public class SplashActivity extends BaseActivity {
                     // 网络错误异常
                     msg.what = CODE_NET_ERROR;
                     e.printStackTrace();
-                } catch (JSONException e) {
+                } catch (Exception e) {
                     // json解析失败
                     msg.what = CODE_JSON_ERROR;
                     e.printStackTrace();
@@ -300,6 +339,7 @@ public class SplashActivity extends BaseActivity {
                     // 跳转到系统下载页面
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.addCategory(Intent.CATEGORY_DEFAULT);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     intent.setDataAndType(Uri.fromFile(arg0.result),
                             "application/vnd.android.package-archive");
                     // startActivity(intent);

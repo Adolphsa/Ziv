@@ -318,6 +318,9 @@ public class Login extends BaseActivity {
 
         int status = loginResponse.getStatus();
         if ( Urls.STATUS_CODE_200 == status){
+
+            System.out.println("登录状态---" + loginResponse.toString());
+
             userNameIsChange(); //判断账号是否改换
 
             //保存账号密码

@@ -20,7 +20,7 @@ public class Urls {
     public static final String APP_SECRET = "9D2AD5F5F1DBE68440E4211AD795E584";
 
     //版本更新
-    public static final String UPDATE_VERSION = "http://olpy0ue07.bkt.clouddn.com/ziv_update.json";
+    public static final String UPDATE_VERSION = "https://api.zivdigi.com/app/down/version";
 
     //注册
     public static final String REGISTER_URL = "http://api.zivdigi.com/v1/user/register";

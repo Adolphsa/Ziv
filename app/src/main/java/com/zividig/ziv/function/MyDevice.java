@@ -55,6 +55,7 @@ public class MyDevice extends BaseActivity {
 
     private SharedPreferences spf;
     private String devid;
+    private String username;
     private Login mLogin;
 
     @Override
@@ -64,14 +65,14 @@ public class MyDevice extends BaseActivity {
 
         spf = getSharedPreferences("config",MODE_PRIVATE);
         devid = spf.getString("devid","");
+        username = spf.getString(Login.ET_USER,"");
         mLogin = new Login();
 
         spf.edit().putBoolean("is_keeping_get_device_state",true).apply();
 
         devinfoList = new ArrayList<>();
 
-        getDeviceList();
-
+        getDeviceInfo(username);
         // 标题
         TextView txtTitle = (TextView) findViewById(R.id.tv_title);
         txtTitle.setText(R.string.my_device_title);
@@ -157,16 +158,15 @@ public class MyDevice extends BaseActivity {
             if (direction == SwipeMenuRecyclerView.RIGHT_DIRECTION) {
                 System.out.println("adapterPosition---" + adapterPosition);
                 //配置请求参数
-                String user = spf.getString(Login.ET_USER,"");
                 devinfoBean = devinfoList.get(adapterPosition);
                 String devid = devinfoBean.getDevid();
                 if (menuPosition == 0){     //解绑设备
                     System.out.println("解绑设备devid---" + devid);
                     //解绑设备
-                    unBindDevice(user,devid,adapterPosition);
+                    unBindDevice(username,devid,adapterPosition);
                 }else if (menuPosition == 1){       //设置车牌号
                     System.out.println("设置devid---" + devid);
-                    showFormDialog(user,devid);
+                    showFormDialog(username,devid);
                     closeable.smoothCloseMenu();
                 }
             }
@@ -219,7 +219,7 @@ public class MyDevice extends BaseActivity {
                         mMenuAdapter.notifyItemRemoved(adapterPosition);
 
                         //重新获取设备信息列表
-                        mLogin.getDeviceInfo();
+//                        mLogin.getDeviceInfo();
 
                     }else if (400 == status){
                         ToastShow.showToast(MyDevice.this,getString(R.string.my_device_unbind_fail));

@@ -61,9 +61,4 @@ public class JsonUtils {
         return mGson.fromJson(json, type);
     }
 
-
-
-
-
-
 }

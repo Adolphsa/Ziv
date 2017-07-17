@@ -63,7 +63,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
     private static final int ERROR_READ_FRAME = 13;
     private static final int ERROR_TIME_OUT = 14;
     private static final int FILE_EXIST = 8;
-    private static final int AUDIO = 1;
+    private static final int MAXSCALE = 1;
     private static final int SHOW_TOOLS = 2;
     private static final int HIDE_TOOLS = 3;
     private static final int OPENFAIL = 4;
@@ -145,6 +145,9 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
                     break;
                 case FILE_EXIST:    //文件存在
                     Toast.makeText(MyTestActivity.this, "截图已保存", Toast.LENGTH_SHORT).show();
+                    break;
+                case MAXSCALE:
+                    Toast.makeText(MyTestActivity.this, "已经放大到最大级别了", Toast.LENGTH_SHORT).show();
                     break;
 
             }
@@ -535,10 +538,11 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
 
 
     private float distance = 1f;
+    private float detDistance;
 
     private float tScale;
-    private float svaeScale;
-    private float svaeScale0;
+    private float svaeScale = 0;
+    private float detScale;
     private float tempDist;
     private boolean isFirst;
     PointF prev = new PointF();
@@ -577,7 +581,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
                     break;
                 //多点触碰按下动作
                 case MotionEvent.ACTION_POINTER_DOWN:
-                    distance = spacing(event);
+                        distance = spacing(event);
                     // 如果连续两点距离大于10，则判定为多点模式
                     if (distance > 10f) {
                         System.out.println("多点触碰，distance---" + distance);
@@ -602,26 +606,45 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
                             System.out.println("newDist---" + newDist);
                             if (newDist > 10f) {
 
-                                tScale = newDist / distance;
-
-                                if (isFirst) {
-                                    svaeScale = svaeScale0;
-                                    isFirst = false;
-                                    MyGLRenderer.ChangeScale = svaeScale;          //将缩放比例交给MyGLRenderer
-                                } else {
-
-                                    if (newDist - tempDist < 0) {
-                                        System.out.println("缩小");
-                                        svaeScale0 = tScale;
-                                    } else {
-
-                                        svaeScale0 = svaeScale + tScale;
-                                        System.out.println("放大---" + svaeScale0);
+                                detDistance = newDist - distance;
+                                detScale = detDistance / distance;
+                                if (detScale > svaeScale){
+                                    System.out.println("svaeScale不大于0");
+                                    if (tScale < 8.0){
+                                        tScale = detScale*2 + 1;
+                                    }else {
+                                        tScale = 7.0f;
+                                        mHandler.sendEmptyMessage(MAXSCALE);
                                     }
 
-                                    tempDist = newDist;
-                                    MyGLRenderer.ChangeScale = svaeScale0;          //将缩放比例交给MyGLRenderer
+                                }else {
+                                    if (tScale < 8.0){
+                                        tScale = detScale*2 + svaeScale;
+                                        System.out.println("svaeScale大于0");
+                                    }else {
+                                        tScale = 7.0f;
+                                        mHandler.sendEmptyMessage(MAXSCALE);
+                                    }
                                 }
+                                MyGLRenderer.ChangeScale = tScale;
+//                                if (isFirst) {
+//                                    svaeScale = svaeScale0;
+//                                    isFirst = false;
+//                                    MyGLRenderer.ChangeScale = svaeScale;          //将缩放比例交给MyGLRenderer
+//                                } else {
+//
+//                                    if (newDist - tempDist < 0) {
+//                                        System.out.println("缩小");
+//                                        svaeScale0 = tScale;
+//                                    } else {
+//
+//                                        svaeScale0 = svaeScale + tScale;
+//                                        System.out.println("放大---" + svaeScale0);
+//                                    }
+//
+//                                    tempDist = newDist;
+//                                    MyGLRenderer.ChangeScale = svaeScale0;          //将缩放比例交给MyGLRenderer
+//                                }
                             }
                         }
                     }
@@ -632,7 +655,8 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
                     MyGLRenderer.Translate = false;
                     zoomFlag = false;
                     mStatus = NONE;             //多点触碰取消
-                    System.out.println("多点触碰离开");
+                    svaeScale = tScale;
+                    System.out.println("多点触碰离开svaeScale---" + svaeScale);
                     break;
                 //单点触碰离开动作
                 case MotionEvent.ACTION_UP:
