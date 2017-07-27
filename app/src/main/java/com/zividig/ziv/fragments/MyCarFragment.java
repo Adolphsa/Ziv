@@ -2,6 +2,7 @@ package com.zividig.ziv.fragments;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -43,6 +44,7 @@ import com.zividig.ziv.rxjava.ZivApiManage;
 import com.zividig.ziv.rxjava.model.DeviceStateBody;
 import com.zividig.ziv.rxjava.model.DeviceStateResponse;
 import com.zividig.ziv.rxjava.model.VideoResponse;
+import com.zividig.ziv.utils.DialogUtils;
 import com.zividig.ziv.utils.HttpParamsUtils;
 import com.zividig.ziv.utils.JsonUtils;
 import com.zividig.ziv.utils.NetworkTypeUtils;
@@ -95,6 +97,7 @@ public class MyCarFragment extends Fragment {
             R.drawable.selector_liuliang_chaxun};
 
     private String devId;
+    private String deviceType;
 
     private List<DeviceInfoBean.DevinfoBean> devinfoList;
     private TextView tvDevidState;
@@ -232,86 +235,80 @@ public class MyCarFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 getDevID();
+                if (TextUtils.isEmpty(devId)) {
+                    ToastShow.showToast(getContext(), getString(R.string.mcf_add_device));
+                    return;
+                }
                 switch (position) {
                     case 0:
                         System.out.println("图片抓拍" + position);
-                        if (!devId.equals("")) {
-                            getDeviceStatus(position);
-                        } else {
-                            ToastShow.showToast(getContext(), getString(R.string.mcf_add_device));
-                        }
+                        if (chageNetWork()) break;
+                        getDeviceStatus(position);
                         break;
                     case 1:
                         System.out.println("实时视频" + position);
-                        if (!devId.equals("")) {
-                            String devid = mSpf.getString("devid", null);
-                            String tmp = "";
-                            if (!TextUtils.isEmpty(devid)){
-                                tmp = devid.substring(devid.length() - 4, devid.length());
-                            }
-                            //判断是否是设备WIFI
-                            if (NetworkTypeUtils.getConnectWifiSsid(ZivApp.getInstance()).contains("ziv_box_"+tmp)) {
-                                startActivity(new Intent(getContext(), SocketTest.class));
-                            } else {
 
-                                    if ((System.currentTimeMillis() - secondTime) > (2 * 1000)) {
-                                        System.out.println("大于2秒");
-                                        RxStartVideo();
-                                    }
-                                    secondTime = System.currentTimeMillis();
-
-                           }
+                        String devid = mSpf.getString("devid", null);
+                        String tmp = "";
+                        if (!TextUtils.isEmpty(devid)) {
+                            tmp = devid.substring(devid.length() - 4, devid.length());
+                        }
+                        //判断是否是设备WIFI
+                        if (NetworkTypeUtils.getConnectWifiSsid(ZivApp.getInstance()).contains("ziv_box_" + tmp)) {
+                            startActivity(new Intent(getContext(), SocketTest.class));
                         } else {
-                            ToastShow.showToast(getContext(), getString(R.string.mcf_add_device));
+
+                            if ((System.currentTimeMillis() - secondTime) > (2 * 1000)) {
+                                System.out.println("大于2秒");
+                                secondTime = System.currentTimeMillis();
+                                if (NetworkTypeUtils.is2GDevice(deviceType)) {
+                                    DialogUtils.showPrompt(getContext(), getString(R.string.add_device_tips),
+                                            getString(R.string.mcf_open_device_wifi),
+                                            getString(R.string.add_device_ensure),
+                                            new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.dismiss();
+                                                    startActivity(new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS));
+                                                }
+                                            });
+                                } else {
+                                    RxStartVideo();
+                                }
+
+                            } else {
+                                ToastShow.showToast(getContext(), getString(R.string.repeat_info));
+                            }
                         }
                         break;
                     case 2:
                         System.out.println("车辆信息" + position);
+                        if (chageNetWork()) break;
                         startActivity(new Intent(getContext(), CarInfo.class));
                         break;
                     case 3:
                         System.out.println("车辆定位" + position);
-                        if (!devId.equals("")) {
-                            if (NetworkTypeUtils.getConnectWifiSsid(ZivApp.getInstance()).contains("car_")) {
-                                startActivity(new Intent(getContext(), CarLocation.class));
-                            } else {
-                                startActivity(new Intent(getContext(), CarLocation.class));
-                            }
-                        } else {
-                            ToastShow.showToast(getContext(), getString(R.string.mcf_add_device));
-                        }
+                        if (chageNetWork()) break;
+                        startActivity(new Intent(getContext(), CarLocation.class));
                         break;
                     case 4:
                         System.out.println("电子围栏" + position);
-                        if (!devId.equals("")) {
-                            //开启轮询服务获取GPS信息
-                            if (NetworkTypeUtils.getConnectWifiSsid(ZivApp.getInstance()).contains("car_")) {
-                                startActivity(new Intent(getContext(), ElectronicFence.class));
-                            } else {
-                                startActivity(new Intent(getContext(), ElectronicFence.class));
-                            }
-                        } else {
-                            ToastShow.showToast(getContext(), getString(R.string.mcf_add_device));
-                        }
+                        if (chageNetWork()) break;
+                        startActivity(new Intent(getContext(), ElectronicFence.class));
                         break;
                     case 5:
                         System.out.println("违章查询" + position);
+                        if (chageNetWork()) break;
                         startActivity(new Intent(getContext(), ViolationActivity.class));
                         break;
                     case 6:
                         System.out.println("轨迹查询" + position);
-                        if (!devId.equals("")) {
-                            startActivity(new Intent(getContext(), TrackQueryDateChoose.class));
-                        } else {
-                            ToastShow.showToast(getContext(), getString(R.string.mcf_add_device));
-                        }
+                        if (chageNetWork()) break;
+                        startActivity(new Intent(getContext(), TrackQueryDateChoose.class));
                         break;
                     case 7:
-                        if (!TextUtils.isEmpty(devId)){
-                            startActivity(new Intent(getContext(), CxllActivity.class));
-                        }else {
-                            ToastShow.showToast(getContext(), getString(R.string.mcf_add_device));
-                        }
+                        if (chageNetWork()) break;
+                        startActivity(new Intent(getContext(), CxllActivity.class));
                         break;
                 }
             }
@@ -457,7 +454,7 @@ public class MyCarFragment extends Fragment {
     /**
      * 在图片抓拍和实时视频之前获取设备状态
      */
-    private void getDeviceStatus(final int position){
+    private void getDeviceStatus(final int position) {
 
         Map<String, String> options = setOp();
         RequestBody jsonBody = setBody();
@@ -470,29 +467,30 @@ public class MyCarFragment extends Fragment {
                     @Override
                     public void call(DeviceStateResponse deviceStateResponse) {
                         int status = deviceStateResponse.getStatus();
-                        if (status == 200){
-                            if (deviceStateResponse.getInfo() != null){
+                        if (status == 200) {
+                            if (deviceStateResponse.getInfo() != null) {
                                 String deviceStatus = deviceStateResponse.getInfo().getWorkmode();
                                 System.out.println("设备状态---" + deviceStatus);
-                                if (deviceStatus.equals("NORMAL")){
-                                    if (position == 0){
+                                System.out.println("设备类型---" + deviceStateResponse.getInfo().getType());
+                                if (deviceStatus.equals("NORMAL")) {
+                                    if (position == 0) {
                                         startActivity(new Intent(getContext(), RealTimeShow.class));
-                                    }else if (position == 1){
+                                    } else if (position == 1) {
                                         RxStartVideo();
                                     }
-                                }else if (deviceStatus.equals("STDBY")) {
+                                } else if (deviceStatus.equals("STDBY")) {
                                     deviceState.setText(R.string.mcf_stdby);
                                     ToastShow.showToast(getContext(), getString(R.string.mcf_device_off));
                                 } else if (deviceStatus.equals("OFF")) {
                                     deviceState.setText("离线");
                                     ToastShow.showToast(getContext(), getString(R.string.mcf_device_off));
-                                }else {
+                                } else {
                                     ToastShow.showToast(getContext(), getString(R.string.mcf_device_off));
                                 }
                             }
-                        }else if (status == 403){
+                        } else if (status == 403) {
                             ToastShow.showToast(getContext(), getString(R.string.mcf_token_error));
-                        }else if (status == 404){
+                        } else if (status == 404) {
                             ToastShow.showToast(getContext(), getString(R.string.mcf_device_no_exist));
                         }
                     }
@@ -508,29 +506,29 @@ public class MyCarFragment extends Fragment {
     /**
      * 开启实时视频
      */
-    private void RxStartVideo(){
+    private void RxStartVideo() {
 
         Map<String, String> options = setOp();
         RequestBody jsonBody = setBody();
 
         ZivApiManage.getInstance().getZivApiService()
-                .startVideo(options,jsonBody)
+                .startVideo(options, jsonBody)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<VideoResponse>() {
                     @Override
                     public void call(VideoResponse videoResponse) {
                         int status = videoResponse.getStatus();
-                        if (200 == status){
+                        if (200 == status) {
                             String url = videoResponse.getUrl();
                             System.out.println("视频URL:" + url);
                             TestDecoder.setUrl(url);
                             getActivity().startActivity(new Intent(getContext(), MyTestActivity.class));
-                        }else if (402 == status){
+                        } else if (402 == status) {
                             ToastShow.showToast(getContext(), getString(R.string.mcf_device_off));
-                        }else if (403 == status){
+                        } else if (403 == status) {
                             ToastShow.showToast(getContext(), getString(R.string.mcf_connect_error));
-                        }else if (404 == status){
+                        } else if (404 == status) {
                             ToastShow.showToast(getContext(), getString(R.string.mcf_device_no_exist));
                         }
 
@@ -551,7 +549,7 @@ public class MyCarFragment extends Fragment {
     public void RxGetDeviceState() {
         System.out.println("轮询获取涉设备状态");
 
-        if (mSubscription == null){
+        if (mSubscription == null) {
             mSubscription = Observable.interval(0, 5, TimeUnit.SECONDS)
                     .flatMap(new Func1<Long, Observable<DeviceStateResponse>>() {
                         @Override
@@ -582,9 +580,9 @@ public class MyCarFragment extends Fragment {
                             if (++retryCount >= 10) {
                                 System.out.println("查询失败");
                                 String devid = mSpf.getString("devid", null);
-                                if (devid != null){
+                                if (devid != null) {
                                     deviceState.setText(R.string.mcf_query_fail);
-                                }else {
+                                } else {
                                     deviceState.setText(R.string.mcf_id_null);
                                 }
                                 retryCount = 0;
@@ -617,6 +615,8 @@ public class MyCarFragment extends Fragment {
             DeviceStateResponse.InfoBean infoBean = deviceStateResponse.getInfo();
             if (infoBean != null) {
                 String workMode = infoBean.getWorkmode();
+                deviceType = infoBean.getType();
+                System.out.println("设备类型---" + deviceType);
                 if (workMode.equals("NORMAL")) {
                     deviceState.setText(R.string.mcf_normal);
                 } else if (workMode.equals("OFFING")) {
@@ -631,12 +631,12 @@ public class MyCarFragment extends Fragment {
                     deviceState.setText(R.string.mcf_booting);
                 }
             }
-        } else if (600 == status){
+        } else if (600 == status) {
             System.out.println("为600");
-            if (mSubscription != null){
+            if (mSubscription != null) {
                 mSubscription.unsubscribe();
             }
-            mSpf.edit().putBoolean("is_keeping_get_device_state",true).apply();
+            mSpf.edit().putBoolean("is_keeping_get_device_state", true).apply();
             dialog2 = LoadingProgressDialog.createLoadingDialog(getContext(), "账号已在其他地方登陆", false, true, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -649,13 +649,33 @@ public class MyCarFragment extends Fragment {
     }
 
     /**
-     * 停止轮询涉笔状态
+     * 停止轮询设备状态
      */
-    public void stopLoop(){
-        if (mSubscription != null){
+    public void stopLoop() {
+        if (mSubscription != null) {
             mSubscription.unsubscribe();
             mSubscription = null;
         }
+    }
+
+    private boolean chageNetWork() {
+
+        if (NetworkTypeUtils.getConnectWifiSsid(ZivApp.getInstance()).contains("ziv_box_") &&
+                NetworkTypeUtils.is2GDevice(deviceType)) {
+            DialogUtils.showPrompt(getContext(), getString(R.string.add_device_tips),
+                    getString(R.string.mcf_close_device_wifi),
+                    getString(R.string.add_device_ensure),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            startActivity(new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS));
+                        }
+                    });
+
+            return true;
+        }
+        return false;
     }
 
 }

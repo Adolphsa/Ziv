@@ -14,7 +14,6 @@ import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
-import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
@@ -57,7 +56,7 @@ public class TrackQuery extends BaseActivity {
     private MapTrackBean mapTrackBean;
     private MapView mMapView;
     private BaiduMap mBaiduMap;
-    private List<LatLng> overLatLng;
+
     private double latitude;  // 围栏圆心纬度
 
     private double longitude;  // 围栏圆心经度
@@ -66,6 +65,8 @@ public class TrackQuery extends BaseActivity {
     private Long mEndTime;
     private String mDevid;
     private Gson mGson;
+
+    boolean isFenduan = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,16 +102,9 @@ public class TrackQuery extends BaseActivity {
             }
         });
 
-        overLatLng = new ArrayList<LatLng>();
-
         mMapView = (MapView) findViewById(R.id.track_map);
         mBaiduMap = mMapView.getMap();
 
-        //设定地图的初始中心
-        MapStatus.Builder builder = new MapStatus.Builder();
-        builder.target(GPSConverterUtils.gpsToBaidu(new LatLng(22.549467,113.920565)))
-                .zoom(16.0f);
-        mBaiduMap.setMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
     }
 
     private void initData(){
@@ -167,6 +161,12 @@ public class TrackQuery extends BaseActivity {
                             latitude = mapTrackBean.getLocationdata().get(0).getLat();
                             longitude = mapTrackBean.getLocationdata().get(0).getLon();
                             System.out.println("经度" + latitude + "w纬度" + longitude);
+
+                            //设定地图的初始中心
+                            MapStatus.Builder builder = new MapStatus.Builder();
+                            builder.target(GPSConverterUtils.gpsToBaidu(new LatLng(latitude,longitude)))
+                                    .zoom(16.0f);
+                            mBaiduMap.setMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
                             //显示轨迹
                             showTrackInMap(mapTrackBean.getLocationdata());
                         }
@@ -219,15 +219,17 @@ public class TrackQuery extends BaseActivity {
         List<LatLng> oneLatLng = new ArrayList<LatLng>();
         List<LatLng> twoLatLng = new ArrayList<LatLng>();
 
-        for (int i = 0; i < locationdata.size()-1; i++) {
+        for (int i = 0; i < locationdata.size()-2; i++) {
 
                 if ((Math.abs(locationdata.get(i).getTi() - locationdata.get(i+1).getTi()) < 600) && isSpilt)
                 {
                     if (twoLatLng.size() > 2){
-                        splitData(twoLatLng);
+                        System.out.println("绘制---twoLatLng");
+                        splitData(twoLatLng,Color.parseColor("#00796B"));
                         twoLatLng.clear();
                     }
                     sourceLatLng = new LatLng(locationdata.get(i).getLat(),locationdata.get(i).getLon());
+                    System.out.println("");
                     //坐标转换
                     desLatLng = GPSConverterUtils.gpsToBaidu(sourceLatLng);
                     oneLatLng.add(desLatLng);
@@ -239,16 +241,19 @@ public class TrackQuery extends BaseActivity {
                         //坐标转换
                         desLatLng = GPSConverterUtils.gpsToBaidu(sourceLatLng);
                         oneLatLng.add(desLatLng);
-                        splitData(oneLatLng);
+                        splitData(oneLatLng,Color.parseColor("#009688"));
+                        System.out.println("---绘制oneLatLng");
                         oneLatLng.clear();
+
                     }
-                    if (Math.abs(locationdata.get(i).getTi() - locationdata.get(i+1).getTi()) < 600){
+                    if (Math.abs(locationdata.get(i+1).getTi() - locationdata.get(i+2).getTi()) < 600){
                         sourceLatLng = new LatLng(locationdata.get(i+1).getLat(),locationdata.get(i+1).getLon());
                         //坐标转换
                         desLatLng = GPSConverterUtils.gpsToBaidu(sourceLatLng);
                         twoLatLng.add(desLatLng);
                         isSpilt = false;
                     }else {
+
                         sourceLatLng = new LatLng(locationdata.get(i+1).getLat(),locationdata.get(i+1).getLon());
                         //坐标转换
                         desLatLng = GPSConverterUtils.gpsToBaidu(sourceLatLng);
@@ -259,11 +264,13 @@ public class TrackQuery extends BaseActivity {
                 }
         }
         if (oneLatLng.size() > 2){
-            splitData(oneLatLng);
+            System.out.println("最后一次绘制oneLatLng");
+            splitData(oneLatLng,Color.parseColor("#0288D1"));
             oneLatLng.clear();
         }
         if (twoLatLng.size() > 2){
-            splitData(twoLatLng);
+            System.out.println("最后一次绘制twoLatLng");
+            splitData(twoLatLng,Color.parseColor("#03A9F4"));
             twoLatLng.clear();
         }
         int tempLength = locationdata.size()/2;
@@ -271,7 +278,7 @@ public class TrackQuery extends BaseActivity {
                 new LatLng(locationdata.get(tempLength).getLat(),locationdata.get(tempLength).getLon()));
     }
 
-    private void splitData(List<LatLng> overLatLng){
+    private void splitData(List<LatLng> overLatLng,int color){
 
         System.out.println("标注的长度：" + overLatLng.size());
         LatLng firstLatLng = overLatLng.get(0);
@@ -280,23 +287,23 @@ public class TrackQuery extends BaseActivity {
         //构建用户绘制折线的Option对象
         polylineOption = new PolylineOptions()
                 .points(overLatLng)
-                .color(Color.BLUE)
-                .width(10)
+                .color(color)
+                .width(13)
                 .visible(true);
         //在地图上添加折线Option，用于显示
         mBaiduMap.addOverlay(polylineOption);
 
-        //标注第一个点的位置
-        MarkerOptions markerStart = new MarkerOptions()
-                .position(firstLatLng)
-                .icon(mapStart).zIndex(9).draggable(true);
-        mBaiduMap.addOverlay(markerStart);
-
-        //标注最后一个点的位置
-        MarkerOptions markerEnd = new MarkerOptions()
-                .position(lastLatLng)
-                .icon(mapEnd).zIndex(9).draggable(true);
-        mBaiduMap.addOverlay(markerEnd);
+//        //标注第一个点的位置
+//        MarkerOptions markerStart = new MarkerOptions()
+//                .position(firstLatLng)
+//                .icon(mapStart).zIndex(9).draggable(true);
+//        mBaiduMap.addOverlay(markerStart);
+//
+//        //标注最后一个点的位置
+//        MarkerOptions markerEnd = new MarkerOptions()
+//                .position(lastLatLng)
+//                .icon(mapEnd).zIndex(9).draggable(true);
+//        mBaiduMap.addOverlay(markerEnd);
     }
 
     //设置地图缩放级别

@@ -274,6 +274,10 @@ public class ElectronicFence extends BaseActivity {
             ToastShow.showToast(ElectronicFence.this,getString(R.string.fence_no_radius));
             return false;
         }
+        if (Integer.parseInt(fenceRadius) <= 100){
+            ToastShow.showToast(ElectronicFence.this,getString(R.string.fence_error));
+            return false;
+        }
         if (TextUtils.isEmpty(fenceName)){
             ToastShow.showToast(ElectronicFence.this,getString(R.string.fence_no_name));
             return false;

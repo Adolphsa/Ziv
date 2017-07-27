@@ -14,7 +14,6 @@ public class GPSConverterUtils {
         CoordinateConverter converter = new CoordinateConverter();
         converter.from(CoordinateConverter.CoordType.GPS);
         converter.coord(sourceLatLng);
-        LatLng desLatLng = converter.convert();
-        return desLatLng;
+        return converter.convert();
     }
 }

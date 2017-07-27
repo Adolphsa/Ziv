@@ -31,7 +31,9 @@ import com.zividig.ziv.utils.SignatureUtils;
 import com.zividig.ziv.utils.Urls;
 import com.zividig.ziv.utils.UtcTimeUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -70,6 +72,8 @@ public class CarLocation extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_carlocation);
+
+//        testConverter();
 
         spf = getSharedPreferences("config",MODE_PRIVATE);
         //设置获取设备状态为真，以便在Activity销毁时能重新获取设备状态
@@ -278,5 +282,26 @@ public class CarLocation extends BaseActivity {
                 initMap(lat,lon,maptime);
             }
         }
+    }
+
+    private void testConverter(){
+        List<LatLng> lList = new ArrayList<>();
+        LatLng l1 = new LatLng(24.517043,118.133974);
+        LatLng l2 = new LatLng(24.516824,118.134101);
+        LatLng l3 = new LatLng(24.516276,118.134451);
+        LatLng l4 = new LatLng(24.515953,118.134657);
+        LatLng l5 = new LatLng(24.515845,118.134698);
+        lList.add(l1);
+        lList.add(l2);
+        lList.add(l3);
+        lList.add(l4);
+        lList.add(l5);
+        for (LatLng l: lList){
+            LatLng d = GPSConverterUtils.gpsToBaidu(l);
+            System.out.println("转换后的lat---" + d.latitude + ",转换后的lon---" + d.longitude);
+        }
+
+
+
     }
 }

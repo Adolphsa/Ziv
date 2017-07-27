@@ -47,6 +47,7 @@ public class DeviceStateResponse {
          * workmode : OFF
          * voltage : 12
          * csq : 10
+         * type : 4G/2G
          */
 
         private String workmode;

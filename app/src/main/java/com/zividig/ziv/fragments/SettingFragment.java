@@ -162,14 +162,14 @@ public class SettingFragment extends Fragment {
                         LogUtils.i("用户名" + username);
                         String alarmState = sp.getString("alarm_status","");
                         if (alarmState.equals("open")){
-                            holder.RightIcon.setImageResource(R.mipmap.switch_on); //不允许推送
+                            holder.RightIcon.setImageResource(R.mipmap.switch_off); //不允许推送
                             //设置成不推送
                             setAlarmDoNotDisturb(username,"close");
                             sp.edit().putString("alarm_status","close").apply();
                             LogUtils.i("设置成不推送");
 
                         }else {
-                            holder.RightIcon.setImageResource(R.mipmap.switch_off); //允许推送
+                            holder.RightIcon.setImageResource(R.mipmap.switch_on); //允许推送
                             //设置成推送
                             setAlarmDoNotDisturb(username,"open");
                             sp.edit().putString("alarm_status","open").apply();
@@ -574,12 +574,12 @@ public class SettingFragment extends Fragment {
 
                 case 1:
                     holder.leftIcon.setImageResource(R.mipmap.restaet);
-                    holder.itemText.setText("震动免打扰");
+                    holder.itemText.setText("消息推送");
                     String alarmState = sp.getString("alarm_status","");
                     if (alarmState.equals("open")){
-                        holder.RightIcon.setImageResource(R.mipmap.switch_off);
-                    }else {
                         holder.RightIcon.setImageResource(R.mipmap.switch_on);
+                    }else {
+                        holder.RightIcon.setImageResource(R.mipmap.switch_off);
                     }
                     break;
 //                case 2:

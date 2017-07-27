@@ -5,6 +5,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.text.TextUtils;
 import android.util.Log;
 
 import static android.content.Context.WIFI_SERVICE;
@@ -52,5 +53,21 @@ public class NetworkTypeUtils {
         System.out.println("wifi名称---" + wifiInfo.getSSID());
         Log.d("wifiInfo", wifiInfo.toString());
         return wifiInfo.getSSID();
+    }
+
+    public static boolean is2GDevice(String type){
+
+        if (!TextUtils.isEmpty(type) && type.equals("2G")){
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean is4GDevice(String type){
+
+        if (!TextUtils.isEmpty(type) && type.equals("4G")){
+            return true;
+        }
+        return false;
     }
 }
