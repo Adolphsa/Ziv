@@ -5,7 +5,7 @@
     android:id="@+id/activity_socket_test"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ffmpeg.SocketTest">
+    tools:context="com.zivdigi.helloffmpeg.twog.SocketTest">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -50,7 +50,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="全屏"
-                android:textColor="@color/white"
+                android:textColor="@android:color/white"
                 android:layout_alignParentRight="true"
                 android:background="@android:color/transparent"
                 />

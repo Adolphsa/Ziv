@@ -88,10 +88,7 @@
         <activity android:name=".function.MessageMapShow"/>
         <activity android:name=".function.CxllActivity"/>
         <activity android:name=".function.Language"/>
-        <activity android:name=".ffmpeg.SocketTest"
-                  android:configChanges="orientation|screenSize|keyboard|keyboardHidden"
-                  android:screenOrientation="portrait"
-            />
+
 
         <!-- 百度地图服务 -->
         <service

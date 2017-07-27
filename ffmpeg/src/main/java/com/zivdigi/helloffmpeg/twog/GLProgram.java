@@ -1,4 +1,4 @@
-package com.zividig.ziv.ffmpeg;
+package com.zivdigi.helloffmpeg.twog;
 
 import android.opengl.GLES20;
 

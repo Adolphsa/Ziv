@@ -1,4 +1,4 @@
-package com.zividig.ziv.ffmpeg;
+package com.zivdigi.helloffmpeg.twog;
 
 
 import java.nio.ByteBuffer;
@@ -39,6 +39,5 @@ public class FfmpegTest {
 
     }
 
-    static {
-        System.loadLibrary("test");}
+    static {System.loadLibrary("test");}
 }

@@ -1,4 +1,4 @@
-package com.zividig.ziv.ffmpeg;
+package com.zivdigi.helloffmpeg.twog;
 
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -15,7 +15,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
-import com.zividig.ziv.R;
+import com.zivdigi.helloffmpeg.R;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

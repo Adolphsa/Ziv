@@ -29,7 +29,7 @@ import com.zividig.ndk_test.weizhang.activity.ViolationActivity;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.DeviceInfoBean;
 import com.zividig.ziv.customView.LoadingProgressDialog;
-import com.zividig.ziv.ffmpeg.SocketTest;
+import com.zivdigi.helloffmpeg.twog.SocketTest;
 import com.zividig.ziv.function.AddDevice;
 import com.zividig.ziv.function.CarInfo;
 import com.zividig.ziv.function.CarLocation;
