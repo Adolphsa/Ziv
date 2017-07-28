@@ -9,7 +9,6 @@ import com.bm.library.PhotoView;
 import com.zividig.ziv.R;
 import com.zividig.ziv.main.BaseActivity;
 
-import cn.sharesdk.framework.ShareSDK;
 import cn.sharesdk.onekeyshare.OnekeyShare;
 
 /**
@@ -25,8 +24,6 @@ public class ShowPicture extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_picture);
-
-        ShareSDK.initSDK(this); //初始化ShareSDK
 
         //返回按钮
         Button btnBack = (Button) findViewById(R.id.btn_back);
@@ -80,6 +77,5 @@ public class ShowPicture extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ShareSDK.stopSDK(this);
     }
 }

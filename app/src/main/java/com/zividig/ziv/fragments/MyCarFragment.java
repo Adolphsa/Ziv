@@ -356,7 +356,7 @@ public class MyCarFragment extends Fragment {
     public void onResume() {
         super.onResume();
         //开始自动翻页
-        convenientBanner.startTurning(3000);
+        convenientBanner.startTurning(5000);
         getDevID();
         System.out.println("MyCarFragment的Resume");
         boolean isKeepingGetDeviceState = mSpf.getBoolean("is_keeping_get_device_state", true);

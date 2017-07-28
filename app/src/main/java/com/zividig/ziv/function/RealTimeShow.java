@@ -44,7 +44,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import cn.sharesdk.framework.ShareSDK;
 import cn.sharesdk.onekeyshare.OnekeyShare;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -95,8 +94,6 @@ public class RealTimeShow extends BaseActivity {
         super.onCreate(savedInstanceState);
         SDKInitializer.initialize(ZivApp.getInstance());
         setContentView(R.layout.acticity_real_time_show);
-
-        ShareSDK.initSDK(this); //初始化ShareSDK
 
         mContext = RealTimeShow.this;
 
@@ -544,7 +541,6 @@ public class RealTimeShow extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ShareSDK.stopSDK(this);
         if (mSubscription != null){
             mSubscription.unsubscribe();
         }

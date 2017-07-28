@@ -79,8 +79,8 @@
     <QZone
         Id="3"
         SortId="7"
-        AppId="1105413845"
-        AppKey="bZ66wzekgjRYDkcq"
+        AppId="1106241832"
+        AppKey="5ftx6iwvGzboiRN8"
         Enable="true" />
     
     <!-- 
@@ -98,32 +98,32 @@
     <Wechat
         Id="4"
         SortId="1"
-        AppId="wx74753bcbf6aa4e53"
-        AppSecret="62b15e2bd6c8b364a2deda3c1e7228bc"
+        AppId="wxd0b454f10da5287a"
+        AppSecret="2a36bd20a21e9c9fc4ad1fab24fec3e3"
         BypassApproval="false"
         Enable="true" />
 
     <WechatMoments
         Id="5"
         SortId="2"
-		AppId="wx74753bcbf6aa4e53"
-		AppSecret="62b15e2bd6c8b364a2deda3c1e7228bc"
+        AppId="wxd0b454f10da5287a"
+        AppSecret="2a36bd20a21e9c9fc4ad1fab24fec3e3"
         BypassApproval="false"
         Enable="true" />
         
 	<WechatFavorite
         Id="6"
         SortId="6"
-		AppId="wx74753bcbf6aa4e53"
-		AppSecret="62b15e2bd6c8b364a2deda3c1e7228bc"
+        AppId="wxd0b454f10da5287a"
+        AppSecret="2a36bd20a21e9c9fc4ad1fab24fec3e3"
         Enable="false" />
     
 	<!-- ShareByAppClient标识是否使用微博客户端分享，默认是false -->
 	<QQ
         Id="7"
         SortId="3"
-        AppId="1105413845"
-        AppKey="bZ66wzekgjRYDkcq"
+        AppId="1106241832"
+        AppKey="5ftx6iwvGzboiRN8"
         ShareByAppClient="true"
         Enable="true" />
     
@@ -131,6 +131,11 @@
     <ShortMessage
         Id="13" 
         SortId="13"
+        Enable="true" />
+
+    <Email
+        Id="14"
+        SortId="14"
         Enable="true" />
 
 </DevInfor>

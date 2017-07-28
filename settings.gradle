@@ -1,1 +1,1 @@
-include ':app', ':sharesdk', 'ffmpeg', 'Violation', 'QrCodeScan'
+include ':app', 'ffmpeg', 'Violation', 'QrCodeScan'

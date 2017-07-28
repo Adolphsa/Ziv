@@ -8,7 +8,6 @@ import com.zivdigi.helloffmpeg.MyTestActivity;
 import com.zividig.ziv.R;
 import com.zividig.ziv.main.BaseActivity;
 
-import cn.sharesdk.framework.ShareSDK;
 import cn.sharesdk.onekeyshare.OnekeyShare;
 
 /**
@@ -21,8 +20,6 @@ public class TestShareVideo extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test_share_video);
-
-        ShareSDK.initSDK(this); //初始化ShareSDK
     }
 
     public void shareVideo(View view){

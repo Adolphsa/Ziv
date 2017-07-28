@@ -13,7 +13,6 @@
             <option value="$PROJECT_DIR$/Violation" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/ffmpeg" />
-            <option value="$PROJECT_DIR$/sharesdk" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
