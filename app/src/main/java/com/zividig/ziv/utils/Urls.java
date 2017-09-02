@@ -19,6 +19,8 @@ public class Urls {
 
     public static final String APP_SECRET = "9D2AD5F5F1DBE68440E4211AD795E584";
 
+    public static boolean deviceServeice = false;
+
     //版本更新
     public static final String UPDATE_VERSION = "https://api.zivdigi.com/app/down/version";
 

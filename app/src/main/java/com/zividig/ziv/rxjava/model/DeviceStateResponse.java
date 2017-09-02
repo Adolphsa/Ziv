@@ -48,12 +48,14 @@ public class DeviceStateResponse {
          * voltage : 12
          * csq : 10
          * type : 4G/2G
+         * service:true or false 是否在服务期内"
          */
 
         private String workmode;
         private String voltage;
         private String csq;
         private String type;
+        private boolean service;
 
         public String getWorkmode() {
             return workmode;
@@ -83,13 +85,21 @@ public class DeviceStateResponse {
 
         public void setType(String type) {this.type = type;}
 
+        public boolean isService() {
+            return service;
+        }
+
+        public void setService(boolean service) {
+            this.service = service;
+        }
+
         @Override
         public String toString() {
             return "InfoBean{" +
                     "workmode='" + workmode + '\'' +
                     ", voltage='" + voltage + '\'' +
                     ", csq='" + csq + '\'' + ", type='" +
-                    type + '\'' + '}';
+                    type + '\'' + ", devService = " + service + '\'' + '}';
         }
     }
 }

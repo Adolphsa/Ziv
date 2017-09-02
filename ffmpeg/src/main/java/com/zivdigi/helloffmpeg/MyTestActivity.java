@@ -29,7 +29,6 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -89,7 +88,7 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
     private TextView mTitle;
     private RelativeLayout playToolsBottom;
     private RelativeLayout playToolstop;
-    private ProgressBar mCycleProgressBar;  //圆形进度条
+    private LoadingView mCycleProgressBar;  //圆形进度条
     private Button mPlay;                   //播放按钮
     private Button VideoRecord;
     private VideoPlayTask mVideoPlayTask;
@@ -130,16 +129,17 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
 
                 case ERROR_CONNECT:    //播放错误
                     mCycleProgressBar.setVisibility(View.VISIBLE);
+                    mCycleProgressBar.initPercentCircle(0,0);
                     isProgressShow = true;
                     break;
                 case ERROR_READ_FRAME:    //av_read_frame error
-
                     mCycleProgressBar.setVisibility(View.VISIBLE);
+                    mCycleProgressBar.initPercentCircle(0,0);
                     isProgressShow = true;
                     break;
                 case ERROR_TIME_OUT:    //avformat_open_input timeout
-
                     mCycleProgressBar.setVisibility(View.VISIBLE);
+                    mCycleProgressBar.initPercentCircle(0,0);
                     isProgressShow = true;
                     showDialog("avformat_open_input timeout");
                     break;
@@ -173,7 +173,8 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
         playToolsBottom = (RelativeLayout) findViewById(R.id.mta_rl);
         playToolstop = (RelativeLayout) findViewById(R.id.mta_rl_top);
         VideoRecord = (Button) findViewById(R.id.ffmpeg_record);
-        mCycleProgressBar = (ProgressBar) findViewById(R.id.mta_recycle_pb); //圆形进度条
+        mCycleProgressBar = (LoadingView) findViewById(R.id.mta_recycle_pb); //圆形进度条
+        mCycleProgressBar.setTargetPercent(99);
 
         //播放按钮
         mPlay = (Button) findViewById(R.id.mta_play);
@@ -313,21 +314,9 @@ public class MyTestActivity extends FragmentActivity implements View.OnClickList
         super.onConfigurationChanged(newConfig);
         mOrientation = newConfig.orientation;
 
-//        DisplayMetrics mDisplayMetrics = new DisplayMetrics();
-//        getWindowManager().getDefaultDisplay().getMetrics(mDisplayMetrics);
-//        int W = mDisplayMetrics.widthPixels;
-//        int H = mDisplayMetrics.heightPixels;
-
         if (mOrientation == Configuration.ORIENTATION_LANDSCAPE) {
-//            System.out.println("横屏W---" + W + "H---" + H);
-//            glSurfaceView.getLayoutParams().width = W;
-//            glSurfaceView.getLayoutParams().height = H;
             show_tools();
         } else {
-//            System.out.println("竖屏W---" + W + "H---" + H);
-//            glSurfaceView.getLayoutParams().width = W;
-//            glSurfaceView.getLayoutParams().height = H;
-
             playToolstop.setVisibility(View.VISIBLE);
             playToolsBottom.setVisibility(View.VISIBLE);
             playToolsBottom.getLayoutParams().width = RelativeLayout.LayoutParams.MATCH_PARENT;

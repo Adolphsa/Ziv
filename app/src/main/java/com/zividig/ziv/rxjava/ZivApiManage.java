@@ -19,7 +19,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * on 2017-03-17.
  */
 
-public class ZivApiManage {
+public class ZivApiManage{
 
     public static final String BASE_URL = "http://api.zivdigi.com/v1/";
 
@@ -47,11 +47,12 @@ public class ZivApiManage {
     };
 
     public static ZivApiManage sZivApiManage;
+
     //缓存相关
     private static File httpCacheDirectory = new File(ZivApp.getInstance().getCacheDir(),"zivCachesss");
     private static int cacheSize = 10 * 1024 * 1024; // 10 MiB
     private static Cache cache = new Cache(httpCacheDirectory,cacheSize);
-    private static OkHttpClient client = new OkHttpClient.Builder()
+    private  OkHttpClient client = new OkHttpClient.Builder()
             .addNetworkInterceptor(REWRITE_CACHE_CONTROL_INTERCEPTOR)
             .addInterceptor(REWRITE_CACHE_CONTROL_INTERCEPTOR)
             .cache(cache)

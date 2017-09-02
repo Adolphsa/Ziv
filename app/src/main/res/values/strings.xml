@@ -1,5 +1,8 @@
 <resources>
-    <string name="app_version">1.0.0.1.0630</string>
+    <string name="app_version">1.0.0.1.0902</string>
+
+    <!--common-->
+    <string name="common_cancel">取消</string>>
 
     <!--MyCarFragment-->
     <string name="mcf_snap">图片抓拍</string>
@@ -26,6 +29,8 @@
     <string name="mcf_booting">启动中</string>
     <string name="mcf_close_device_wifi">请断开设备wifi连接，使用移动网络</string>
     <string name="mcf_open_device_wifi">请切换为设备wifi</string>
+    <string name="mcf_service_is_over">服务到期</string>
+    <string name="mcf_account_offline">账号已在其他地方登陆</string>
 
     <!--mainActivity-->
     <string name="main_tab_bar_one">我的车</string>
@@ -84,9 +89,9 @@
     <string name="fence_no_map_data">暂无地图数据</string>
     <string name="fence_choose_centre">请点击地图选择围栏中心点</string>
     <string name="fence_ensure_center">电子围栏中心点确认</string>
-    <string name="fence_setting_radius">设置半径(大于100)和围栏名称</string>
+    <string name="fence_setting_radius">设置半径(大于500)和围栏名称</string>
     <string name="fence_no_radius">围栏半径不能为空</string>
-    <string name="fence_error">围栏半径应大于100</string>
+    <string name="fence_error">围栏半径应大于500</string>
     <string name="fence_no_name">围栏名称不能为空</string>
     <string name="fence_setting_ok">电子围栏设置成功</string>
     <string name="fence_no_fence">还没有设置围栏</string>
@@ -130,5 +135,6 @@
     <string name="tqdc_title" translatable="false">选择查询时间</string>
     <string name="rts_share_image">分享</string>
     <string name="repeat_info">正在查询状态，请不要重复点击</string>
+
 
 </resources>

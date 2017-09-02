@@ -2,6 +2,7 @@ package com.zividig.ziv.fragments;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -20,11 +21,13 @@ import android.widget.TextView;
 import com.zividig.ziv.R;
 import com.zividig.ziv.customView.LoadingProgressDialog;
 import com.zividig.ziv.function.About;
+import com.zividig.ziv.function.CxllActivity;
 import com.zividig.ziv.function.LightColor;
 import com.zividig.ziv.rxjava.ZivApiManage;
 import com.zividig.ziv.rxjava.model.DeviceStateBody;
 import com.zividig.ziv.rxjava.model.DeviceStateResponse;
 import com.zividig.ziv.rxjava.model.DeviceWakeResponse;
+import com.zividig.ziv.utils.DialogUtils;
 import com.zividig.ziv.utils.HttpParamsUtils;
 import com.zividig.ziv.utils.JsonUtils;
 import com.zividig.ziv.utils.LogUtils;
@@ -104,6 +107,7 @@ public class SettingFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+                if (serviceTrueOrFalse()) return; //检查服务是否到期
                 switch (position){
                     case 0:
                         System.out.println("主机唤醒" + position);
@@ -187,6 +191,28 @@ public class SettingFragment extends Fragment {
             }
         });
         return view;
+    }
+
+    //检查服务是否到期
+    private boolean serviceTrueOrFalse(){
+
+        if (!Urls.deviceServeice ){
+            DialogUtils.showPrompt(getContext(), "提示",
+                    "服务已到期，请续费",
+                    "确定",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            Intent intent = new Intent(getContext(),CxllActivity.class);
+                            intent.putExtra("cxll_title","VIP服务");
+                            startActivity(intent);
+                        }
+                    });
+            return true;
+
+        }
+        return false;
     }
 
     /**

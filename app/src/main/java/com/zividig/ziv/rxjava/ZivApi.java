@@ -48,7 +48,7 @@ public interface ZivApi {
 
     //图片抓拍
     @Headers({"Content-Type: application/json","Accept: application/json"})
-    @POST("device/snap")
+    @POST("device/snap2")
     Observable<SnapResponse> getImageUrl(@QueryMap Map<String, String> options, @Body RequestBody body);
 
     //下载图片

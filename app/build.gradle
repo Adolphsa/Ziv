@@ -17,8 +17,8 @@ android {
         applicationId "com.zividig.ziv"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 3
-        versionName "1.0.0.1-0707"
+        versionCode 5
+        versionName "1.0.0.1-0902"
         signingConfig signingConfigs.config
 
         //参数说明

@@ -51,15 +51,16 @@ public class CxllActivity extends BaseActivity {
         //设置获取设备状态为真，以便在Activity销毁时能重新获取设备状态
         mSpf.edit().putBoolean("is_keeping_get_device_state",true).apply();
 
-        initView();
+        initView("服务充值");
+
         initWebview();
     }
 
-    private void initView(){
+    private void initView(String title){
 
         // 标题
         TextView txtTitle = (TextView) findViewById(R.id.tv_title);
-        txtTitle.setText("流量查询");
+        txtTitle.setText(title);
 
         //返回按钮
         Button btnBack = (Button) findViewById(R.id.btn_back);

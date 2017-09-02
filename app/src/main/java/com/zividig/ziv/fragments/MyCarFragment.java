@@ -25,11 +25,11 @@ import com.bigkoo.convenientbanner.holder.Holder;
 import com.google.gson.Gson;
 import com.zivdigi.helloffmpeg.MyTestActivity;
 import com.zivdigi.helloffmpeg.TestDecoder;
+import com.zivdigi.helloffmpeg.twog.SocketTest;
 import com.zividig.ndk_test.weizhang.activity.ViolationActivity;
 import com.zividig.ziv.R;
 import com.zividig.ziv.bean.DeviceInfoBean;
 import com.zividig.ziv.customView.LoadingProgressDialog;
-import com.zivdigi.helloffmpeg.twog.SocketTest;
 import com.zividig.ziv.function.AddDevice;
 import com.zividig.ziv.function.CarInfo;
 import com.zividig.ziv.function.CarLocation;
@@ -38,7 +38,6 @@ import com.zividig.ziv.function.ElectronicFence;
 import com.zividig.ziv.function.RealTimeShow;
 import com.zividig.ziv.function.TrackQueryDateChoose;
 import com.zividig.ziv.main.Login;
-import com.zividig.ziv.main.MainActivity;
 import com.zividig.ziv.main.ZivApp;
 import com.zividig.ziv.rxjava.ZivApiManage;
 import com.zividig.ziv.rxjava.model.DeviceStateBody;
@@ -85,7 +84,7 @@ public class MyCarFragment extends Fragment {
             "电子围栏",
             "违章查询",
             "轨迹查询",
-            "流量充值"};
+            "服务充值"};
 
     private int[] itemImages = {R.drawable.selector_real_time,
             R.drawable.select_real_video,
@@ -105,8 +104,6 @@ public class MyCarFragment extends Fragment {
     private SharedPreferences mSpf;
     private TextView mTitle;
 
-    private MainActivity mMainActivity;
-
     private long secondTime = 0;
 
     private Subscription mSubscription;
@@ -123,7 +120,7 @@ public class MyCarFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_mycar, null);
         mSpf = getActivity().getSharedPreferences("config", Context.MODE_PRIVATE);
-        mMainActivity = (MainActivity) getActivity();
+
         mSpf.edit().putBoolean("is_keeping_get_device_state", true).apply();
 
         initView();
@@ -242,12 +239,13 @@ public class MyCarFragment extends Fragment {
                 switch (position) {
                     case 0:
                         System.out.println("图片抓拍" + position);
-                        if (chageNetWork()) break;
+                        if (serviceTrueOrFalse()) return; //检查服务是否到期
+                        if (chageNetWork()) break;  //检查网络类型
                         getDeviceStatus(position);
                         break;
                     case 1:
                         System.out.println("实时视频" + position);
-
+                        if (serviceTrueOrFalse()) return; //检查服务是否到期
                         String devid = mSpf.getString("devid", null);
                         String tmp = "";
                         if (!TextUtils.isEmpty(devid)) {
@@ -262,16 +260,7 @@ public class MyCarFragment extends Fragment {
                                 System.out.println("大于2秒");
                                 secondTime = System.currentTimeMillis();
                                 if (NetworkTypeUtils.is2GDevice(deviceType)) {
-                                    DialogUtils.showPrompt(getContext(), getString(R.string.add_device_tips),
-                                            getString(R.string.mcf_open_device_wifi),
-                                            getString(R.string.add_device_ensure),
-                                            new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    dialog.dismiss();
-                                                    startActivity(new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS));
-                                                }
-                                            });
+                                    showChangeWifiDialog();
                                 } else {
                                     RxStartVideo();
                                 }
@@ -283,26 +272,31 @@ public class MyCarFragment extends Fragment {
                         break;
                     case 2:
                         System.out.println("车辆信息" + position);
+                        if (serviceTrueOrFalse()) return; //检查服务是否到期
                         if (chageNetWork()) break;
                         startActivity(new Intent(getContext(), CarInfo.class));
                         break;
                     case 3:
                         System.out.println("车辆定位" + position);
+                        if (serviceTrueOrFalse()) return; //检查服务是否到期
                         if (chageNetWork()) break;
                         startActivity(new Intent(getContext(), CarLocation.class));
                         break;
                     case 4:
                         System.out.println("电子围栏" + position);
+                        if (serviceTrueOrFalse()) return; //检查服务是否到期
                         if (chageNetWork()) break;
                         startActivity(new Intent(getContext(), ElectronicFence.class));
                         break;
                     case 5:
                         System.out.println("违章查询" + position);
+                        if (serviceTrueOrFalse()) return; //检查服务是否到期
                         if (chageNetWork()) break;
                         startActivity(new Intent(getContext(), ViolationActivity.class));
                         break;
                     case 6:
                         System.out.println("轨迹查询" + position);
+                        if (serviceTrueOrFalse()) return; //检查服务是否到期
                         if (chageNetWork()) break;
                         startActivity(new Intent(getContext(), TrackQueryDateChoose.class));
                         break;
@@ -313,6 +307,26 @@ public class MyCarFragment extends Fragment {
                 }
             }
         });
+    }
+
+    //检查服务是否到期
+    private boolean serviceTrueOrFalse(){
+
+        if (!Urls.deviceServeice ){
+            DialogUtils.showPrompt(getContext(), "提示",
+                    "服务已到期，请续费",
+                    "确定",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            startActivity(new Intent(getContext(),CxllActivity.class));
+                        }
+                    });
+            return true;
+
+        }
+        return false;
     }
 
     //初始化广告控件
@@ -467,14 +481,20 @@ public class MyCarFragment extends Fragment {
                     @Override
                     public void call(DeviceStateResponse deviceStateResponse) {
                         int status = deviceStateResponse.getStatus();
+                        System.out.println("抓图状态---" + status);
                         if (status == 200) {
                             if (deviceStateResponse.getInfo() != null) {
                                 String deviceStatus = deviceStateResponse.getInfo().getWorkmode();
+                                String deviceType = deviceStateResponse.getInfo().getType();
+                                boolean isService = deviceStateResponse.getInfo().isService();
                                 System.out.println("设备状态---" + deviceStatus);
-                                System.out.println("设备类型---" + deviceStateResponse.getInfo().getType());
+                                System.out.println("设备类型---" + deviceType);
+                                System.out.println("是否在服务器---" + isService);
                                 if (deviceStatus.equals("NORMAL")) {
                                     if (position == 0) {
-                                        startActivity(new Intent(getContext(), RealTimeShow.class));
+                                            Intent intent = new Intent(getContext(), RealTimeShow.class);
+                                            intent.putExtra("device_type",deviceType);
+                                            startActivity(intent);
                                     } else if (position == 1) {
                                         RxStartVideo();
                                     }
@@ -557,6 +577,7 @@ public class MyCarFragment extends Fragment {
                             Map<String, String> options = setOp();
                             RequestBody jsonBody = setBody();
                             if (options != null && jsonBody != null) {
+
                                 return ZivApiManage.getInstance().getZivApiService().getDeviceStateInfo(options, jsonBody);
                             } else {
                                 return Observable.error(new Exception("devid_is_null"));
@@ -609,6 +630,7 @@ public class MyCarFragment extends Fragment {
      * @param deviceStateResponse 设备状态的返回
      */
     private void handDevideStateResponse(DeviceStateResponse deviceStateResponse) {
+        System.out.println("设备状态---" + deviceStateResponse.getInfo().toString());
         int status = deviceStateResponse.getStatus();
         System.out.println("设备状态---" + status);
         if (200 == status) {
@@ -617,27 +639,37 @@ public class MyCarFragment extends Fragment {
                 String workMode = infoBean.getWorkmode();
                 deviceType = infoBean.getType();
                 System.out.println("设备类型---" + deviceType);
-                if (workMode.equals("NORMAL")) {
-                    deviceState.setText(R.string.mcf_normal);
-                } else if (workMode.equals("OFFING")) {
-                    deviceState.setText(R.string.mcf_offing);
-                } else if (workMode.equals("STDBY")) {
-                    deviceState.setText(R.string.mcf_stdby);
-                } else if (workMode.equals("OFF")) {
-                    deviceState.setText(R.string.mcf_off);
-                } else if (workMode.equals("UNKNOWN")) {
-                    deviceState.setText(R.string.mcf_unknow);
-                } else if (workMode.equals("BOOTING")) {
-                    deviceState.setText(R.string.mcf_booting);
+                boolean isService = infoBean.isService();
+                System.out.println("isService---" + isService);
+                //设置服务是否到期
+                Urls.deviceServeice = isService;
+                System.out.println("服务是否到期---" + Urls.deviceServeice);
+                if (isService){
+                    if (workMode.equals("NORMAL")) {
+                        deviceState.setText(R.string.mcf_normal);
+                    } else if (workMode.equals("OFFING")) {
+                        deviceState.setText(R.string.mcf_offing);
+                    } else if (workMode.equals("STDBY")) {
+                        deviceState.setText(R.string.mcf_stdby);
+                    } else if (workMode.equals("OFF")) {
+                        deviceState.setText(R.string.mcf_off);
+                    } else if (workMode.equals("UNKNOWN")) {
+                        deviceState.setText(R.string.mcf_unknow);
+                    } else if (workMode.equals("BOOTING")) {
+                        deviceState.setText(R.string.mcf_booting);
+                    }
+                }else {
+                    deviceState.setText(R.string.mcf_service_is_over);
                 }
             }
+
         } else if (600 == status) {
             System.out.println("为600");
             if (mSubscription != null) {
                 mSubscription.unsubscribe();
             }
             mSpf.edit().putBoolean("is_keeping_get_device_state", true).apply();
-            dialog2 = LoadingProgressDialog.createLoadingDialog(getContext(), "账号已在其他地方登陆", false, true, new View.OnClickListener() {
+            dialog2 = LoadingProgressDialog.createLoadingDialog(getContext(), getString(R.string.mcf_account_offline), false, true, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     dialog2.dismiss();
@@ -662,7 +694,7 @@ public class MyCarFragment extends Fragment {
 
         if (NetworkTypeUtils.getConnectWifiSsid(ZivApp.getInstance()).contains("ziv_box_") &&
                 NetworkTypeUtils.is2GDevice(deviceType)) {
-            DialogUtils.showPrompt(getContext(), getString(R.string.add_device_tips),
+            DialogUtils.showPrompt2(getContext(), getString(R.string.add_device_tips),
                     getString(R.string.mcf_close_device_wifi),
                     getString(R.string.add_device_ensure),
                     new DialogInterface.OnClickListener() {
@@ -671,6 +703,13 @@ public class MyCarFragment extends Fragment {
                             dialog.dismiss();
                             startActivity(new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS));
                         }
+                    },
+                    getString(R.string.common_cancel),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
                     });
 
             return true;
@@ -678,4 +717,24 @@ public class MyCarFragment extends Fragment {
         return false;
     }
 
+
+    private void showChangeWifiDialog(){
+        DialogUtils.showPrompt2(getContext(), getString(R.string.add_device_tips),
+                getString(R.string.mcf_open_device_wifi),
+                getString(R.string.add_device_ensure),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        startActivity(new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS));
+                    }
+                },
+                getString(R.string.common_cancel),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+    }
 }

@@ -1,6 +1,6 @@
 package com.zividig.ziv.function;
 
-import android.app.Dialog;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,19 +13,16 @@ import android.os.Environment;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baidu.mapapi.SDKInitializer;
 import com.bm.library.PhotoView;
 import com.zividig.ziv.R;
-import com.zividig.ziv.customView.LoadingProgressDialog;
+import com.zividig.ziv.customView.PercentCircle;
 import com.zividig.ziv.main.BaseActivity;
 import com.zividig.ziv.main.ZivApp;
 import com.zividig.ziv.rxjava.ZivApiManage;
-import com.zividig.ziv.rxjava.model.DeviceStateBody;
-import com.zividig.ziv.rxjava.model.DeviceStateResponse;
 import com.zividig.ziv.rxjava.model.SnapBody;
 import com.zividig.ziv.rxjava.model.SnapResponse;
 import com.zividig.ziv.utils.DialogUtils;
@@ -66,11 +63,11 @@ public class RealTimeShow extends BaseActivity {
 
     private Context mContext;
     private PhotoView photoView;
-    private ProgressBar progressBar;
 
     private Button btRefresh;
     private Button btDownImage;
     private Button btShraeImage;
+    private PercentCircle mPercentCircle;
 
     private String devid;
 
@@ -85,9 +82,13 @@ public class RealTimeShow extends BaseActivity {
     private int count;
 
     private SharedPreferences mSpf;
-    private Dialog mDialog;
 
     private String shareImageUrl;
+
+    int imgChannel;
+    String channelStr;
+    String deviceType;
+    String resolution = "00";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,7 +121,7 @@ public class RealTimeShow extends BaseActivity {
         photoView = (PhotoView) findViewById(R.id.ph_img); //图片显示控件
         photoView.enable();
 
-        progressBar = (ProgressBar) findViewById(R.id.pb_img); //进度条
+        mPercentCircle = (PercentCircle) findViewById(R.id.percent_progress);
 
         //按钮监听
         BtnListener listener = new BtnListener();
@@ -129,103 +130,118 @@ public class RealTimeShow extends BaseActivity {
         btDownImage = (Button) findViewById(R.id.bt_downImage);  //图片下载
         btShraeImage = (Button) findViewById(R.id.rts_share_image); //图片分享
 
+
         btRefresh.setOnClickListener(listener);
         btDownImage.setOnClickListener(listener);
         btShraeImage.setOnClickListener(listener);
 
-        RxgetDeviceState();
+        deviceType = getIntent().getStringExtra("device_type");
+        mPercentCircle.setTargetPercent(99);
+        if (deviceType.equals("2G")){
+            System.out.println("2G类型---");
+            show2GDialog();
+        }else if (deviceType.equals("4G")){
+            channelStr = "00";
+            snapImage();
+        }
+//        RxgetDeviceState();
 
     }
 
-    /**
-     * 配置options
-     * @return options
-     */
-    private Map<String, String> setOp(){
 
-        String token = mSpf.getString("token", null);
-        String devid = mSpf.getString("devid", null);
 
-        //计算signature
-        String timestamp = UtcTimeUtils.getTimestamp();
-        String noncestr = HttpParamsUtils.getRandomString(10);
-        String signature = SignatureUtils.getSinnature(timestamp,
-                noncestr,
-                Urls.APP_KEY,
-                devid,
-                token);
+//    /**
+//     * 配置options
+//     * @return options
+//     */
+//    private Map<String, String> setOp(){
+//
+//        String token = mSpf.getString("token", null);
+//        String devid = mSpf.getString("devid", null);
+//
+//        //计算signature
+//        String timestamp = UtcTimeUtils.getTimestamp();
+//        String noncestr = HttpParamsUtils.getRandomString(10);
+//        String signature = SignatureUtils.getSinnature(timestamp,
+//                noncestr,
+//                Urls.APP_KEY,
+//                devid,
+//                token);
+//
+//        //配置请求头
+//        Map<String, String> options = new HashMap<>();
+//        options.put(SignatureUtils.SIGNATURE_APP_KEY, Urls.APP_KEY);
+//        options.put(SignatureUtils.SIGNATURE_TIMESTAMP, timestamp);
+//        options.put(SignatureUtils.SIGNATURE_NONCESTTR, noncestr);
+//        options.put(SignatureUtils.SIGNATURE_STRING, signature);
+//
+//        return options;
+//    }
+//
+//    /**
+//     * 配置jsonBody
+//     * @return  RequestBody
+//     */
+//    private RequestBody setBody(){
+//
+//        String token = mSpf.getString("token", null);
+//        String devid = mSpf.getString("devid", null);
+//
+//        //配置请求体
+//        DeviceStateBody deviceStateBody = new DeviceStateBody();
+//        deviceStateBody.devid = devid;
+//        deviceStateBody.token = token;
+//        String stringDeviceListBody = JsonUtils.serialize(deviceStateBody);
+//        RequestBody jsonBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), stringDeviceListBody);
+//
+//        return jsonBody;
+//    }
+//
+//    /**
+//     * 获取设备状态
+//     */
+//    private void RxgetDeviceState(){
+//
+//        Map<String, String> options = setOp();
+//        RequestBody jsonBody = setBody();
+//        ZivApiManage.getInstance().getZivApiService()
+//                .getDeviceStateInfo(options,jsonBody)
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new Action1<DeviceStateResponse>() {
+//                    @Override
+//                    public void call(DeviceStateResponse deviceStateResponse) {
+//                        int status = deviceStateResponse.getStatus();
+//                        DeviceStateResponse.InfoBean infoBean =  deviceStateResponse.getInfo();
+//                        if (200 == status && infoBean != null){
+//                            String worlMode = infoBean.getWorkmode();
+//                            if (worlMode.equals("NORMAL")){
+//
+//                            }
+//                        }
+//                    }
+//                }, new Action1<Throwable>() {
+//                    @Override
+//                    public void call(Throwable throwable) {
+//                        if (!RealTimeShow.this.isFinishing()){
+//                            DialogUtils.showPrompt(RealTimeShow.this, getString(R.string.add_device_tips), getString(R.string.rts_device_offline), getString(R.string.add_device_ensure), new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialog, int which) {
+//                                    dialog.dismiss();
+//                                    finish();
+//                                }
+//                            });
+//                        }
+//                    }
+//                });
+//    }
 
-        //配置请求头
-        Map<String, String> options = new HashMap<>();
-        options.put(SignatureUtils.SIGNATURE_APP_KEY, Urls.APP_KEY);
-        options.put(SignatureUtils.SIGNATURE_TIMESTAMP, timestamp);
-        options.put(SignatureUtils.SIGNATURE_NONCESTTR, noncestr);
-        options.put(SignatureUtils.SIGNATURE_STRING, signature);
-
-        return options;
-    }
-
-    /**
-     * 配置jsonBody
-     * @return  RequestBody
-     */
-    private RequestBody setBody(){
-
-        String token = mSpf.getString("token", null);
-        String devid = mSpf.getString("devid", null);
-
-        //配置请求体
-        DeviceStateBody deviceStateBody = new DeviceStateBody();
-        deviceStateBody.devid = devid;
-        deviceStateBody.token = token;
-        String stringDeviceListBody = JsonUtils.serialize(deviceStateBody);
-        RequestBody jsonBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), stringDeviceListBody);
-
-        return jsonBody;
-    }
-
-    /**
-     * 获取设备状态
-     */
-    private void RxgetDeviceState(){
-
-        Map<String, String> options = setOp();
-        RequestBody jsonBody = setBody();
-        ZivApiManage.getInstance().getZivApiService()
-                .getDeviceStateInfo(options,jsonBody)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<DeviceStateResponse>() {
-                    @Override
-                    public void call(DeviceStateResponse deviceStateResponse) {
-                        int status = deviceStateResponse.getStatus();
-                        DeviceStateResponse.InfoBean infoBean =  deviceStateResponse.getInfo();
-                        if (200 == status && infoBean != null){
-                            String worlMode = infoBean.getWorkmode();
-                            if (worlMode.equals("NORMAL")){
-                                //执行获取图片
-                                progressBar.setVisibility(View.VISIBLE);
-                                if("Meizu".equals(android.os.Build.MANUFACTURER)){
-                                    showProgressDialog();
-                                }
-                                RXgetImageUrl();
-                            }
-                        }
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        if (!RealTimeShow.this.isFinishing()){
-                            DialogUtils.showPrompt(RealTimeShow.this, getString(R.string.add_device_tips), getString(R.string.rts_device_offline), getString(R.string.add_device_ensure), new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                    finish();
-                                }
-                            });
-                        }
-                    }
-                });
+    private void snapImage(){
+        //执行获取图片
+        mPercentCircle.setVisibility(View.VISIBLE);
+        mPercentCircle.setTargetPercent(99);
+        mPercentCircle.initPercentCircle(0,0);
+        RXgetImageUrl();
     }
 
     private Map<String, String> setOp(String imageKeyTest){
@@ -241,7 +257,9 @@ public class RealTimeShow extends BaseActivity {
                 Urls.APP_KEY,
                 devid,
                 token,
-                imageKeyTest);
+                imageKeyTest,
+                channelStr,
+                resolution);
 
         //配置请求头
         mapOptions = new HashMap<>();
@@ -263,6 +281,8 @@ public class RealTimeShow extends BaseActivity {
         body.devid = devid;
         body.imageKey = imageKeyTest;
         body.token = token;
+        body.channel = channelStr;
+        body.resolution = resolution;
         String snapBody = JsonUtils.serialize(body);
         jsonBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), snapBody);
 
@@ -287,7 +307,9 @@ public class RealTimeShow extends BaseActivity {
                 Urls.APP_KEY,
                 devid,
                 token,
-                imageKey);
+                imageKey,
+                channelStr,
+                resolution);
 
         //配置请求头
         mapOptions = new HashMap<>();
@@ -301,6 +323,9 @@ public class RealTimeShow extends BaseActivity {
         body.devid = devid;
         body.imageKey = imageKey;
         body.token = token;
+        body.channel = channelStr;
+        System.out.println("body channel2---" + body.channel);
+        body.resolution = resolution;
         String snapBody = JsonUtils.serialize(body);
         jsonBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), snapBody);
 
@@ -319,6 +344,7 @@ public class RealTimeShow extends BaseActivity {
                     @Override
                     public Observable<SnapResponse> call(SnapResponse snapResponse) {
                         System.out.println("第二次变换imagekey---" + snapResponse.getKey());
+                        System.out.println("抓图状态---" + snapResponse.getStatus());
                         Map<String, String> op = setOp(snapResponse.getKey());
                         RequestBody js = setBody(snapResponse.getKey());
                         return ZivApiManage.getInstance().getZivApiService().getImageUrl(op,js);
@@ -389,15 +415,13 @@ public class RealTimeShow extends BaseActivity {
                         mBitmap = bitmap;
                         System.out.println("图片宽度---" + bitmap.getWidth() + "图片高度---" + bitmap.getHeight());
                         photoView.setImageBitmap(bitmap);
-                        progressBar.setVisibility(View.INVISIBLE);
-                        closeDialog();
+                        closePercentCircle();
 
                     }
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        progressBar.setVisibility(View.INVISIBLE);
-                        closeDialog();
+                        closePercentCircle();
                         if (!RealTimeShow.this.isFinishing()) {
                             DialogUtils.showPrompt(RealTimeShow.this, getString(R.string.add_device_tips), getString(R.string.rts_snap_fail), getString(R.string.add_device_ensure), new DialogInterface.OnClickListener() {
                                 @Override
@@ -413,8 +437,7 @@ public class RealTimeShow extends BaseActivity {
                     public void call() {
                         System.out.println("完成了");
                         if (count > SNAP_COUNT-1){
-                            progressBar.setVisibility(View.INVISIBLE);
-                            closeDialog();
+                            closePercentCircle();
                             if (!RealTimeShow.this.isFinishing()) {
                                 DialogUtils.showPrompt(RealTimeShow.this, getString(R.string.add_device_tips), getString(R.string.rts_snap_fail), getString(R.string.add_device_ensure), new DialogInterface.OnClickListener() {
                                     @Override
@@ -481,24 +504,62 @@ public class RealTimeShow extends BaseActivity {
         this.sendBroadcast(intent);
     }
 
-    /**
-     * 显示进度条
-     */
-    private void showProgressDialog(){
-        if (mDialog == null && !RealTimeShow.this.isFinishing()){
-            mDialog = LoadingProgressDialog.createLoadingDialog(RealTimeShow.this,getString(R.string.rts_snaping),true,false,null);
-            mDialog.show();
+    private void closePercentCircle(){
+        if (mPercentCircle != null){
+            mPercentCircle.setVisibility(View.INVISIBLE);
         }
     }
 
-    /**
-     * 关闭进度条
-     */
-    private void closeDialog() {
-        if (mDialog != null) {
-            mDialog.dismiss();
-            mDialog = null;
-        }
+    //显示2G抓图选择对话框
+    private void show2GDialog(){
+
+        final String[] items = {"前","后","左","右","四分格画面"};
+        imgChannel = 0;
+
+        AlertDialog.Builder channel2gDialog =
+                new AlertDialog.Builder(RealTimeShow.this);
+        channel2gDialog.setTitle("请选择抓拍图片通道");
+
+        // 第二个参数是默认选项，此处设置为0
+        channel2gDialog.setSingleChoiceItems(items, 0,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        imgChannel = which;
+                        System.out.println("which---" + which);
+                    }
+                });
+
+        channel2gDialog.setPositiveButton("确定",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        System.out.println("imgChannel---" + imgChannel);
+                        if (imgChannel == 0){
+                            channelStr = "03";    //前
+                        }else if (imgChannel == 1){
+                            channelStr = "04";    //后
+                        }else if (imgChannel == 2){
+                            channelStr = "01";    //左
+                        }else if (imgChannel == 3){
+                            channelStr = "02";    //右
+                        }else if (imgChannel == 4){
+                            channelStr = "00";    //四分格画面
+                        }else if (imgChannel == 5){
+                            channelStr = "10";    //拼接画面
+                        }
+                        System.out.println("画面channel---" + channelStr);
+                        snapImage();
+                    }
+                });
+        channel2gDialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+            }
+        });
+        channel2gDialog.setCancelable(false);
+        channel2gDialog.show();
     }
 
     class BtnListener implements View.OnClickListener {
@@ -507,9 +568,14 @@ public class RealTimeShow extends BaseActivity {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.bt_refresh:
-                    if ((System.currentTimeMillis()- secondTime) > (1 * 1000)){
+                    if ((System.currentTimeMillis()- secondTime) > (1000)){
                         imageKey = "new";
-                        RxgetDeviceState();
+                        if (deviceType.equals("2G")){
+                            show2GDialog();
+                        }else if (deviceType.equals("4G")){
+                            channelStr = "00";
+                            snapImage();
+                        }
                     }
                     secondTime = System.currentTimeMillis();
                     break;
